@@ -1,0 +1,98 @@
+# bootstrap.R
+importFrom(stats, optim, reorder)
+importFrom(utils, setTxtProgressBar, txtProgressBar)
+importFrom(multiway, congru)
+
+# feem.R
+export(feem)
+S3method(feem, matrix)
+
+importFrom(stats, reshape)
+S3method(feem, data.frame)
+
+S3method(as.data.frame, feem)
+
+importFrom(graphics, plot)
+importFrom(lattice, levelplot)
+S3method(plot, feem)
+
+S3method(`[`, feem)
+S3method(`[<-`, feem)
+
+# feemcube.R
+export(feemcube)
+S3method(feemcube, array)
+S3method(feemcube, list)
+
+S3method(`[`, feemcube)
+S3method(`[<-`, feemcube)
+
+S3method(as.list, feemcube)
+S3method(as.data.frame, feemcube)
+
+importFrom(graphics, plot)
+importFrom(lattice, levelplot)
+S3method(plot, feemcube)
+
+# feemife.R
+export(feemife)
+importFrom(stats, setNames, splinefun)
+S3method(feemife, feemcube)
+S3method(feemife, feem)
+S3method(feemife, list)
+
+# feemscale.R
+export(feemscale)
+
+importFrom(stats, sd)
+S3method(feemscale, feem)
+
+S3method(feemscale, feemcube)
+S3method(feemscale, list)
+
+# feemscatter.R
+export(feemscatter)
+
+importFrom(pracma, pchip)
+importFrom(stats, predict, loess)
+S3method(feemscatter, feem)
+
+S3method(feemscatter, feemcube)
+S3method(feemscatter, list)
+
+# jackknife.R
+importFrom(pracma, pinv)
+importFrom(multiway, krprod, rescale)
+export(feemjackknife)
+
+importFrom(lattice, ltext, panel.abline, panel.xyplot, xyplot)
+importFrom(stats, quantile, resid)
+S3method(plot, feemjackknife)
+
+# parafac.R
+importFrom(multiway, parafac)
+export(feemparafac)
+
+importFrom(stats, fitted)
+S3method(fitted, feemparafac)
+
+importFrom(stats, residuals)
+S3method(residuals, feemparafac)
+
+importFrom(graphics, plot)
+importFrom(lattice, xyplot)
+S3method(plot, feemparafac)
+
+# marine.R
+importFrom(grDevices, hcl)
+export(marine.colours)
+
+# splithalf.R
+importFrom(utils, combn)
+export(feemsplithalf)
+
+S3method(print, feemsplithalf)
+
+importFrom(graphics, plot)
+importFrom(lattice, bwplot, trellis.par.get, xyplot)
+S3method(plot, feemsplithalf)
