@@ -9,7 +9,7 @@
   Functions to create fluorescence excitation-emission matrix objects from
   R matrices coupled with excitation and emission wavelengths or three-column
   \code{data.frame}s containing \eqn{(\lambda_{em}, \lambda_{ex}, I)}{%
-  (lambda.em, lambda.ex, intensity)} tuples.
+  (\lambda.em, \lambda.ex, intensity)} tuples.
 }
 \usage{
   feem(x, \dots)
@@ -84,7 +84,8 @@
 
 \seealso{
   FEEM methods: \code{\link{plot.feem}}, \code{\link{as.data.frame.feem}},
-  \code{\link{[.feem}}
+  \code{\link{[.feem}}, \code{\link{feemife}}, \code{\link{feemscale}},
+  \code{\link{feemscatter}}.
 }
 \examples{
   feem(matrix(1:40, ncol = 8), 1:5, 1:8)

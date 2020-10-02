@@ -1,5 +1,6 @@
 \name{feemparafac}
 \alias{feemparafac}
+\alias{plot.feemparafac}
 \title{
   Compute PARAFAC on a FEEM cube object
 }
@@ -10,15 +11,20 @@
 }
 \usage{
   feemparafac(X, \dots, rescale = 3, retries = 10)
+  \method{plot}{feemparafac}(x, type = c("image", "lines"), \dots)
 }
 \arguments{
   \item{X}{
     A FEEM cube object. The per-sample factors will be multiplied by
     \code{attr(X, 'scales')} stored in it.
   }
-  \item{\dots}{
-    Passed as-is to \code{\link{parafac}}.
-  }
+  \item{\dots}{\describe{
+    \item{feemparafac}{Passed as-is to \code{\link{parafac}}.}
+    \item{plot.feemparafac}{
+      Passed as-is to \pkg{lattice} functions \code{\link{levelplot}} and
+      \code{\link{xyplot}}.
+    }
+  }}
   \item{rescale}{
     Rescale the resulting factors to leave all the variance in the given
     mode: emission, excitation, or sample (default). Set to \code{NA}
@@ -28,6 +34,36 @@
     Retry for given number of tries until \code{\link{parafac}} returns
     a successfully fitted model or stops due to the iteration number
     limit. Raise a fatal error if all tries were unsuccessful.
+  }
+  \item{x}{
+    An object returned by \code{\link{feemparafac}}.
+  }
+  \item{type}{
+    Given a fitted PARAFAC model:
+
+    \deqn{%
+      X_{ijk} = \sum_r A_{ir} B_{jr} C_{kr}}{%
+      X[i,j,k] = sum(A[i,] * B[j,] * C[k,])%
+    }
+
+    With \eqn{\mathbf{A}}{A} corresponding to fluorescence emission
+    spectra, \eqn{\mathbf{B}}{B} corresponding to fluorescence
+    excitation spectra, and \eqn{\mathbf{C}}{C} corresponding to the
+    scores of the components in different samples, the following plots
+    can be produced:
+    \describe{
+      \item{\code{"image"}}{
+        Plot the factors (\dQuote{loadings}) as a series of false-colour
+        images of outer products
+        \eqn{\mathbf{A}_r \otimes \mathbf{B}_r}{A[,r] \%o\% B[,r]}.
+      }
+      \item{\code{"lines"}}{
+        Plot the factors \eqn{\mathbf A_r}{A[,r]} and \eqn{%
+          \mathbf B_r}{B[,r]} as functions of wavelengths, with each
+        pair of factors on a different panel.
+      }
+    }
+    More plot kinds may be added in the future.
   }
 }
 \details{
@@ -41,11 +77,22 @@
   a list of alternative solutions can therefore be achieved by running:
 
   \code{replicate(\var{n}, feemparafac(..., nstart = 1))}
+
+  \code{plot.feemparafac} provides sane defaults for \pkg{lattice} options
+  such as \code{xlab}, \code{ylab}, \code{as.table}, \code{auto.key},
+  \code{type}, \code{cuts}, \code{col.regions}, but they can be
+  overridden.
 }
 \value{
-  An object of classes \code{feemparafac} and \code{parafac} with the
-  \code{cube} attribute added containing a reference to the original
-  FEEM cube object.
+  \item{feemparafac}{
+    An object of classes \code{feemparafac} and \code{parafac} with the
+    \code{cube} attribute added containing a reference to the original
+    FEEM cube object.
+  }
+  \item{plot.feemparafac}{
+    A \pkg{lattice} plot object. Its \code{print} or \code{plot} method
+    will draw the plot on an appropriate plotting device.
+  }
 }
 \references{
   R. Bro, PARAFAC. Tutorial and applications, Chemometrics and Intelligent
@@ -55,8 +102,9 @@
 \seealso{
   \code{\link{parafac}} for the \code{parafac} class structure;
   \code{\link{fitted.feemparafac}}, \code{\link{residuals.feemparafac}},
-  \code{\link{plot.feemparafac}} for methods specific to values returned
-  from this function.
+  for methods specific to values returned from this function.
+
+  \code{\link{levelplot}}, \code{\link{xyplot}}.
 }
 \examples{
   data(feems)
@@ -65,9 +113,9 @@
       feemcube(feems, FALSE)[(1:45)*4,(1:13)*4,],
       rep(24, 4)), na.rm = TRUE
   )
-  plot(
-    factors <- feemparafac(
-      cube, nfac = 2, const = rep('nonneg', 3)
-    )
-  )
+  factors <- feemparafac(cube, nfac = 2, const = rep('nonneg', 3))
+  plot(factors, 'image')
+  plot(factors, 'line')
 }
+\keyword{hplot}
+\keyword{method}

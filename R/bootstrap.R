@@ -19,19 +19,23 @@ match.factors <- function(target, current) {
 	current <- reorder(current, perm)
 
 	# 2. rescale the matching components
-	# by minimizing L2 norm of reconstruction error
-	# subject to sAsB = 1/sC
-	scaling <- optim(
-		par = rep(1, nfac * 2),
-		fn = function(x) {
-			x <- matrix(x, nfac, 2)
-			sum(
-				(t(t(current[['A']]) * x[,1]) - target[['A']])^2,
-				(t(t(current[['B']]) * x[,2]) - target[['B']])^2
-			)
-		}
+	# by minimizing L2 norm of reconstruction error per each mode
+	scaling <- cbind(
+		optim(
+			par = rep(1, nfac), fn = function(x)
+				sum((t(t(current[["A"]]) * x) - target[["A"]])^2),
+			gr = function(x)
+				colSums((t(t(current[["A"]]) * x) - target[["A"]]) * current$A),
+			method = 'BFGS'
+		)$par,
+		optim(
+			par = rep(1, nfac), fn = function(x)
+				sum((t(t(current[["B"]]) * x) - target[["B"]])^2),
+			gr = function(x)
+				colSums((t(t(current[["B"]]) * x) - target[["B"]]) * current$B),
+			method = 'BFGS'
+		)$par
 	)
-	scaling <- matrix(scaling$par, nfac, 2)
 	# scaling matrix such that
 	# Acurrent[r] * scaling[r,1] ~ Atarget
 	# Bcurrent[r] * scaling[r,1] ~ Btarget

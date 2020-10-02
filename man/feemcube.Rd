@@ -74,7 +74,9 @@
   }
 }
 \seealso{
-  \code{\link{[.feemcube}}
+  FEEM cube methods: \code{\link{[.feemcube}}, \code{\link{plot.feemcube}},
+  \code{\link{as.data.frame.feemcube}}, \code{\link{as.list.feemcube}},
+  \code{\link{feemife}}, \code{\link{feemscale}}, \code{\link{feemscatter}}.
 }
 \examples{
   feemcube(array(1:24, 4:2), 1:4, 1:3) # array form

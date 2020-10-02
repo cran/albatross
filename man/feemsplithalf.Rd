@@ -1,5 +1,6 @@
 \name{feemsplithalf}
 \alias{feemsplithalf}
+\alias{plot.feemsplithalf}
 \alias{print.feemsplithalf}
 \title{Split-half analysis of PARAFAC models}
 \description{
@@ -9,6 +10,7 @@
 }
 \usage{
   feemsplithalf(cube, nfac, splits, random, \dots)
+  \method{plot}{feemsplithalf}(x, kind = c("tcc", "factors"), \dots)
   \method{print}{feemsplithalf}(x, \dots)
 }
 \arguments{
@@ -44,12 +46,29 @@
   \item{x}{
     An object returned by \code{feemsplithalf}.
   }
-  \item{\dots}{
-    \code{feemsplithalf}: remaining options are passed to
-    \code{\link{feemparafac}} and, eventually, to \code{\link{parafac}}.
-
-    \code{print.feemsplithalf}: no options are allowed.
+  \item{kind}{
+    \describe{
+      \item{\code{"tcc"}}{
+        Display statistics of between-half TCCs for different numbers
+        of components. The smallest TCC is chosen between emission- and
+        excitation-mode values, but otherwise they are not aggregated.
+        Components with the same number have the same colour.
+      }
+      \item{\code{"factors"}}{
+        Plot the resulting factors themselves on panels per each number
+        of components and each mode (emission or excitation). Components
+        with the same number have the same colour.
+      }
+    }
   }
+  \item{\dots}{\describe{
+    \item{feemsplithalf}{
+      Remaining options are passed to \code{\link{feemparafac}} and,
+      eventually, to \code{\link{parafac}}.
+    }
+    \item{plot.feemsplithalf}{Passed as-is to \code{\link{xyplot}}.}
+    \item{print.feemsplithalf}{No options are allowed.}
+  }}
 }
 \details{
   Pass either \code{splits} or \code{random} parameter, but not both, as
@@ -60,46 +79,54 @@
   using \code{\link{congru}} for emission and excitation mode factors,
   then the smallest value of the two is chosen for the purposes of
   matching). The models are first reordered according to the best match
-  by TCC value, then rescaled [3] so that:
+  by TCC value, then rescaled [3] by minimising \eqn{%
+    || \mathbf A \, \mathrm{diag}(\mathbf s_\mathrm A) - %
+      \mathbf A^\mathrm{orig} ||^2 %
+  }{sum((A * s.A - A.orig)^2)} and \eqn{ %
+    || \mathbf{B} \, \mathrm{diag}(\mathbf s_\mathrm B) - %
+      \mathbf B^\mathrm{orig} ||^2 %
+  }{sum((B * s.B - B.orig)^2)} over \eqn{\mathbf s_\mathrm A}{s.A} and
+  \eqn{\mathbf s_\mathrm B}{s.B}, subject to \eqn{%
+    \mathrm{diag}(\mathbf s_\mathrm A) \, %
+    \mathrm{diag}(\mathbf s_\mathrm B) \, %
+    \mathrm{diag}(\mathbf s_\mathrm C) = \mathbf I}{%
+    s.C = 1 / (s.A * s.B) %
+  }, to make them comparable.
 
-  \deqn{\sum_r \left( %
-    \sum_i (S_{1,r} A_{i,r} - A^\mathrm{orig}_{i,r})^2 + %
-    \sum_j (S_{2,r} B_{j,r} - B^\mathrm{orig}_{j,r})^2   %
-    \right) \rightarrow \min_\mathbf{S}
-  }{%
-    sum( %
-      (A * S[1,] - A.orig)^2, %
-      (B * S[2,] - B.orig)^2  %
-    ) -> min over S %
-  }
-
-  subject to \eqn{%
-    S_{3,r} = \frac{1}{S_{1,r} S_{2,r}} \; \forall r}{%
-    S[3,] = 1 / apply(S[1:2,], 2, prod)%
-  }.
+  \code{plot.feemsplithalf} provides sane defaults for \code{\link{xyplot}}
+  parameters \code{xlab}, \code{ylab}, \code{as.table}, but they can be
+  overridden.
 }
-\value{
-  An object of class \code{feemsplithalf}, containing named fields:
-  \item{factors}{
-    A \code{\link{list}} of \code{\link{feemparafac}} objects containing
-    the factors of the halves. The list has dimensions, the first one
-    corresponding to the halves (always 2), the second to different
-    numbers of factors (as many in \code{nfac}) and the third to
-    different groupings of the samples (depends on \code{splits} or
-    \code{random}).
+\value{\describe{
+  \item{feemsplithalf, print.feemsplithalf}{
+    An object of class \code{feemsplithalf}, containing named fields:
+    \describe{
+      \item{factors}{
+        A \code{\link{list}} of \code{\link{feemparafac}} objects containing
+        the factors of the halves. The list has dimensions, the first one
+        corresponding to the halves (always 2), the second to different
+        numbers of factors (as many as in \code{nfac}) and the third to
+        different groupings of the samples (depends on \code{splits} or
+        \code{random}).
+      }
+      \item{tcc}{
+        A named list containing arrays of Tucker's congruence coefficients
+        between the halves. Each entry in the list corresponds to an element
+        in the \code{nfac} argument. The dimensions of each array in the
+        list correspond to, in order: the factors (1 to \var{nfac}), the
+        modes (emission or excitation) and the groupings of the samples
+        (depending on \code{splits} or \code{random}).
+      }
+      \item{nfac}{
+        A copy of \code{nfac} argument.
+      }
+    }
   }
-  \item{tcc}{
-    A named list containing arrays of Tucker's congruence coefficients
-    between the halves. Each entry in the list corresponds to an element
-    in the \code{nfac} argument. The dimensions of each array in the
-    list correspond to, in order: the factors (1 to \var{nfac}), the
-    modes (emission or excitation) and the groupings of the samples
-    (depending on \code{splits} or \code{random}).
+  \item{plot.feemsplithalf}{
+    A \pkg{lattice} plot object. Its \code{print} or \code{plot} method
+    will draw the plot on an appropriate plotting device.
   }
-  \item{nfac}{
-    A copy of \code{nfac} argument.
-  }
-}
+}}
 \references{\enumerate{
   \item W.S. DeSarbo, An Application of PARAFAC to a Small Sample
   Problem, Demonstrating Preprocessing, Orthogonality Constraints, and
@@ -118,13 +145,14 @@
 }}
 
 \seealso{
-  \code{\link{plot.feemsplithalf}}, \code{\link{feemparafac}},
-  \code{\link{parafac}}, \code{\link{congru}}, \code{\link{feemcube}}.
+  \code{\link{feemparafac}}, \code{\link{parafac}}, \code{\link{congru}},
+  \code{\link{feemcube}}.
 }
 \examples{\donttest{
   data(feems)
   cube <- feemscale(
-    feemscatter(feemcube(feems, FALSE), rep(24, 4)), na.rm = TRUE
+    feemscatter(feemcube(feems, FALSE), rep(24, 4))[1:30*6, 1:9*6,],
+    na.rm = TRUE
   )
   (sh <- feemsplithalf( # takes a long time
     cube, 2:4, splits = 4, # 4 splits => S4C6T3
@@ -132,5 +160,7 @@
     const = rep('nonneg', 3) # setting ctol and maxit is recommended
   ))
   plot(sh)
+  plot(sh, 'factors')
 }}
+\keyword{hplot}
 \keyword{method}

@@ -39,8 +39,9 @@
     If \code{x} is a FEEM object, a number specifying the length of the
     optical path used when measuring the absorbance, cm.
 
-    Otherwise, a vector of them of exactly same length as the number of
-    FEEMs in \code{x}.
+    Otherwise, a named vector containing the names from \code{x}, or a
+    vector of exactly same length as the number of FEEMs in \code{x}:
+    same lookup rules apply as for \code{absorbance} argument.
 
     If not set, assumed to be \eqn{1}.
   }

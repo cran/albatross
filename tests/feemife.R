@@ -7,13 +7,12 @@ stopifnot(0 == sum(sapply(2:length(absorp), function(i)
 )))
 # build a matrix of absorbance spectra with named columns
 absmat <- do.call(cbind, c(list(absorp[[1]][,1]), lapply(absorp, `[`,, 2)))
-matplot(absmat[,1], absmat[,-1])
 
 # simple one-spectrum correction
-plot(feemcube(list(
+feemcube(list(
 	before = feemscatter(feems$a, rep(24, 4)),
 	after = feemscatter(feemife(feems$a, absorp$a), rep(24, 4))
-), TRUE))
+), TRUE)
 
 # list-list correction
 # corr[[i]] should match the result of IFE-correcting
@@ -72,12 +71,3 @@ check.ife2(
 		unname(absmat[, c(1, match(subn, colnames(absmat)))])
 	), subn
 )
-
-# plot some correction coefficients
-plot(z <- feemcube(lapply(setNames(nm = c(1, 2, 5, 10)), function (i)
-	feemscatter(feemife(feems$a, absorp$a, i), rep(24, 4))
-), TRUE))
-plot(feemcube(list(
-	corr.mat = z[,,1] / feems$a,
-	one.to.ten = z[,,1] / z[,,4]
-), TRUE))

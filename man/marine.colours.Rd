@@ -18,15 +18,14 @@ marine.colours(
   \item{chroma}{
     Specifies the chroma (how saturated should the colours be) for the
     palette, a real number between 0 and 1. May also be a two-element
-    vector, in which case the chroma is changed linearly from start to
+    vector, in which case the chroma is changed smoothly from start to
     finish of the resulting palette.
   }
   \item{luminance}{
     Specifies the luminance (how bright should the colours be) of the
     colours constituting the palette. Typically, a two-element vector
-    of real numbers between 0 and 1 to indicate linear change along the
-    palette, but can also be a fixed number. See the \code{gamma}
-    argument if you want to make the change non-linear.
+    of real numbers between 0 and 1 to indicate smooth change along the
+    palette, but can also be a fixed number.
   }
   \item{alpha}{
     Specifies the transparency of the colours of the palette. As above,
@@ -35,12 +34,13 @@ marine.colours(
     used.
   }
   \item{gamma}{
-    Provides the power coefficient for the luminance growth formula.
-    May be useful when it is needed to sacrifice the perceptual
-    linearity of the palette to provide more constrast for darker or
-    brighter areas of the plot. The exact expression used is
-    \code{luminance ^ gamma}. Typically, linear growth (\code{gamma=1})
-    is preferred.
+    Provides the power coefficient for the hue/chroma/luminance growth
+    formulae. May be useful when it is needed to sacrifice the perceptual
+    linearity of the palette to provide more constrast for smaller or
+    bigger values on the plot. The gamma-corrected values are obtained by
+    computing \eqn{x ^ \gamma}, \var{x} in \eqn{[0;1]}, then scaling the
+    result linearly to the required range. Typically, linear growth
+    (\code{gamma = 1}) is preferred.
   }
   \item{fixup}{
     Whether to correct the palette if the resulting colours happen to
@@ -54,14 +54,14 @@ marine.colours(
   for use with R graphics functions.
 }
 \references{
-  Insired by \href{https://matplotlib.org/cmocean/#haline}{cmocean
-  palette called \dQuote{haline}}, but using R's implementation of polar
-  CIE-LUV colour space instead of CAM02-UCS.
+  Insired by cmocean palette called \dQuote{haline}
+  (\url{https://matplotlib.org/cmocean/#haline}), but using R's
+  implementation of polar CIE-LUV colour space instead of CAM02-UCS.
 }
 
 \seealso{
- \code{\link{hcl}} for the colour space used,
- \href{http://www.mrao.cam.ac.uk/~dag/CUBEHELIX/}{CUBEHELIX} for a
+ \code{\link{hcl}} for the colour space used, CUBEHELIX
+ (\url{http://www.mrao.cam.ac.uk/~dag/CUBEHELIX/}) for a
  similar technique using BT.601 luminance coefficients and RGB colour
  space.
 }

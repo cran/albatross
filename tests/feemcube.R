@@ -29,3 +29,6 @@ stopifnot(
 	c('emission', 'excitation', 'intensity', 'sample') %in%
 	colnames(as.data.frame(z[,1, 1, drop = F]))
 )
+
+z <- feemscale(z, na.rm = TRUE)
+stopifnot(all.equal(z, feemcube(as.list(z), TRUE)))
