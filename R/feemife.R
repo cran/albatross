@@ -6,47 +6,40 @@ abs2list.matrix <- abs2list.data.frame <- function(x) lapply(
 )
 abs2list.list <- identity
 
-# arrange: return x[n] if names match or length(x) == length(n)
+# arrange: return x[n] if names match
+# or just x if x is not named but the lengths match
 arrange <- function(x, n, m) if (
 	!is.null(names(x)) && !is.null(n) &&
 	!anyDuplicated(n) && all(n %in% names(x))
 ) {
 	x[n]
-} else if (length(x) == if (is.null(n)) m else length(n)) {
+} else if (length(x) == m && (is.null(names(x)) || is.null(n))) {
 	x
 } else {
 	stop(
-		'Need either exactly N absorbance spectra or named ',
-		'absorbance spectra exactly matching (unique) names of samples'
+		'Names of ', deparse(substitute(x)), ' must exactly match ',
+		'(unique) names of samples. Otherwise, length must match the ',
+		'number of samples while some of the names are missing.'
 	)
 }
 
 feemife <- function(x, ...) UseMethod('feemife')
 
-feemife.list <- function(x, absorbance, abs.path, ...) {
+feemife.list <- function(x, absorbance, abs.path, ..., progress = FALSE) {
 	if (missing(abs.path)) abs.path <- rep(1, length(x))
 	stopifnot(
 		length(list(...)) == 0,
 		length(abs.path) == length(x)
 	)
-	Map(
-		feemife, x, arrange(abs2list(absorbance), names(x), length(x)),
-		arrange(abs.path, names(x), length(x))
+	cubeapply(
+		x, feemife, arrange(abs2list(absorbance), names(x), length(x)),
+		arrange(abs.path, names(x), length(x)),
+		progress = progress, .recycle = TRUE
 	)
 }
 
-feemife.feemcube <- function(x, absorbance, abs.path, ...) {
-	if (missing(abs.path)) abs.path <- rep(1, dim(x)[3])
-	stopifnot(
-		length(list(...)) == 0,
-		length(abs.path) == dim(x)[3]
-	)
-	feemcube(Map(
-		feemife, as.list(x),
-		arrange(abs2list(absorbance), dimnames(x)[[3]], dim(x)[3]),
-		arrange(abs.path, dimnames(x)[[3]], dim(x)[3])
-	), TRUE)
-}
+feemife.feemcube <- function(x, absorbance, abs.path, ..., progress = FALSE)
+	cubeapply(x, feemife, absorbance, abs.path, ..., progress = progress)
 
 feemife.feem <- function(x, absorbance, abs.path = 1, ...) {
 	stopifnot(

@@ -90,10 +90,22 @@ feemcube.array <- function(x, emission, excitation, scales, names = NULL, ...) {
 		rhs.scales <- attr(value,
 			if (inherits(value, 'feem')) 'scale' else 'scales'
 		)
-		if (any(attr(x, 'scales')[k] != rhs.scales)) warning(
-			'Assigning from FEEM[s] with different scales: LHS ',
-			attr(x, 'scales')[k], ' != RHS ', rhs.scales
-		)
+		if (any(dif <- attr(x, 'scales')[k] != rhs.scales)) {
+			# gather the sample names, if any
+			if (is.null(rn <- dimnames(x)[[3]])) rn <- seq_len(dim(x)[3])
+			# combine the LHS and RHS (could have different lengths!);
+			# leave those that differ
+			warn <- rbind(attr(x, 'scales')[k], rhs.scales)[, dif, drop = FALSE]
+			# format the warning table
+			warn <- rbind(
+				format(c('',  rn[k][dif]), justify = 'right'), ' ',
+				format(c('LHS', warn[1,]), justify = 'right'), ' ',
+				format(c('RHS', warn[2,]), justify = 'right'), '\n'
+			)
+			warning(
+				'Assigning from FEEM[s] with different scales:\n', warn
+			)
+		}
 	}
 	NextMethod()
 }

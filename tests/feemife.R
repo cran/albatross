@@ -1,3 +1,4 @@
+library(tools)
 library(albatross)
 data(feems)
 
@@ -25,6 +26,11 @@ check.ife(feemife(feems, absorp), names(feems))
 subn <- c('a','e','j','g')
 check.ife(feemife(feems[subn], absorp), subn)
 check.ife(feemife(unname(feems[subn]), unname(absorp[subn])), subn)
+# correction should fail if lengths are the same but names don't match
+assertError(
+	feemife(feems[c('a', 'b', 'c')], absorp[c('c', 'a', 'd')]),
+	verbose = TRUE
+)
 
 # list-matrix correction
 check.ife(feemife(feems, absmat), names(feems))
@@ -35,6 +41,10 @@ check.ife(
 		unname(absmat[, c(1, match(subn, colnames(absmat)))])
 	), subn
 )
+assertError(feemife(
+	feems[c('a', 'b', 'c')],
+	absmat[, c(1, match(c('c', 'a', 'd'), colnames(absmat)))]
+), verbose = TRUE)
 
 # feemcube-list correction
 fcube <- feemcube(feems, TRUE)
@@ -52,13 +62,15 @@ check.ife2 <- function(corr, name) stopifnot(sapply(
 	}
 ))
 check.ife2(feemife(fcube, absorp), dimnames(fcube)[[3]])
-subn <- c('a','e','j','g')
 check.ife2(
 	feemife(fcube[,,subn], absorp), subn
 )
 check.ife2(
 	feemife(unname(fcube[,,subn]), unname(absorp[subn])), subn
 )
+assertError(feemife(
+	fcube[,,c('a', 'b', 'c')], absorp[c('c', 'a', 'd')]
+), verbose = TRUE)
 
 # feemcube-matrix correction
 check.ife2(feemife(fcube, absmat), dimnames(fcube)[[3]])
@@ -71,3 +83,9 @@ check.ife2(
 		unname(absmat[, c(1, match(subn, colnames(absmat)))])
 	), subn
 )
+assertError(feemife(
+	fcube[,,c('a', 'b', 'c')],
+	absmat[, c(1, match(c('c', 'a', 'd'), colnames(absmat)))]
+), verbose = TRUE)
+
+feemife(feems, absorp, progress = TRUE)

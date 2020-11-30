@@ -20,9 +20,10 @@ assertError(z[,,2] <- feem(matrix(1:(11*13), 11), 1:11, 1:13, 3))
 assertError(z[] <- structure(z, emission = attr(z, 'emission') + 10))
 
 # warn about assignment from non-matching scales
-assertWarning(z[] <- structure(z, scales = c(1,1,1)))
+assertWarning(z[] <- structure(z, scales = c(1e-2, 1, 1e+3)), verbose = TRUE)
 assertWarning(
-	z[3 + 1:3, 5 + 1:5, 1] <- feem(matrix(15:1, 3), 3 + 1:3, 20 + 5 + 1:5, 1)
+	z[3 + 1:3, 5 + 1:5, 1] <- feem(matrix(15:1, 3), 3 + 1:3, 20 + 5 + 1:5, 1),
+	verbose = TRUE
 )
 
 stopifnot(

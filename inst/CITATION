@@ -1,0 +1,16 @@
+bibentry('Article',
+	title = 'Albatross R package to study PARAFAC components of DOM fluorescence from mixing zones of arctic shelf seas',
+	author = c(
+		person('Ivan N.', 'Krylov'),
+		person('Anastasia N.', 'Drozdova', email = 'adrozdova@ocean.ru'),
+		person('Timur A.', 'Labutin')
+	),
+	doi = '10.1016/j.chemolab.2020.104176',
+	journal = 'Chemometrics and Intelligent Laboratory Systems',
+	number = 104176,
+	volume = 207,
+	year = 2020,
+	key = 'albatross2020'
+)
+
+citation(auto = meta)

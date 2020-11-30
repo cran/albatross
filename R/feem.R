@@ -81,8 +81,8 @@ plot.feem <- function(
 		)
 		# scales must match, but user may intend to proceed
 		if (attr(x, 'scale') != attr(value, 'scale')) warning(
-			'Assigning from FEEM with different scale: LHS ',
-			attr(x, 'scale'), ' != RHS ', attr(value, 'scale')
+			'Assigning from FEEM with different scale: LHS(',
+			attr(x, 'scale'), ') != RHS(', attr(value, 'scale'), ')'
 		)
 	}
 	NextMethod()

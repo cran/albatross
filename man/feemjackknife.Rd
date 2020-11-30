@@ -7,7 +7,7 @@
   given FEEM cube.
 }
 \usage{
-  feemjackknife(cube, ...)
+  feemjackknife(cube, ..., progress = TRUE)
   \method{plot}{feemjackknife}(
     x, kind = c('estimations', 'RIP', 'IMP'), \dots
   )
@@ -15,6 +15,9 @@
 \arguments{
   \item{cube}{
     A \code{\link{feemcube}} object.
+  }
+  \item{progress}{
+    Set to \code{FALSE} to disable the progress bar.
   }
   \item{x}{
     An object returned by \code{\link{feemjackknife}}.
@@ -62,8 +65,8 @@
       \mathbf B^\mathrm{orig} ||^2 %
   }{sum((B * s.B - B.orig)^2)} over \eqn{\mathbf s_\mathrm A}{s.A} and
   \eqn{\mathbf s_\mathrm B}{s.B}, subject to \eqn{%
-    \mathrm{diag}(\mathbf s_\mathrm A) \, %
-    \mathrm{diag}(\mathbf s_\mathrm B) \, %
+    \mathrm{diag}(\mathbf s_\mathrm A) \cdot %
+    \mathrm{diag}(\mathbf s_\mathrm B) \cdot %
     \mathrm{diag}(\mathbf s_\mathrm C) = \mathbf I}{%
     s.C = 1 / (s.A * s.B) %
   }, to make them comparable.
@@ -121,6 +124,7 @@
   plot(jk)
   plot(jk, 'IMP')
   plot(jk, 'RIP')
+  plot(jk$leaveone[[1]])
 }}
 \keyword{method}
 \keyword{hplot}

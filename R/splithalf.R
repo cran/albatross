@@ -1,4 +1,4 @@
-feemsplithalf <- function(cube, nfac, splits, random, ...) {
+feemsplithalf <- function(cube, nfac, splits, random, ..., progress = TRUE) {
 	# list(list(half, half), ...)
 	tests <- if (!missing(splits) && missing(random)) {
 		# should be even because we want to combine into halves
@@ -33,16 +33,19 @@ feemsplithalf <- function(cube, nfac, splits, random, ...) {
 	)
 
 	# organise two parallel arrays:
-	# ((half1, half2), ...) =>
+	# ((half1, half2), (half3, half4), ...) =>
+	# ((half1, half2) for ncomp1, (half1, half2) for ncomp2, ...) =>
 	#  (half1 for ncomp1, half2 for ncomp1, half1 for ncomp2, ...)
-	slices <- rep(unlist(tests, FALSE), each = length(nfac))
+	slices <- unlist(rep(tests, each = length(nfac)), FALSE)
 	# (ncomp1, ...) => (ncomp1, ncomp1, ncomp2, ncomp2, ...)
 	facarg <- lapply(
 		rep(nfac, each = 2, times = length(tests)),
 		function(n) list(nfac = n)
 	)
 
-	factors <- bootparafac(cube, slices, ..., args = facarg)
+	factors <- bootparafac(
+		cube, slices, ..., args = facarg, progress = progress
+	)
 
 	# okay, now we have a list of parafac results:
 	# half_a_1, nfac1
@@ -123,17 +126,18 @@ shtccplot <- function(
 shxyplot <- function(
 	x, xlab = quote(lambda*", nm"), ylab = 'Factor value', as.table = T, ...
 ) {
+	cube1 <- .pfcube(x$factors[[1]])
 	df <- do.call(rbind, Map(
 		function(x, test, half)
 			do.call(rbind, lapply(1:ncol(x$A), function(i) cbind(
 				rbind(
 					data.frame(
-						wavelength = attr(attr(x, 'cube'), 'emission'),
+						wavelength = attr(cube1, 'emission'),
 						value = x$A[,i],
 						mode = 'Emission'
 					),
 					data.frame(
-						wavelength = attr(attr(x, 'cube'), 'excitation'),
+						wavelength = attr(cube1, 'excitation'),
 						value = x$B[,i],
 						mode = 'Excitation'
 					)

@@ -9,7 +9,7 @@
   and comparing the results [1].
 }
 \usage{
-  feemsplithalf(cube, nfac, splits, random, \dots)
+  feemsplithalf(cube, nfac, splits, random, \dots, progress = TRUE)
   \method{plot}{feemsplithalf}(x, kind = c("tcc", "factors"), \dots)
   \method{print}{feemsplithalf}(x, \dots)
 }
@@ -42,6 +42,9 @@
       2 * random}.
 
     Mutually incompatible with \code{splits} parameter.
+  }
+  \item{progress}{
+    Set to FALSE to disable the progress bar.
   }
   \item{x}{
     An object returned by \code{feemsplithalf}.
@@ -87,8 +90,8 @@
       \mathbf B^\mathrm{orig} ||^2 %
   }{sum((B * s.B - B.orig)^2)} over \eqn{\mathbf s_\mathrm A}{s.A} and
   \eqn{\mathbf s_\mathrm B}{s.B}, subject to \eqn{%
-    \mathrm{diag}(\mathbf s_\mathrm A) \, %
-    \mathrm{diag}(\mathbf s_\mathrm B) \, %
+    \mathrm{diag}(\mathbf s_\mathrm A) \cdot %
+    \mathrm{diag}(\mathbf s_\mathrm B) \cdot %
     \mathrm{diag}(\mathbf s_\mathrm C) = \mathbf I}{%
     s.C = 1 / (s.A * s.B) %
   }, to make them comparable.
@@ -113,7 +116,7 @@
         A named list containing arrays of Tucker's congruence coefficients
         between the halves. Each entry in the list corresponds to an element
         in the \code{nfac} argument. The dimensions of each array in the
-        list correspond to, in order: the factors (1 to \var{nfac}), the
+        list correspond to, in order: the factors (1 to \code{nfac[i]}), the
         modes (emission or excitation) and the groupings of the samples
         (depending on \code{splits} or \code{random}).
       }
@@ -161,6 +164,7 @@
   ))
   plot(sh)
   plot(sh, 'factors')
+  plot(sh$factors[[1]])
 }}
 \keyword{hplot}
 \keyword{method}

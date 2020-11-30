@@ -8,7 +8,8 @@
 \description{
   Functions to create fluorescence excitation-emission matrix objects from
   R matrices coupled with excitation and emission wavelengths or three-column
-  \code{data.frame}s containing \eqn{(\lambda_{em}, \lambda_{ex}, I)}{%
+  \code{data.frame}s containing
+  \eqn{(\lambda_\mathrm{em}, \lambda_\mathrm{ex}, I)}{%
   (\lambda.em, \lambda.ex, intensity)} tuples.
 }
 \usage{

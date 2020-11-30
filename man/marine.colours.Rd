@@ -34,13 +34,14 @@ marine.colours(
     used.
   }
   \item{gamma}{
-    Provides the power coefficient for the hue/chroma/luminance growth
-    formulae. May be useful when it is needed to sacrifice the perceptual
-    linearity of the palette to provide more constrast for smaller or
-    bigger values on the plot. The gamma-corrected values are obtained by
-    computing \eqn{x ^ \gamma}, \var{x} in \eqn{[0;1]}, then scaling the
-    result linearly to the required range. Typically, linear growth
-    (\code{gamma = 1}) is preferred.
+    Provides the power coefficient for the hue/chroma/luminance/alpha
+    growth formulae. May be useful when it is needed to sacrifice the
+    perceptual linearity of the palette to provide more constrast for
+    smaller or bigger values on the plot. The gamma-corrected values
+    are obtained by computing \eqn{x ^ \gamma},
+    \eqn{x \in [0;1]}{x in [0;1]}, then scaling the result linearly to
+    the required range. Typically, linear growth (\code{gamma = 1})
+    is preferred.
   }
   \item{fixup}{
     Whether to correct the palette if the resulting colours happen to

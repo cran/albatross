@@ -57,21 +57,31 @@ match.factors <- function(target, current) {
 # the same number of components
 # returns the list of overall results
 bootparafac <- function(
-	cube, slices, ..., args = vector('list', length(slices)), postprocess
+	cube, slices, ..., args = vector('list', length(slices)), postprocess,
+	progress = TRUE
 ) {
-	pb <- txtProgressBar(max = length(slices), style = 3)
-	on.exit(close(pb))
+	if (progress) {
+		pb <- txtProgressBar(max = length(slices), style = 3)
+		on.exit(close(pb))
+	}
 
 	ret <- list()
 	# keep track of nfac because it may differ between runs
 	ncomps <- integer()
+
+	# store X in an environment to prevent it from being copied
+	env <- new.env(parent = emptyenv())
+	env$X <- cube
 
 	for (i in seq_along(slices)) {
 		# calculate the model
 		ret[[i]] <- do.call(
 			feemparafac,
 			c(
-				list(X = cube[,, slices[[i]]], ..., verbose = FALSE),
+				list(
+					X = 'X', ..., verbose = FALSE,
+					subset = slices[[i]], envir = env
+				),
 				args[[i]]
 			)
 		)
@@ -88,7 +98,7 @@ bootparafac <- function(
 			ret[[i]], cube, slices[[i]], args[[i]], ...
 		)
 		# finally done with this run
-		setTxtProgressBar(pb, i)
+		if (progress) setTxtProgressBar(pb, i)
 	}
 
 	ret

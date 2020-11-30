@@ -12,8 +12,8 @@
 \usage{
   feemscale(x, \dots)
   \method{feemscale}{feem}(x, norm = sd, remember = TRUE, \dots)
-  \method{feemscale}{feemcube}(x, \dots)
-  \method{feemscale}{list}(x, \dots)
+  \method{feemscale}{feemcube}(x, \dots, progress = FALSE)
+  \method{feemscale}{list}(x, \dots, progress = FALSE)
 }
 \arguments{
   \item{x}{
@@ -33,6 +33,10 @@
     \code{feemscale.feem}. Also passed as-is to the norm function,
     which is useful for passing \code{na.rm = TRUE} to functions like
     \code{\link{sd}} or \code{\link{sumsq}}.
+  }
+  \item{progress}{
+    Set to \code{TRUE} to enable a progress bar (implemented via
+    \code{\link{txtProgressBar}}).
   }
 }
 \value{

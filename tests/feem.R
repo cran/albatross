@@ -23,7 +23,8 @@ assertError(
 
 # replacement operator must warn about scale differences
 assertWarning(
-	z[2:3, 4:5] <- feem(matrix(1:4, 2), 66 + 2:3, 99 + 4:5, 2)
+	z[2:3, 4:5] <- feem(matrix(1:4, 2), 66 + 2:3, 99 + 4:5, 2),
+	verbose = TRUE
 )
 
 sortdf <- function(x) x[do.call(order, x),]

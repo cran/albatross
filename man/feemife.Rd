@@ -11,8 +11,8 @@
 \usage{
   feemife(x, \dots)
   \method{feemife}{feem}(x, absorbance, abs.path = 1, \dots)
-  \method{feemife}{feemcube}(x, absorbance, abs.path, \dots)
-  \method{feemife}{list}(x, absorbance, abs.path, \dots)
+  \method{feemife}{feemcube}(x, absorbance, abs.path, \dots, progress = FALSE)
+  \method{feemife}{list}(x, absorbance, abs.path, \dots, progress = FALSE)
 }
 \arguments{
   \item{x}{
@@ -25,15 +25,15 @@
     absorbance values in the second column.
 
     Otherwise, this could be a list of such objects or a multi-column
-    matrix-like objects. If \code{x} contains names of the samples
+    matrix-like object. If \code{x} contains names of the samples
     (is a named list or had \code{names} specified when calling
     \code{\link{feemcube}}), \code{absorbance} is a named list or has
     named columns, and all samples from \code{x} can be looked up in
-    \code{absorbance}, results of this lookup are used. If name lookup
-    fails but (given \eqn{N}-sample \code{x}) \code{absorbance} has
-    exactly \eqn{N+1} columns or is an \eqn{N}-element list, absorbances
-    are supposed to be present in the same order as the samples in
-    \code{x}.
+    \code{absorbance}, results of this lookup are used. If \code{x}
+    or \code{absorbance} isn't named, but (given \eqn{N}-sample
+    \code{x}) \code{absorbance} has exactly \eqn{N+1} columns or is an
+    \eqn{N}-element list, absorbances are assumed to be present in the
+    same order as the samples in \code{x}. Otherwise, an error is raised.
   }
   \item{abs.path}{
     If \code{x} is a FEEM object, a number specifying the length of the
@@ -45,17 +45,26 @@
 
     If not set, assumed to be \eqn{1}.
   }
+  \item{progress}{
+    Set to \code{TRUE} to enable a progress bar (implemented via
+    \code{\link{txtProgressBar}}).
+  }
   \item{\dots}{
     No parameters besides those described above are allowed.
   }
 }
 \details{
-  The formula used is:
+  If you receive errors alleging that some names don't match, but
+  are absolutely sure that the absorbance spectra and path lengths are
+  present in the same order as in \code{x}, remove the names from either
+  of the objects.
+
+  The formula used to correct for inner filter effect is:
 
   \deqn{
-    I_{corr}(\lambda_{em}, \lambda_{ex}) = %
-    I_{orig}(\lambda_{em}, \lambda_{ex}) 10^{ %
-      \frac{A(\lambda{em}) + A(\lambda{ex})}{2 L_{abs}} %
+    I_\mathrm{corr}(\lambda_\mathrm{em}, \lambda_\mathrm{ex}) = %
+    I_\mathrm{orig}(\lambda_\mathrm{em}, \lambda_\mathrm{ex}) 10^{ %
+      \frac{A(\lambda_\mathrm{em}) + A(\lambda_\mathrm{ex})}{2 L_\mathrm{abs}} %
     }
   }{I.corrected = I.orig * 10^((A.em + A.ex) / (2 * abs.path))}
 }

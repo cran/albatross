@@ -10,10 +10,10 @@
 }
 \usage{
   feemscatter(x, \dots)
-  \method{feemscatter}{list}(x, \dots)
-  \method{feemscatter}{feemcube}(x, \dots)
+  \method{feemscatter}{list}(x, \dots, cl, progress = TRUE)
+  \method{feemscatter}{feemcube}(x, \dots, cl, progress = TRUE)
   \method{feemscatter}{feem}(
-    x, widths, method = c("omit", "pchip", "loess"),
+    x, widths, method = c("omit", "pchip", "loess", "kriging"),
     add.zeroes = 30, Raman.shift = 3400, \dots
   )
 }
@@ -38,7 +38,7 @@
   \item{method}{
     A string choosing \emph{how} to handle the scattering signal:
     \describe{
-      \item{\code{"omit"}}{Replace it with \code{NA}}
+      \item{\code{"omit"}}{Replace it with \code{NA}.}
       \item{\code{"pchip"}}{
         Interpolate it line-by-line using piecewise cubic Hermitean
         polynomials (\code{\link{pchip}}).
@@ -49,11 +49,19 @@
         passed verbatim to \code{\link{loess}}, which may be used to set
         parameters such as \code{span}.
       }
+      \item{\code{"kriging"}}{
+        Interpolate it by means of ordinary or simple Kriging, as
+        implemented in \pkg{pracma} function \code{\link{kriging}}.
+        Pass a \code{type} argument to choose between the two methods.
+      }
     }
   }
   \item{add.zeroes}{
     Set intensities at
-    \eqn{\lambda_{em} < \lambda_{ex} - \mathtt{add.zeroes}\:\mathrm{nm}}{%
+    \eqn{%
+      \lambda_\mathrm{em} < \lambda_\mathrm{ex}
+      - \mathtt{add.zeroes}\:\mathrm{nm}%
+    }{%
       \lambda.em < \lambda.ex - add.zeroes (nm)
     } to \eqn{0} unless they have been measured. Set to \code{NA} to
     disable this behaviour.
@@ -67,6 +75,14 @@
     \code{feemscatter.feem}. If \code{"loess"} method is selected,
     remaining options are passed to \code{\link{loess}} (the \code{span}
     parameter is of particular interest there).
+  }
+  \item{cl}{
+    If not \code{\link{missing}}, a \pkg{parallel} cluster object to
+    run the scattering correction code on or \code{NULL} for the default
+    cluster object registered via \code{\link{setDefaultCluster}}.
+  }
+  \item{progress}{
+    Set to \code{FALSE} to disable the progress bar.
   }
 }
 \details{
@@ -83,6 +99,12 @@
   The \code{"loess"} method feeds the whole FEEM except the area to be
   interpolated to \code{\link{loess}}, then asks it to predict the
   remaining part of the spectum.
+
+  The \code{"kriging"} method is much more computationally expensive than
+  the previous two, but, on some spectra, provides best results, not
+  affected by artifacts resulting from line-by-line one-dimensional
+  interpolation (\code{pchip}) or varying degrees of smoothness in
+  different areas of the spectrum (\code{loess}).
 }
 \value{
   An object of the same kind (FEEM object / FEEM cube / list of them)
@@ -93,6 +115,10 @@
   scatter for PARAFAC modeling of fluorescence data using interpolation,
   Journal of Chemometrics. 20 (2006) 99-105.
   \doi{10.1002/cem.978}
+
+  Press, W. H., A. A. Teukolsky, W. T. Vetterling, and B. P. Flannery (2007).
+  Numerical recipes: The Art of Scientific Computing (3rd Ed.). Cambridge
+  University Press, New York, Sect. 3.7.4, pp. 144-147.
 }
 
 \seealso{

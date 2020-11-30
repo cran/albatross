@@ -10,13 +10,19 @@
   a few attributes.
 }
 \usage{
-  feemparafac(X, \dots, rescale = 3, retries = 10)
+  feemparafac(
+    X, \dots, rescale = 3, retries = 10, subset = TRUE, envir = NULL
+  )
   \method{plot}{feemparafac}(x, type = c("image", "lines"), \dots)
 }
 \arguments{
   \item{X}{
     A FEEM cube object. The per-sample factors will be multiplied by
     \code{attr(X, 'scales')} stored in it.
+
+    If \code{envir} is \code{NULL} (by default), this should be just a
+    value. If \code{envir} is given, this should be a name of the value
+    to \code{\link{get}} from the environment.
   }
   \item{\dots}{\describe{
     \item{feemparafac}{Passed as-is to \code{\link{parafac}}.}
@@ -34,6 +40,13 @@
     Retry for given number of tries until \code{\link{parafac}} returns
     a successfully fitted model or stops due to the iteration number
     limit. Raise a fatal error if all tries were unsuccessful.
+  }
+  \item{subset}{
+    An integer or logical vector choosing the samples from \code{X}, as
+    in \code{feemparafac(X[,,subset], \dots)}. Defaults to the whole cube.
+  }
+  \item{envir}{
+    An environment to look up \code{X} in.
   }
   \item{x}{
     An object returned by \code{\link{feemparafac}}.
@@ -78,6 +91,17 @@
 
   \code{replicate(\var{n}, feemparafac(..., nstart = 1))}
 
+  The \code{subset} and \code{envir} options are useful to repeatedly
+  perform PARAFAC on different subsets of the same FEEM cube, e.g. in
+  jack-knifing or split-half analysis. Since \code{feemparafac} keeps
+  a reference to the its \code{X} and \code{envir} arguments, the use
+  of \code{subset} should ensure that the same FEEM cube is referenced
+  from multiple \code{feemparafac} objects instead of creating copies
+  of its subsets. Additionally, environment objects are not duplicated
+  on \code{\link{save}} or \code{\link{load}}, so storing \code{X} in an
+  environment and passing it to multiple invocations of \code{feemparafac}
+  will save a lot of memory when the results are serialised together.
+
   \code{plot.feemparafac} provides sane defaults for \pkg{lattice} options
   such as \code{xlab}, \code{ylab}, \code{as.table}, \code{auto.key},
   \code{type}, \code{cuts}, \code{col.regions}, but they can be
@@ -86,8 +110,17 @@
 \value{
   \item{feemparafac}{
     An object of classes \code{feemparafac} and \code{parafac} with the
-    \code{cube} attribute added containing a reference to the original
-    FEEM cube object.
+    following attributes added: \describe{
+      \item{cube}{A copy of the \code{X} argument.}
+      \item{subset}{A copy of the \code{subset} argument.}
+      \item{envir}{A copy of the \code{envir} argument.}
+    }
+    To access the cube that was factored, use \code{\link{get}} on
+    \code{cube} attribute if \code{envir} attribute is not \code{NULL},
+    then extract the samples in question using the \code{subset}
+    attribute. Normally, this is only needed to save memory when
+    performing cross-validation; otherwise, \code{attr(pf, 'cube')}
+    is enough.
   }
   \item{plot.feemparafac}{
     A \pkg{lattice} plot object. Its \code{print} or \code{plot} method

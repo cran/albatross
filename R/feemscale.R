@@ -1,8 +1,7 @@
 feemscale <- function(x, ...) UseMethod('feemscale')
 
-feemscale.list <- function(x, ...) lapply(x, feemscale, ...)
-
-feemscale.feemcube <- function(x, ...) feemcube(feemscale(as.list(x), ...), TRUE)
+feemscale.list <- feemscale.feemcube <- function(x, ..., progress = FALSE)
+	cubeapply(x, feemscale, ..., progress = progress)
 
 feemscale.feem <- function(x, norm = sd, remember = TRUE, ...) {
 	factor <- norm(x, ...)

@@ -1,8 +1,7 @@
 feemscatter <- function(x, ...) UseMethod('feemscatter')
 
-feemscatter.list <- function(x, ...) lapply(x, feemscatter, ...)
-
-feemscatter.feemcube <- function(x, ...) feemcube(feemscatter(as.list(x), ...), TRUE)
+feemscatter.list <- feemscatter.feemcube <- function(x, ..., cl, progress = TRUE)
+	cubeapply(x, feemscatter, ..., cl = cl, progress = progress)
 
 omit.mask <- function(feem, mask) {
 	feem[mask] <- NA
@@ -74,8 +73,25 @@ interpolate.loess <- function(feem, mask, span = .05, ...) {
 	feem
 }
 
+interpolate.kriging <- function(feem, mask, ...) {
+	l.em <- attr(feem, 'emission')
+	l.ex <- attr(feem, 'excitation')
+
+	src <- !mask & is.finite(feem)
+	xx <- l.em[row(feem)][src]
+	yy <- l.ex[col(feem)][src]
+	zz <- feem[src]
+
+	x0 <- l.em[row(feem)][mask]
+	y0 <- l.ex[col(feem)][mask]
+
+	feem[mask] <- kriging(cbind(xx, yy), zz, cbind(x0, y0), ...)
+
+	feem
+}
+
 feemscatter.feem <- function(
-	x, widths, method = c('omit', 'pchip', 'loess'),
+	x, widths, method = c('omit', 'pchip', 'loess', 'kriging'),
 	add.zeroes = 30, Raman.shift = 3400, ...
 ) {
 	scatter <- outer(
@@ -96,6 +112,7 @@ feemscatter.feem <- function(
 	switch(match.arg(method),
 		omit = omit.mask,
 		pchip = interpolate.pchip,
-		loess = interpolate.loess
+		loess = interpolate.loess,
+		kriging = interpolate.kriging
 	)(x, scatter, ...)
 }

@@ -1,4 +1,4 @@
-feemjackknife <- function(cube, ...) {
+feemjackknife <- function(cube, ..., progress = TRUE) {
 	slices <- c(list(1:dim(cube)[3]), lapply(1:dim(cube)[3], `-`))
 	models <- bootparafac(
 		cube, slices, ...,
@@ -23,7 +23,7 @@ feemjackknife <- function(cube, ...) {
 				attr(fac, 'Chat') <- t(pinv(D[mask,]) %*% X[mask])
 			}
 			fac
-		}
+		}, progress = progress
 	)
 	structure(
 		list(overall = models[[1]], leaveone = models[-1]),
@@ -43,18 +43,19 @@ jkplot <- function(
 	jk, xlab = quote(lambda*', nm'), ylab = 'Loading values', as.table = T,
 	scales = list(x = 'free'), ...
 ) {
+	ovcube <- .pfcube(jk$overall)
 	df <- do.call(rbind, lapply(seq_along(jk$leaveone), function(i) rbind(
 		data.frame(
 			loading = as.vector(jk$leaveone[[i]]$A),
 			mode = 'Emission',
-			wavelength = attr(attr(jk$leaveone[[i]], 'cube'), 'emission'),
+			wavelength = attr(ovcube, 'emission'),
 			factor = as.factor(col(jk$leaveone[[i]]$A)),
 			rep = i
 		),
 		data.frame(
 			loading = as.vector(jk$leaveone[[i]]$B),
 			mode = 'Excitation',
-			wavelength = attr(attr(jk$leaveone[[i]], 'cube'), 'excitation'),
+			wavelength = attr(ovcube, 'excitation'),
 			factor = as.factor(col(jk$leaveone[[i]]$B)),
 			rep = i
 		)
@@ -76,7 +77,7 @@ jk.RIP <- function(
 		Emission = mean((fac$A - jk$overall$A)^2, na.rm = T),
 		Excitation = mean((fac$B - jk$overall$B)^2, na.rm = T)
 	)))
-	cube <- attr(jk$overall, 'cube')
+	cube <- .pfcube(jk$overall)
 	if (!is.null(dimnames(cube)[[3]])) rownames(RIP) <- dimnames(cube)[[3]]
 
 	xyplot(

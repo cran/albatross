@@ -5,9 +5,9 @@
 \description{
   Transform a FEEM object from its matrix form accompanied by vectors of
   wavelengths into a three-column form consisting of \eqn{
-  (\lambda_{em}, \lambda_{ex}, I)}{(\lambda.em, \lambda.ex, intensity)}
-  tuples, which could be useful for export or plotting with \pkg{lattice}
-  or \pkg{ggplot2}.
+  (\lambda_\mathrm{em}, \lambda_\mathrm{ex}, I)}{%
+  (\lambda.em, \lambda.ex, intensity)} tuples, which could be useful for
+  export or plotting with \pkg{lattice} or \pkg{ggplot2}.
 }
 \usage{
   \method{as.data.frame}{feem}(x, row.names = NULL, optional = FALSE, ...)
@@ -40,7 +40,8 @@
   \item{emission  }{Emission wavelength, nm}
   \item{excitation}{Excitation wavelentgh, nm}
   \item{intensity }{
-    Fluorescence intensity at \eqn{(\lambda_{em}, \lambda_{ex})}{%
+    Fluorescence intensity at
+    \eqn{(\lambda_\mathrm{em}, \lambda_\mathrm{ex})}{%
     (\lambda.em, \lambda.ex)}
   }
   \item{sample}{

@@ -3,6 +3,10 @@ importFrom(stats, optim, reorder)
 importFrom(utils, setTxtProgressBar, txtProgressBar)
 importFrom(multiway, congru)
 
+# cubeapply.R
+importFrom(utils, txtProgressBar, getTxtProgressBar, setTxtProgressBar)
+importFrom(parallel, clusterEvalQ, clusterMap, parLapply)
+
 # feem.R
 export(feem)
 S3method(feem, matrix)
@@ -53,7 +57,7 @@ S3method(feemscale, list)
 # feemscatter.R
 export(feemscatter)
 
-importFrom(pracma, pchip)
+importFrom(pracma, pchip, kriging)
 importFrom(stats, predict, loess)
 S3method(feemscatter, feem)
 

@@ -20,7 +20,8 @@
     data measured at different wavelength grids (excitation wavelengths
     between \eqn{230} nm and \eqn{500} or \eqn{550} nm; emission
     wavelengths between \eqn{240} nm and \eqn{600} or \eqn{650} nm).
-    Intensity at \eqn{\lambda_{em} < \lambda_{ex} + 10\;\mathrm{nm}}{
+    Intensity at
+    \eqn{\lambda_\mathrm{em} < \lambda_\mathrm{ex} + 10\;\mathrm{nm}}{
     \lambda.em < \lambda.ex + 10 nm} is not measured.
   }
   \item{absorp}{

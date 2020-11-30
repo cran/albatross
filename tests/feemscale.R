@@ -11,3 +11,5 @@ feemscale(z)
 
 z[1, 1, ] <- NA
 feemscale(z, multiway::sumsq, na.rm = TRUE)
+
+feemscale(y, progress = TRUE)
