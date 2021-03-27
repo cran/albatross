@@ -3,50 +3,66 @@ feemscatter <- function(x, ...) UseMethod('feemscatter')
 feemscatter.list <- feemscatter.feemcube <- function(x, ..., cl, progress = TRUE)
 	cubeapply(x, feemscatter, ..., cl = cl, progress = progress)
 
-omit.mask <- function(feem, mask) {
-	feem[mask] <- NA
-	feem
+# pchip requires sorted x0 and at least 3 defined points
+.pchip <- function(x0, y0, xi) if (length(x0) >= 3) {
+	pchip(sort(x0), y0[order(x0)], xi)
+} else { # fall back to linear interpolation
+	interp1(sort(x0), y0[order(x0)], xi)
 }
 
-# pchip requires sorted x0
-.pchip <- function(x0, y0, xi) pchip(sort(x0), y0[order(x0)], xi)
-
-interpolate.pchip <- function(feem, mask) {
+do.interpolate.pchip <- function(feem, mask, l.row, l.col) {
 	# interpolate from everything defined not in target set
 	src <- !mask & is.finite(feem)
 
-	l.em <- attr(feem, 'emission')
-	l.ex <- attr(feem, 'excitation')
-	minmax.em <- c(which.min(l.em), which.max(l.em))
-	minmax.ex <- c(which.min(l.ex), which.max(l.ex))
+	minmax.row <- c(which.min(l.row), which.max(l.row))
+	minmax.col <- c(which.min(l.col), which.max(l.col))
 
-	# 1. provide a row of zeroes at minimal emission wavelength if needed
-	feem[minmax.em[1],][!src[minmax.em[1],]] <- 0
-	src[minmax.em[1],] <- TRUE
+	# need to provide a pair of fully defined columns on border
+	# wavelengths (unless they are already defined) to avoid
+	# extrapolation
 
-	# provide a fully defined excitation spectrum at maximal wavelength,
-	# unless it's already defined
-	# 2. provide zeroes as a last resort, since pchip doesn't like NAs
-	feem[minmax.em[2], minmax.ex] <- ifelse(
-		src[minmax.em[2], minmax.ex],
-		feem[minmax.em[2], minmax.ex], 0
+	# 1. provide zeroes as a last resort
+	feem[minmax.row, minmax.col] <- ifelse(
+		src[minmax.row, minmax.col],
+		feem[minmax.row, minmax.col], 0
 	)
-	src[minmax.em[2], minmax.ex] <- TRUE
+	src[minmax.row, minmax.col] <- TRUE
 
-	# 3. pchip-interpolate anything missing
-	feem[minmax.em[2], !src[minmax.em[2],]] <- .pchip(
-		l.ex[src[minmax.em[2],]], feem[minmax.em[2], src[minmax.em[2],]],
-		l.ex[!src[minmax.em[2],]]
-	)
-	src[minmax.em[2],] <- TRUE
-
-	for (i.ex in seq_along(l.ex)) {
-		.pchip(
-			l.em[src[,i.ex]], feem[src[,i.ex], i.ex], l.em[mask[,i.ex]]
-		) -> feem[mask[,i.ex], i.ex]
+	# 2. pchip-interpolate anything missing
+	for (i in 1:2) { # min and max
+		feem[minmax.row[i], !src[minmax.row[i],]] <- .pchip(
+			l.col[src[minmax.row[i],]], feem[minmax.row[i], src[minmax.row[i],]],
+			l.col[!src[minmax.row[i],]]
+		)
+		src[minmax.row[i],] <- TRUE
 	}
+
+	# 3. ready to work column by column
+	for (i.col in seq_along(l.col)) {
+		.pchip(
+			l.row[src[,i.col]], feem[src[,i.col], i.col], l.row[mask[,i.col]]
+		) -> feem[mask[,i.col], i.col]
+	}
+
 	feem
 }
+
+interpolate.pchip <- function(
+	feem, mask, by = c('emission', 'excitation', 'both')
+) switch(match.arg(by),
+	emission = do.interpolate.pchip(
+		feem, mask, attr(feem, 'emission'), attr(feem, 'excitation')
+	),
+	excitation = t(do.interpolate.pchip(
+		# easier to reuse existing method than to reimplement
+		# it in terms of the other axis
+		t(feem), t(mask), attr(feem, 'excitation'), attr(feem, 'emission')
+	)),
+	both = (
+		Recall(feem, mask, 'emission') +
+		Recall(feem, mask, 'excitation')
+	)/2
+)
 
 interpolate.loess <- function(feem, mask, span = .05, ...) {
 	l.em <- attr(feem, 'emission')
@@ -90,8 +106,26 @@ interpolate.kriging <- function(feem, mask, ...) {
 	feem
 }
 
+interpolate.whittaker <- function(
+	feem, mask, d = 1:2, lambda = c(1e-2, 10), logscale = NA, nonneg = 1
+) {
+	feem[mask] <- NA # request the points to be interpolated
+	feem[mask] <- whittaker2(
+		attr(feem, 'emission'), attr(feem, 'excitation'),
+		feem, lambda = lambda, d = d, logscale = logscale, nonneg = nonneg
+	)[mask] # substitute only requested zone
+	feem
+}
+
+.feeminterpolate <- function(x, method, ...) switch(method,
+	pchip     = interpolate.pchip,
+	loess     = interpolate.loess,
+	kriging   = interpolate.kriging,
+	whittaker = interpolate.whittaker
+)(x, ...)
+
 feemscatter.feem <- function(
-	x, widths, method = c('omit', 'pchip', 'loess', 'kriging'),
+	x, widths, method = c('omit', 'pchip', 'loess', 'kriging', 'whittaker'),
 	add.zeroes = 30, Raman.shift = 3400, ...
 ) {
 	scatter <- outer(
@@ -109,10 +143,8 @@ feemscatter.feem <- function(
 			`<`
 		)
 	] <- 0
-	switch(match.arg(method),
-		omit = omit.mask,
-		pchip = interpolate.pchip,
-		loess = interpolate.loess,
-		kriging = interpolate.kriging
-	)(x, scatter, ...)
+	switch(method <- match.arg(method),
+		omit = { x[scatter] <- NA; x },
+		.feeminterpolate(x, method, scatter, ...)
+	)
 }

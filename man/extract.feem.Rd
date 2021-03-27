@@ -5,7 +5,7 @@
 \description{
   Extract or replace parts of FEEM spectra. Returns FEEM objects unless
   dimensions should be dropped. When assigning from a FEEM object,
-  requires wavelenths to match and warns if scale factors differ.
+  requires wavelengths to match and warns if scale factors differ.
 }
 \usage{
   \method{[}{feem}(x, i, j, drop = TRUE)
@@ -16,14 +16,13 @@
     A FEEM object.
   }
   \item{i, j}{
-    Row and column indices, respectively. As in usual R
-    \link[=Extract]{subsetting}, may be integer, logical or character
-    vectors, or missing.
+    Row and column indices, respectively. As in usual R subsetting
+    (see \link{Extract}), may be integer, logical or character vectors,
+    or missing.
   }
   \item{drop}{
     Coerce result to the lowest possible dimension (dropping the
-    \code{feem} class if so). This only makes sence for extracting,
-    not replacement.
+    \code{feem} class if so).
   }
   \item{value}{
     An array-like object to assign values from. When assigning from
@@ -32,9 +31,9 @@
   }
 }
 \value{
-  For \code{[}: If \code{isTRUE(drop)} and at least one of the index
-  arguments chooses only one element along its axis, a named numeric
-  vector. Otherwise, a FEEM object.
+  For \code{[}: If \code{drop} is \code{TRUE} and at least one of the
+  index arguments chooses only one element along its axis, a named
+  numeric vector. Otherwise, a FEEM object.
 
   For \code{[<-}: a FEEM object.
 }

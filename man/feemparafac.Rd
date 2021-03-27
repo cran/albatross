@@ -1,6 +1,7 @@
 \name{feemparafac}
 \alias{feemparafac}
 \alias{plot.feemparafac}
+\alias{coef.feemparafac}
 \title{
   Compute PARAFAC on a FEEM cube object
 }
@@ -14,6 +15,11 @@
     X, \dots, rescale = 3, retries = 10, subset = TRUE, envir = NULL
   )
   \method{plot}{feemparafac}(x, type = c("image", "lines"), \dots)
+  \method{coef}{feemparafac}(
+    object, type = c(
+      "all", "scores", "loadings", "emission", "excitation", "samples"
+    ), \dots
+  )
 }
 \arguments{
   \item{X}{
@@ -29,6 +35,9 @@
     \item{plot.feemparafac}{
       Passed as-is to \pkg{lattice} functions \code{\link{levelplot}} and
       \code{\link{xyplot}}.
+    }
+    \item{coef.feemparafac}{
+      No other parameters are allowed.
     }
   }}
   \item{rescale}{
@@ -48,39 +57,74 @@
   \item{envir}{
     An environment to look up \code{X} in.
   }
-  \item{x}{
+  \item{x, object}{
     An object returned by \code{\link{feemparafac}}.
   }
   \item{type}{
     Given a fitted PARAFAC model:
 
-    \deqn{%
-      X_{ijk} = \sum_r A_{ir} B_{jr} C_{kr}}{%
-      X[i,j,k] = sum(A[i,] * B[j,] * C[k,])%
+    \deqn3{
+      X_{i,j,k} = \sum_r A_{i,r} B_{j,r} C_{k,r}
+    }{X[i,j,k] = sum(A[i,] * B[j,] * C[k,])}{
+      X<sub>i,j,k</sub> = &#x2211;<sub>r</sub>
+        A<sub>i,r</sub> B<sub>j,r</sub> C<sub>k,r</sub>
     }
 
-    With \eqn{\mathbf{A}}{A} corresponding to fluorescence emission
-    spectra, \eqn{\mathbf{B}}{B} corresponding to fluorescence
-    excitation spectra, and \eqn{\mathbf{C}}{C} corresponding to the
-    scores of the components in different samples, the following plots
-    can be produced:
+    With \eqn3{\mathbf{A}}{A}{<b>A</b>} corresponding to fluorescence
+    emission spectra, \eqn3{\mathbf{B}}{B}{<b>B</b>} corresponding to
+    fluorescence excitation spectra, and \eqn3{\mathbf{C}}{C}{<b>C</b>}
+    corresponding to the scores of the components in different samples,
+    the following plots can be produced:
     \describe{
-      \item{\code{"image"}}{
+      \item{image}{
         Plot the factors (\dQuote{loadings}) as a series of false-colour
         images of outer products
-        \eqn{\mathbf{A}_r \otimes \mathbf{B}_r}{A[,r] \%o\% B[,r]}.
+        \eqn3{
+          \mathbf{a}_r \times \mathbf{b}_r^\top
+        }{A[,r] \\\%o\\\% B[,r]}{
+          <b>a</b><sub>r</sub> &times; <b>b</b><sub>r</sub><sup>
+            <span style="font-style: normal;">T</span>
+          </sup>
+        }
       }
-      \item{\code{"lines"}}{
-        Plot the factors \eqn{\mathbf A_r}{A[,r]} and \eqn{%
-          \mathbf B_r}{B[,r]} as functions of wavelengths, with each
-        pair of factors on a different panel.
+      \item{lines}{
+        Plot the factors \eqn3{\mathbf a_r}{A[,r]}{<b>a</b><sub>r</sub>}
+        and \eqn3{\mathbf b_r}{B[,r]}{<b>b</b><sub>r</sub>} as functions
+        of wavelengths, with each pair of factors on a different panel.
       }
     }
-    More plot kinds may be added in the future.
+
+    Fitted PARAFAC coefficients can be returned in the following forms:
+    \describe{
+      \item{emission, excitation, samples}{
+        Return the contents of \eqn3{\mathbf{A}}{A}{<b>A</b>},
+        \eqn3{\mathbf{B}}{B}{<b>B</b>} or \eqn3{\mathbf{C}}{C}{<b>C</b>},
+        respectively, as a \code{\link{data.frame}} with three
+        columns, the first one (named \code{wavelength} or \code{sample})
+        containing the independent variable
+        (\eqn3{\lambda_\mathrm{em}}{lambda.em}{&lambda;<sub>em</sub>} /
+        \eqn3{\lambda_\mathrm{ex}}{lambda.ex}{&lambda;<sub>ex</sub>} /
+        sample name or number),
+        the second one (named \code{value}) containing the values and
+        the third one (named \code{factor}) containing the factor numbers.
+      }
+      \item{scores}{Same as samples.}
+      \item{loadings}{
+        Same as \dQuote{emission} and \dQuote{excitation} combined using
+        \code{\link{rbind}}, with a fourth column (\code{mode}) added,
+        naming the kinds of loadings.
+      }
+      \item{all}{
+        A list with names \dQuote{emission}, \dQuote{excitation},
+        \dQuote{samples} containing results of
+        \code{coef(object, "emission")}, \code{coef(object, "excitation")},
+        \code{coef(object, "samples")}, respectively.
+      }
+    }
   }
 }
 \details{
-  The function tries hard to guarantee the convergence flag to be
+  \code{feemparafac} tries hard to guarantee the convergence flag to be
   \code{0} (normal convergence) or \code{1} (iteration number limit
   reached), but never \code{2} (a problem with the constraints). A fatal
   error is raised if repeated runs of \code{\link{parafac}} do not
@@ -89,7 +133,7 @@
   The \code{output} option is fixed to \code{"best"} value. Obtaining
   a list of alternative solutions can therefore be achieved by running:
 
-  \code{replicate(\var{n}, feemparafac(..., nstart = 1))}
+  \code{replicate(\var{n}, feemparafac(..., nstart = 1), simplify = FALSE)}
 
   The \code{subset} and \code{envir} options are useful to repeatedly
   perform PARAFAC on different subsets of the same FEEM cube, e.g. in
@@ -115,29 +159,45 @@
       \item{subset}{A copy of the \code{subset} argument.}
       \item{envir}{A copy of the \code{envir} argument.}
     }
-    To access the cube that was factored, use \code{\link{get}} on
-    \code{cube} attribute if \code{envir} attribute is not \code{NULL},
-    then extract the samples in question using the \code{subset}
-    attribute. Normally, this is only needed to save memory when
-    performing cross-validation; otherwise, \code{attr(pf, 'cube')}
-    is enough.
+    \code{\link{rownames}} are added from the original data cube to
+    the \code{A}, \code{B}, \code{C} components of the list returned
+    by \code{\link{parafac}}.
+
+    If \code{envir} attribute is not \code{NULL}, use \code{\link{get}}
+    together with the \code{cube} attribute to access the FEEM cube.
+    Remember to use the \code{subset} attribute to access the samples that
+    took part in the decomposition. Normally, this is only used to save
+    memory when performing cross-validation; otherwise,
+    \code{attr(pf, 'cube')} is enough.
   }
   \item{plot.feemparafac}{
     A \pkg{lattice} plot object. Its \code{print} or \code{plot} method
     will draw the plot on an appropriate plotting device.
   }
+  \item{coef.feemparafac}{
+    A \code{\link{data.frame}} or a list of them (only if \code{type}
+    is \dQuote{all}). See the description of the \code{type} argument
+    for more information.
+  }
 }
 \references{
-  R. Bro, PARAFAC. Tutorial and applications, Chemometrics and Intelligent
-  Laboratory Systems. 38 (1997) 149-171. \doi{10.1016/S0169-7439(97)00032-4}
+  \bibentry{'Article',
+    author = person('Rasmus', 'Bro'),
+    title = 'PARAFAC. Tutorial and applications',
+    journal = 'Chemometrics and Intelligent Laboratory Systems',
+    volume = 38,
+    number = 2,
+    pages = '149-171',
+    year = 1997,
+    doi = '10.1016/S0169-7439(97)00032-4'
+  }
 }
 
 \seealso{
   \code{\link{parafac}} for the \code{parafac} class structure;
   \code{\link{fitted.feemparafac}}, \code{\link{residuals.feemparafac}},
-  for methods specific to values returned from this function.
-
-  \code{\link{levelplot}}, \code{\link{xyplot}}.
+  \code{\link{write.openfluor}} for methods specific to values returned
+  from this function.
 }
 \examples{
   data(feems)
@@ -149,6 +209,8 @@
   factors <- feemparafac(cube, nfac = 2, const = rep('nonneg', 3))
   plot(factors, 'image')
   plot(factors, 'line')
+  head(coef(factors, 'loadings'))
+  str(coef(factors, 'all'))
 }
 \keyword{hplot}
 \keyword{method}

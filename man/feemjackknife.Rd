@@ -1,6 +1,7 @@
 \name{feemjackknife}
 \alias{feemjackknife}
 \alias{plot.feemjackknife}
+\alias{coef.feemjackknife}
 \title{Jack-knife outlier detection in PARAFAC models}
 \description{
   Perform leave-one-out fitting + validation of PARAFAC models on a
@@ -11,6 +12,9 @@
   \method{plot}{feemjackknife}(
     x, kind = c('estimations', 'RIP', 'IMP'), \dots
   )
+  \method{coef}{feemjackknife}(
+    object, kind = c('estimations', 'RIP', 'IMP'), \dots
+  )
 }
 \arguments{
   \item{cube}{
@@ -19,35 +23,42 @@
   \item{progress}{
     Set to \code{FALSE} to disable the progress bar.
   }
-  \item{x}{
+  \item{x, object}{
     An object returned by \code{\link{feemjackknife}}.
   }
-  \item{kind}{\describe{
-    \item{\code{"estimations"}}{
-      Plot the loadings from every leave-one-out model.
+  \item{kind}{
+    Chooses what to plot (when called as \code{plot(\dots)}) or return
+    as a \code{\link{data.frame}} (when called as \code{coef(\dots)}):
+    \describe{
+      \item{estimations}{
+        Produce the loadings from every leave-one-out model.
+      }
+      \item{RIP}{
+        Produce a Resample Influence Plot, i.e. mean squared difference
+        between loadings in overall and leave-one-out models plotted
+        against mean squared residuals in leave-one-out models.
+      }
+      \item{IMP}{
+        Produce an Identity Match Plot, i.e. scores in leave-one-out
+        models plotted against scores in the overall model.
+      }
     }
-    \item{\code{"RIP"}}{
-      Produce a Resample Influence Plot, i.e. plot mean squared
-      difference between loadings in overall and leave-one-out models
-      against mean squared residuals in leave-one-out models.
-    }
-    \item{\code{"IMP"}}{
-      Produce an Identity Match Plot, i.e. plot scores in leave-one-out
-      models against scores in overall model.
-    }
-  }}
+  }
   \item{\dots}{\describe{
     \item{feemjackknife}{
       Passed as-is to \code{\link{feemparafac}} and, eventually, to
       \code{\link{parafac}}
     }
     \item{plot.feemjackknife}{
-      When \code{kind} is \code{"RIP"} or \code{"IMP"}, pass a \code{q}
-      argument to specify the quantile of residual values (for RIP) or
-      absolute score differences (IMP) above which sample names (or
-      numbers) should be plotted.
+      When \code{kind} is \dQuote{RIP} or \dQuote{IMP}, pass a \code{q}
+      argument to specify the quantile of residual values (for RIP)
+      or absolute score differences (IMP) above which sample names (or
+      numbers) should be plotted. Default value for \code{q} is \eqn{0.9}.
 
       Remaining arguments are passed as-is to \code{\link{xyplot}}.
+    }
+    \item{coef.feemjackknife}{
+      No further parameters are allowed.
     }
   }}
 }
@@ -56,25 +67,47 @@
   model without it, then fits the outstanding sample to the model with
   emission and excitation factors fixed.
 
-  The individual leave-one-out models are reordered according to best
-  Tucker's congruence coefficient match and rescaled by minimising \eqn{%
-    || \mathbf A \, \mathrm{diag}(\mathbf s_\mathrm A) - %
-      \mathbf A^\mathrm{orig} ||^2 %
-  }{sum((A * s.A - A.orig)^2)} and \eqn{ %
-    || \mathbf{B} \, \mathrm{diag}(\mathbf s_\mathrm B) - %
-      \mathbf B^\mathrm{orig} ||^2 %
-  }{sum((B * s.B - B.orig)^2)} over \eqn{\mathbf s_\mathrm A}{s.A} and
-  \eqn{\mathbf s_\mathrm B}{s.B}, subject to \eqn{%
-    \mathrm{diag}(\mathbf s_\mathrm A) \cdot %
-    \mathrm{diag}(\mathbf s_\mathrm B) \cdot %
-    \mathrm{diag}(\mathbf s_\mathrm C) = \mathbf I}{%
-    s.C = 1 / (s.A * s.B) %
+  The individual leave-one-out models (fitted loadings
+  \eqn3{\mathbf A}{A}{<b>A</b>}, \eqn3{\mathbf B}{B}{<b>B</b>} and scores
+  \eqn3{\mathbf C}{C}{<b>C</b>}) are reordered according to best Tucker's
+  congruence coefficient match and rescaled by minimising \eqn3{
+    || \mathbf A \, \mathrm{diag}(\mathbf s_\mathrm A) -
+      \mathbf A^\mathrm{orig} ||^2
+  }{sum((A * s.A - A.orig)^2)}{
+    ||<b>A</b>
+      <span style="font-style: normal;">diag</span>(<b>s</b><sub>A</sub>)
+      - <b>A</b><sup>orig</sup>||<sup>2</sup>
+  } and \eqn3{
+    || \mathbf{B} \, \mathrm{diag}(\mathbf s_\mathrm B) -
+      \mathbf B^\mathrm{orig} ||^2
+  }{sum((B * s.B - B.orig)^2)}{
+    ||<b>B</b>
+      <span style="font-style: normal;">diag</span>(<b>s</b><sub>B</sub>)
+      - <b>B</b><sup>orig</sup>||<sup>2</sup>
+  } over \eqn3{\mathbf s_\mathrm A}{s.A}{<b>s</b><sub>A</sub>} and
+  \eqn3{\mathbf s_\mathrm B}{s.B}{<b>s</b><sub>B</sub>}, subject to \eqn3{
+    \mathrm{diag}(\mathbf s_\mathrm A) \times
+    \mathrm{diag}(\mathbf s_\mathrm B) \times
+    \mathrm{diag}(\mathbf s_\mathrm C) = \mathbf I
+  }{s.A * s.B * s.C = 1}{
+    <span style="font-style: normal;">diag</span>(<b>s</b><sub>A</sub>)
+    &times;
+    <span style="font-style: normal;">diag</span>(<b>s</b><sub>B</sub>)
+    &times;
+    <span style="font-style: normal;">diag</span>(<b>s</b><sub>C</sub>)
+    = <b>I</b>
   }, to make them comparable.
 
   Once the models are fitted, resample influence plots and identity
   match plots can be produced from resulting data to detect outliers.
 
-  It is recommended to fully name the parameters to be passed to
+  To conserve memory, \code{feemjackknife} puts the user-provided
+  \code{cube} in an environment and passes it via \code{envir} and
+  \code{subset} options of \code{\link{feemparafac}}. This means that,
+  unlike in \code{\link{feemparafac}}. the \code{cube} argument has
+  to be a \code{\link{feemcube}} object and passing \code{envir} and
+  \code{subset} options to \code{feemjackknife} is not supported. It
+  is recommended to fully name the parameters to be passed to
   \code{\link{feemparafac}} to avoid problems.
 
   \code{plot.feemjackknife} provides sane defaults for \code{\link{xyplot}}
@@ -83,7 +116,7 @@
 }
 \value{\describe{
   \item{feemjackknife}{
-    An list of class \code{feemjackknife} containing the following
+    A list of class \code{feemjackknife} containing the following
     entries:\describe{
     \item{overall}{
       Result of fitting the overall \code{cube} with
@@ -102,12 +135,85 @@
     A \pkg{lattice} plot object. Its \code{print} or \code{plot} method
     will draw the plot on an appropriate plotting device.
   }
+
+  \item{coef.feemjackknife}{
+    A \code{\link{data.frame}} containing various columns, depending on
+    the value of the \code{kind} argument:
+
+    \describe{
+      \item{estimations}{\describe{
+        \item{loading}{Values of the loadings.}
+        \item{mode}{
+          The axis of the loadings, \dQuote{Emission} or \dQuote{Excitation}.
+        }
+        \item{wavelength}{
+          Emission or excitation wavelength the loading values correspond to.
+        }
+        \item{factor}{The component number.}
+        \item{omitted}{
+          The sample (name if \code{cube} had names, integer if it didn't)
+          that was omitted to get the resulting loading values.
+        }
+      }}
+
+      \item{RIP}{\describe{
+        \item{msq.resid}{
+          Mean squared residual value for the model with a given sample
+          omitted.
+        }
+        \item{Emission}{
+          Mean squared difference in emission mode loadings between the
+          overall model and the model with a given sample omitted.
+        }
+        \item{Excitation}{
+          Mean squared difference in excitation mode loadings between
+          the overall model and the model with a given sample omitted.
+        }
+        \item{omitted}{
+          The sample (name if \code{cube} had names, integer if it didn't)
+          that was omitted from a given model.
+        }
+      }}
+
+      \item{IMP}{\describe{
+        \item{score.overall}{Score values for the overall model.}
+        \item{score.predicted}{
+          Score values estimated from the loadings of the model missing
+          a given sample: \deqn3{
+            \hat{\mathbf{c}} =
+              (\mathbf{A} \ast \mathbf{B})^{+} \times \mathbf{x}
+          }{c.hat = pseudoinverse(krprod(A, B)) \\\%*\\\% x}{
+            <b>c&#x0302;</b> = (
+              <b>A</b> * <b>B</b>
+            )<sup>+</sup> &times; <b>x</b>
+          }
+        }
+        \item{factor}{The component number.}
+        \item{omitted}{
+          The sample (name if \code{cube} had names, integer if it didn't)
+          that was omitted from a given model.
+        }
+      }}
+    }
+  }
 }}
 \references{
-  J. Riu, R. Bro, Jack-knife technique for outlier detection and
-  estimation of standard errors in PARAFAC models, Chemometrics and
-  Intelligent Laboratory Systems. 65 (2003) 35-49.
-  \doi{10.1016/S0169-7439(02)00090-4}
+  \bibentry{'Article',
+    author = c(
+      person('Jordi', 'Riu'),
+      person('Rasmus', 'Bro')
+    ),
+    title = paste(
+      'Jack-knife technique for outlier detection and',
+      'estimation of standard errors in PARAFAC models'
+    ),
+    journal = 'Chemometrics and Intelligent Laboratory Systems',
+    volume = 65,
+    number = 1,
+    pages = '35-49',
+    year = 2003,
+    doi = '10.1016/S0169-7439(02)00090-4',
+  }
 }
 
 \seealso{
@@ -121,10 +227,12 @@
   )
   # takes a long time
   jk <- feemjackknife(cube, nfac = 3, const = rep('nonneg', 3))
+  # feemparafac methods should be able to use the environment and subset
+  plot(jk$leaveone[[1]])
   plot(jk)
   plot(jk, 'IMP')
   plot(jk, 'RIP')
-  plot(jk$leaveone[[1]])
+  head(coef(jk))
 }}
 \keyword{method}
 \keyword{hplot}

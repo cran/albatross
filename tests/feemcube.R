@@ -33,3 +33,9 @@ stopifnot(
 
 z <- feemscale(z, na.rm = TRUE)
 stopifnot(all.equal(z, feemcube(as.list(z), TRUE)))
+
+# "sample" column should be factor or character, but not integer
+for (cube in list(z, feemcube(unname(as.list(z)), FALSE)))
+	with(as.data.frame(cube),
+		stopifnot(is.factor(sample) || is.character(sample))
+	)

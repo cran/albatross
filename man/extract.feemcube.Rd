@@ -21,8 +21,7 @@
   }
   \item{drop}{
     Coerce result to the lowest possible dimension (dropping the
-    \code{feemcube} class). This only makes sence for extracting,
-    not replacement.
+    \code{feemcube} class).
   }
   \item{value}{
     An array-like object to assign values from. When assigning from

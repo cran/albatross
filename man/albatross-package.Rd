@@ -38,23 +38,62 @@ Timur Labutin
 Maintainer: Ivan Krylov
 }
 \references{
-  K.R. Murphy, C.A. Stedmon, D. Graeber, R. Bro, Fluorescence spectroscopy and
-  multi-way techniques. PARAFAC, Analytical Methods. 5 (2013) 6557.
-  \doi{10.1039/c3ay41160e}
+  \bibentry{'Article',
+    author = c(
+      person(c('Kathleen', 'R.'), 'Murphy'),
+      person(c('Colin', 'A.'), 'Stedmon'),
+      person('Daniel', 'Graeber'),
+      person('Rasmus', 'Bro')
+    ),
+    title = 'Fluorescence spectroscopy and multi-way techniques. PARAFAC',
+    journal = 'Analytical Methods',
+    doi = '10.1039/c3ay41160e',
+    volume = 5,
+    year = 2013,
+    pages = '6557-6566'
+  }
 
-  M. Pucher, U. \enc{Wünsch}{Wuensch}, G. Weigelhofer, K. Murphy, T. Hein,
-  D. Graeber, staRdom: Versatile Software for Analyzing Spectroscopic Data of
-  Dissolved Organic Matter in R, Water. 11 (2019) 2366.
-  \doi{10.3390/w11112366}
+  \bibentry{'Article',
+    author = c(
+      person('Matthias', 'Pucher'),
+      # my kingdom for a backslash!
+      person('Urban',  paste0(rawToChar(as.raw(0x5c)), 'enc{Wünsch}{Wuensch}')),
+      person('Gabriele', 'Weigelhofer'),
+      person('Kathleen', 'Murphy'),
+      person('Thomas', 'Hein'),
+      person('Daniel', 'Graeber')
+    ),
+    title = paste(
+      'staRdom: Versatile Software for Analyzing Spectroscopic Data',
+      'of Dissolved Organic Matter in R'
+    ),
+    journal = 'Water',
+    volume = 11,
+    number = 11,
+    year = 2019,
+    pages = 2366,
+    doi = '10.3390/w11112366'
+  }
 
-  J. Cleese, T. Jones, Albatross: Flavours of different sea birds, Journal
-  of Flying Circus. 1.13 (1970) 7:05-7:45.
+  \bibentry{'Article',
+    author = c(
+      person('John', 'Cleese'),
+      person('Terry', 'Jones')
+    ),
+    title = 'Albatross: Flavours of different sea birds',
+    journal = 'Journal of Flying Circus',
+    year = 1970,
+    volume = '1.13',
+    pages = '7:05-7:45'
+  }
 }
 \keyword{package}
 \seealso{
-  \code{\link{feem}}, \code{\link{feemcube}}, \code{\link{feemscatter}},
-  \code{\link{feemife}}, \code{\link{feemscale}}, \code{\link{feemparafac}},
-  \code{\link{feemsplithalf}}, \code{\link{feemjackknife}}.
+  \code{\link{feem}}, \code{\link{feemlist}}, \code{\link{feemife}},
+  \code{\link{feemscatter}}, \code{\link{feemgrid}},
+  \code{\link{feemcube}}, \code{\link{feemscale}},
+  \code{\link{feemsplithalf}}, \code{\link{feemparafac}},
+  \code{\link{feemjackknife}}.
 }
 \examples{
   plot(x <- feem(matrix(1:42, 7), 400:406, 350:355))

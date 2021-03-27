@@ -14,7 +14,7 @@ feemjackknife <- function(cube, ..., progress = TRUE) {
 
 				X <- cube[,,-slice]
 				X <- X * attr(X, 'scale')
-				dim(X) <- prod(dim(X))
+				dim(X) <- length(X)
 				mask <- !is.na(X) # skip NA regions in the spectrum
 				D <- krprod(fac$B, fac$A)
 				# we could have used ginv() from recommended MASS package,
@@ -31,6 +31,17 @@ feemjackknife <- function(cube, ..., progress = TRUE) {
 	)
 }
 
+coef.feemjackknife <- function(
+	object, kind = c('estimations', 'RIP', 'IMP'), ...
+) {
+	stopifnot(length(list(...)) == 0)
+	switch(match.arg(kind),
+		estimations = jksumm(object),
+		RIP = jksummrip(object),
+		IMP = jksummimp(object)
+	)
+}
+
 plot.feemjackknife <- function(x, kind = c('estimations', 'RIP', 'IMP'), ...)
 	switch(
 		match.arg(kind),
@@ -39,32 +50,48 @@ plot.feemjackknife <- function(x, kind = c('estimations', 'RIP', 'IMP'), ...)
 		IMP = jk.IMP(x, ...)
 	)
 
-jkplot <- function(
-	jk, xlab = quote(lambda*', nm'), ylab = 'Loading values', as.table = T,
-	scales = list(x = 'free'), ...
-) {
+jksumm <- function(jk) {
 	ovcube <- .pfcube(jk$overall)
-	df <- do.call(rbind, lapply(seq_along(jk$leaveone), function(i) rbind(
+	samples <- .feemcsamples(ovcube)
+	do.call(rbind, lapply(seq_along(jk$leaveone), function(i) rbind(
 		data.frame(
 			loading = as.vector(jk$leaveone[[i]]$A),
 			mode = 'Emission',
 			wavelength = attr(ovcube, 'emission'),
 			factor = as.factor(col(jk$leaveone[[i]]$A)),
-			rep = i
+			omitted = samples[i]
 		),
 		data.frame(
 			loading = as.vector(jk$leaveone[[i]]$B),
 			mode = 'Excitation',
 			wavelength = attr(ovcube, 'excitation'),
 			factor = as.factor(col(jk$leaveone[[i]]$B)),
-			rep = i
+			omitted = samples[i]
 		)
 	)))
+}
+
+jkplot <- function(
+	jk, xlab = quote(lambda*', nm'), ylab = 'Loading values',
+	as.table = TRUE, scales = list(x = 'free'), ...
+) {
+	df <- coef(jk, 'estimations')
+	omitted <- NULL # R CMD check vs. xyplot(groups = ...)
 	xyplot(
-		loading ~ wavelength | mode + factor, df, group = rep,
+		loading ~ wavelength | mode + factor, df, group = omitted,
 		type = 'l', as.table = as.table, xlab = xlab, ylab = ylab,
 		scales = scales, ...
 	)
+}
+
+jksummrip <- function(jk) {
+	RIP <- do.call(rbind, lapply(jk$leaveone, function(fac) data.frame(
+		msq.resid = mean(resid(fac)^2, na.rm = TRUE),
+		Emission = mean((fac$A - jk$overall$A)^2),
+		Excitation = mean((fac$B - jk$overall$B)^2)
+	)))
+	RIP$omitted <- .feemcsamples(.pfcube(jk$overall))
+	RIP
 }
 
 jk.RIP <- function(
@@ -72,23 +99,27 @@ jk.RIP <- function(
 	ylab = 'Mean squared difference in loadings',
 	scales = list(alternating = 1), ...
 ) {
-	RIP <- do.call(rbind, lapply(jk$leaveone, function(fac) data.frame(
-		msq.resid = mean(resid(fac)^2, na.rm = T),
-		Emission = mean((fac$A - jk$overall$A)^2, na.rm = T),
-		Excitation = mean((fac$B - jk$overall$B)^2, na.rm = T)
-	)))
-	cube <- .pfcube(jk$overall)
-	if (!is.null(dimnames(cube)[[3]])) rownames(RIP) <- dimnames(cube)[[3]]
+	RIP <- coef(jk, 'RIP')
 
 	xyplot(
-		Emission + Excitation ~ msq.resid, RIP, outer = T,
+		Emission + Excitation ~ msq.resid, RIP, outer = TRUE,
 		xlab = xlab, ylab = ylab, scales = scales,
 		panel = function(x, y, ...) {
 			panel.xyplot(x, y, ...)
 			outl <- x > quantile(x, q) | y > quantile(y, q)
-			ltext(x[outl], y[outl], rownames(RIP)[outl])
+			ltext(x[outl], y[outl], RIP$omitted[outl])
 		},
 		...
+	)
+}
+
+jksummimp <- function(jk) {
+	Chat <- do.call(rbind, lapply(jk$leaveone, attr, 'Chat'))
+	data.frame(
+		score.overall = as.vector(jk$overall$C),
+		score.predicted = as.vector(Chat),
+		factor = as.factor(col(Chat)),
+		omitted = .feemcsamples(.pfcube(jk$overall))
 	)
 }
 
@@ -97,12 +128,7 @@ jk.IMP <- function(
 	ylab = 'Individual model scores', as.table = T,
 	scales = list(alternating = 1), ...
 ) {
-	Chat <- do.call(rbind, lapply(jk$leaveone, attr, 'Chat'))
-	IMP <- data.frame(
-		score.overall = as.vector(jk$overall$C),
-		score.predicted = as.vector(Chat),
-		factor = as.factor(col(Chat))
-	)
+	IMP <- coef(jk, 'IMP')
 	xyplot(
 		score.predicted ~ score.overall | factor, IMP,
 		xlab = xlab, ylab = ylab, scales = scales, as.table = as.table,
@@ -111,7 +137,7 @@ jk.IMP <- function(
 			panel.abline(0, 1, lwd = .5)
 			outl <- abs(y - x)
 			outl <- outl > quantile(outl, q)
-			ltext(x[outl], y[outl], rownames(IMP)[outl])
+			ltext(x[outl], y[outl], IMP$omitted[outl])
 		},
 		...
 	)

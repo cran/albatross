@@ -3,8 +3,7 @@
 \alias{plot.feemcube}
 \title{Plot a FEEM object}
 \description{
-  A thin wrapper around \pkg{lattice}::\code{\link{levelplot}}, which
-  uses it to plot a 2D fluorescence intensity surface.
+  Plot a 2D fluorescence intensity surface as a false-colour image.
 }
 \usage{
 \method{plot}{feem}(
@@ -30,7 +29,7 @@
   }
   \item{cuts}{
     The number of distinct levels the intensity would be divided into,
-    areas between them assined different colours.
+    areas between them assigned different colours.
   }
   \item{col.regions}{
     The palette to take the colours from, a character vector of R colour

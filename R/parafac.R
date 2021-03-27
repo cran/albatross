@@ -8,9 +8,13 @@ feemparafac <- function(
 		if (ret$cflag != 2) break
 	}
 	if (ret$cflag == 2) stop(
-		"Algorithm terminated abnormally due to",
+		"Algorithm terminated abnormally due to ",
 		"a problem with the constraints"
 	)
+	# assign dimnames for convenience
+	rownames(ret$A) <- dimnames(cube)[[1]]
+	rownames(ret$B) <- dimnames(cube)[[2]]
+	rownames(ret$C) <- dimnames(cube)[[3]][subset]
 	# undo per-sample scaling
 	ret$C <- ret$C * attr(cube, 'scales')[subset]
 	# move variance to a given mode
@@ -57,6 +61,46 @@ residuals.feemparafac <- function(object, ...) {
 	.pfcube(object) - fitted(object)
 }
 
+coef.feemparafac <- function(
+	object, type = c(
+		'all', 'scores', 'loadings', 'emission', 'excitation', 'samples'
+	), ...
+) {
+	stopifnot(length(list(...)) == 0)
+	cube <- .pfcube(object)
+	comps <- list(
+		emission = list(comp = 'A', name = 'wavelength', val = attr(cube, 'emission')),
+		excitation = list(comp = 'B', name = 'wavelength', val = attr(cube, 'excitation')),
+		samples = list(comp = 'C', name = 'sample', val = .feemcsamples(cube))
+	)
+	switch(type <- match.arg(type),
+		emission =, excitation =, samples = {
+			set <- comps[[type]]
+			values <- object[[set$comp]]
+			as.data.frame(
+				list(
+					set$val[row(values)],
+					as.vector(values),
+					as.factor(col(values))
+				),
+				col.names = c(set$name, 'value', 'factor')
+			)
+		},
+		scores = coef(object, 'samples'),
+		all = lapply(
+			setNames(nm = c('emission', 'excitation', 'samples')),
+			function(n) coef(object, n)
+		),
+		loadings = do.call(rbind, lapply(c('emission', 'excitation'),
+			function(n) cbind(
+				coef(object, n),
+				# kludge: uppercase "Emission" / "Excitation"
+				mode = `substr<-`(n, 1, 1, 'E')
+			)
+		))
+	)
+}
+
 compplot.surf <- function(X, ...) {
 	cube <- .pfcube(X)
 	plot(feemcube(with(X,
@@ -74,25 +118,9 @@ compplot.xy <- function(
 	X, xlab = quote(lambda*", nm"), ylab = "Factor value", as.table = T,
 	auto.key = TRUE, type = 'l', ...
 ) {
-	cube <- .pfcube(X)
 	xyplot(
-		x = factor ~ wavelength | ncomp, groups = mode,
-		data = do.call(rbind, lapply(1:ncol(X$A), function (i) {
-			rbind(
-				data.frame(
-					wavelength = attr(cube, 'emission'),
-					factor = X$A[,i],
-					mode = 'Emission',
-					ncomp = as.character(i)
-				),
-				data.frame(
-					wavelength = attr(cube, 'excitation'),
-					factor = X$B[,i],
-					mode = 'Excitation',
-					ncomp = as.character(i)
-				)
-			)
-		})),
+		x = value ~ wavelength | factor, groups = mode,
+		data = coef(X, 'loadings'),
 		xlab = xlab, ylab = ylab, as.table = as.table, auto.key = auto.key,
 		type = type, ...
 	)

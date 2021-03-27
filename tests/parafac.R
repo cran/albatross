@@ -44,3 +44,28 @@ factors <- feemparafac(
 )
 fitted(factors)
 resid(factors)
+
+# dimnames should be assigned
+stopifnot(
+	dimnames(cube)[[1]] == rownames(factors$A),
+	dimnames(cube)[[2]] == rownames(factors$B),
+	dimnames(cube)[[3]] == rownames(factors$C)
+)
+
+# coef must return data.frames or lists with correct contents
+coefnames <- list(
+	emission = c('wavelength', 'value', 'factor'),
+	excitation = c('wavelength', 'value', 'factor'),
+	samples = c('sample', 'value', 'factor'),
+	scores = c('sample', 'value', 'factor'),
+	loadings = c('wavelength', 'value', 'factor', 'mode')
+)
+for (n in names(coefnames))
+	stopifnot(all.equal(colnames(coef(factors, n)), coefnames[[n]]))
+allnames <- c('emission', 'excitation', 'samples')
+stopifnot(all.equal(names(coef(factors, 'all')), allnames))
+for (n in allnames)
+	stopifnot(all.equal(
+		colnames(coef(factors, 'all')[[n]]),
+		coefnames[[n]]
+	))

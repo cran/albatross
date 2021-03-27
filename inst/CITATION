@@ -9,8 +9,5 @@ bibentry('Article',
 	journal = 'Chemometrics and Intelligent Laboratory Systems',
 	number = 104176,
 	volume = 207,
-	year = 2020,
-	key = 'albatross2020'
+	year = 2020
 )
-
-citation(auto = meta)

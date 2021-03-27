@@ -2,6 +2,15 @@
 
 feem <- function(x, ...) UseMethod('feem')
 
+feem.character <- feem.connection <- function(x, format, ...) {
+	stopifnot(length(x) == 1)
+	switch(
+		match.arg(format, c('table', 'panorama')),
+		table = read.matrix,
+		panorama = read.panorama,
+	)(x, ...)
+}
+
 feem.matrix <- function(x, emission, excitation, scale = 1, ...) {
 	stopifnot(
 		length(list(...)) == 0, is.numeric(x),

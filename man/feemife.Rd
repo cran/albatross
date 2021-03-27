@@ -19,10 +19,10 @@
     A FEEM object, a FEEM data cube, or a list of them.
   }
   \item{absorbance}{
-    If \code{x} is a FEEM object: a two-column matrix-like object suitable
-    for \code{\link{xy.coords}} containing the absorbance spectrum of the
-    sample: the wavelengths in the first column and the unitless
-    absorbance values in the second column.
+    If \code{x} is a FEEM object: a two-column matrix-like object
+    containing the absorbance spectrum of the sample: the wavelengths
+    in the first column and the unitless absorbance values in the
+    second column.
 
     Otherwise, this could be a list of such objects or a multi-column
     matrix-like object. If \code{x} contains names of the samples
@@ -32,8 +32,9 @@
     \code{absorbance}, results of this lookup are used. If \code{x}
     or \code{absorbance} isn't named, but (given \eqn{N}-sample
     \code{x}) \code{absorbance} has exactly \eqn{N+1} columns or is an
-    \eqn{N}-element list, absorbances are assumed to be present in the
-    same order as the samples in \code{x}. Otherwise, an error is raised.
+    \eqn{N}-element list, absorbance spectra are assumed to be present
+    in the same order as the samples in \code{x}. Otherwise, an error
+    is raised.
   }
   \item{abs.path}{
     If \code{x} is a FEEM object, a number specifying the length of the
@@ -61,27 +62,50 @@
 
   The formula used to correct for inner filter effect is:
 
-  \deqn{
-    I_\mathrm{corr}(\lambda_\mathrm{em}, \lambda_\mathrm{ex}) = %
-    I_\mathrm{orig}(\lambda_\mathrm{em}, \lambda_\mathrm{ex}) 10^{ %
-      \frac{A(\lambda_\mathrm{em}) + A(\lambda_\mathrm{ex})}{2 L_\mathrm{abs}} %
+  \deqn3{
+    I_\mathrm{corr}(\lambda_\mathrm{em}, \lambda_\mathrm{ex}) =
+    I_\mathrm{orig}(\lambda_\mathrm{em}, \lambda_\mathrm{ex}) 10^{
+      \frac{A(\lambda_\mathrm{em}) + A(\lambda_\mathrm{ex})}{2 L_\mathrm{abs}}
     }
-  }{I.corrected = I.orig * 10^((A.em + A.ex) / (2 * abs.path))}
+  }{I.corrected = I.orig * 10^((A.em + A.ex) / (2 * abs.path))}{
+    I<sub>corr</sub>(&lambda;<sub>em</sub>, &lambda;<sub>ex</sub>) =
+    I<sub>orig</sub>(&lambda;<sub>em</sub>, &lambda;<sub>ex</sub>) &middot;
+    10<sup>
+      <sup>A(&lambda;<sub>em</sub>) +
+        A(&lambda;<sub>ex</sub>)</sup>/<sub>2L<sub>abs</sub>
+      </sub>
+    </sup>
+  }
 }
 \value{
   An object of the same kind as \code{x}, with inner filter effect
   corrected.
 }
 \references{
-  J.R. Lakowicz, Principles of Fluorescence Spectroscopy, 3rd ed.,
-  Springer US, 2006.
-  \url{https://www.springer.com/la/book/9780387312781}
+  \bibentry{'Book',
+    author = person(c('Joseph', 'R.'), 'Lakowicz'),
+    title = 'Principles of Fluorescence Spectroscopy, 3rd ed.',
+    year = '2006',
+    publisher = 'Springer US',
+    url = 'https://www.springer.com/la/book/9780387312781'
+  }
 
-  D.N. Kothawala, K.R. Murphy, C.A. Stedmon, G.A. Weyhenmeyer,
-  L.J. Tranvik, Inner filter correction of dissolved organic matter
-  fluorescence: Correction of inner filter effects, Limnology and
-  Oceanography: Methods. 11 (2013) 616-630.
-  \doi{10.4319/lom.2013.11.616}
+  \bibentry{'Article',
+    author = c(
+      person(c('Dolly', 'N.'), 'Kothawala'),
+      person(c('Kathleen', 'R.'), 'Murphy'),
+      person(c('Colin', 'A.'), 'Stedmon'),
+      person(c('Gesa', 'A.'), 'Weyhenmeyer'),
+      person(c('Lars', 'J.'), 'Tranvik')
+    ),
+    title = 'Inner filter correction of dissolved organic matter fluorescence',
+    journal = 'Limnology and Oceanography: Methods',
+    volume = 11,
+    number = 12,
+    pages = '616-630',
+    doi = '10.4319/lom.2013.11.616',
+    year = 2013
+  }
 }
 \examples{
   data(feems)

@@ -1,12 +1,58 @@
 \name{NEWS}
 \title{News for package \pkg{albatross}}
+\section{Changes in version 0.3-0 (2021-03-24)}{\itemize{
+  \item Added a new \sQuote{whittaker} interpolation method for
+  \code{feemscatter} and \code{feemgrid} based on Whittaker smoothing
+  with configurable difference order(s) and optional iterative penalty
+  against resulting negative values. This brings in a dependency on the
+  recommended \pkg{Matrix} package.
+
+  \item The \sQuote{pchip} interpolation method now offers a choice
+  whether to interpolate the EEM by row, by column, or to do both and
+  average the results (thanks \pkg{staRdom} for the trick). It also
+  doesn't crash anymore when trying to 1-D interpolate less than 3
+  defined points, falling back to linear interpolation instead.
+
+  \item Added \code{feem} methods for strings and connections, making
+  it possible to read EEMs from files in simple table format, including
+  those produced by Horiba and Panorama software.
+
+  \item Added the \code{feemlist} generic to construct lists of
+  \code{feem} objects from \pkg{eemR} or \pkg{EEM} objects or vectors
+  of file and directory paths.
+
+  \item Added the \code{groups} argument to \code{feemsplithalf},
+  making it possible to stratify the resulting halves according to a
+  given factor value.
+
+  \item Added the \code{feemgrid} generic to interpolate FEEM(s) on a
+  given wavelength grid.
+
+  \item Added \code{coef} methods for \code{feemparafac},
+  \code{feemsplithalf}, \code{feemjackknife} returning the coefficients
+  and summary values (e.g. TCC for split-half) in \dQuote{long}
+  \link{data.frame} format.
+
+  \item Added function \code{write.openfluor} to export a fitted
+  \code{feemparafac} object for the OpenFluor service.
+
+  \item Equations in the HTML documents are now typeset using HTML
+  features instead of plain ASCII.
+
+  \item Dependency on \code{R >= 3.3} is now acknowledged. The package
+  doesn't actually pass \code{R CMD check} on \code{R < 3.3}. Patches
+  to lower the required version are welcome if they don't result in
+  extensive rewrites.
+
+  \item Other documentation improvements.
+}}
 \section{Changes in version 0.2-0 (2020-11-30)}{\itemize{
   \item Fixed a serious bug in \code{feemsplithalf} that would result
   in partially overlapping splits being compared. It has been present
   since v0.1-1. I apologise to any users of \pkg{albatross} who found
   out they have been bitten by this. Steps have been taken to make sure
   that other bugs like this don't still lurk in the code and to prevent
-  similar bugs from occuring in the future.
+  similar bugs from occurring in the future.
 
   \item Potentially breaking change: \code{feemife} now accepts either
   named absorbance / optical path length data exactly matching unique
@@ -21,9 +67,9 @@
   only referencing it using vectors of indices instead of keeping copies
   of its subsets.
 
-  \item New interpolation method: \code{kriging}. Very resource-intensive,
-  but results can be nicer-looking than either \code{loess} or
-  \code{pchip}.
+  \item New interpolation method: \dQuote{kriging}. Very
+  resource-intensive, but results can be nicer-looking than either
+  \code{loess} or \code{pchip}.
 
   \item More consistent progress bars for operations on collections of
   \code{feem}s. Scatter correction can now be run in parallel.

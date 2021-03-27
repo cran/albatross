@@ -2,15 +2,21 @@
 \alias{feem}
 \alias{feem.matrix}
 \alias{feem.data.frame}
+\alias{feem.character}
+\alias{feem.connection}
+\newcommand{\reg}{\ifelse{latex}{\out{\textregistered}}{\ifelse{html}{\out{&reg;}}{(R)}}}
+\newcommand{\regsp}{\reg\if{latex}{\out{\space}}}
 \title{
   Create a fluorescence excitation-emission matrix object
 }
 \description{
   Functions to create fluorescence excitation-emission matrix objects from
-  R matrices coupled with excitation and emission wavelengths or three-column
-  \code{data.frame}s containing
-  \eqn{(\lambda_\mathrm{em}, \lambda_\mathrm{ex}, I)}{%
-  (\lambda.em, \lambda.ex, intensity)} tuples.
+  R matrices coupled with excitation and emission wavelengths, three-column
+  \code{data.frame}s containing \eqn3{
+    (\lambda_\mathrm{em}, \lambda_\mathrm{ex}, I)
+  }{(\lambda.em, \lambda.ex, intensity)}{
+    (&lambda;<sub>em</sub>, &lambda;<sub>ex</sub>, I)
+  } tuples or files.
 }
 \usage{
   feem(x, \dots)
@@ -19,21 +25,28 @@
     x, scale = 1, emission = 'emission',
     excitation = 'excitation', intensity = 'intensity', \dots
   )
+  \method{feem}{character}(x, format, \dots)
+  \method{feem}{connection}(x, format, \dots)
 }
 \arguments{
   \item{x}{
-    The matrix or three-column \code{data.frame} to convert into a FEEM object.
+    The source of the information to create a FEEM object from: a matrix,
+    a three-column \code{data.frame}, a file path as a single string,
+    or a \link{connection}.
 
     If converting a matrix, its rows should correspond to different
-    fluorescence emission wavelengths specified in \code{emission} argument;
-    conversely, its columns should correspond to excitation wavelengths
-    specified in \code{excitation} argument.
+    fluorescence emission wavelengths specified in the \code{emission}
+    argument; conversely, its columns should correspond to excitation
+    wavelengths specified in the \code{excitation} argument.
 
-    If converting a \code{data.frame}, it should have exactly three columns,
-    one for emission wavelengths, excitation wavelength, and intensity. The
-    names of the columns are expected to be \code{'emission'},
-    \code{'excitation'}, and \code{'intensity'}, respectively, but can be
-    overridden using namesake arguments.
+    If converting a \code{data.frame}, it should have exactly three
+    columns containing emission wavelengths, excitation wavelength,
+    and intensity values. The names of the columns are expected to be
+    \dQuote{emission}, \dQuote{excitation}, and \dQuote{intensity},
+    respectively, but can be overridden using namesake arguments.
+
+    If reading a single file by file path or connection, the \code{format}
+    argument must specify the kind of file to parse, see below.
   }
   \item{emission}{
     If conversing a matrix, this should be a vector of emission wavelengths,
@@ -54,13 +67,74 @@
     name of the column containing the fluorescence intensities.
   }
   \item{scale}{
-    The scale value of a EEM is preserved through the analysis procedure to
-    make it easy to undo the scaling after runnining PARAFAC. If the EEM
-    has been pre-multiplied prior to creating the FEEM object, you can set
-    the multiplier here.
+    The scale value of a EEM is preserved through the analysis procedure
+    to divide the resulting score values after running PARAFAC. If
+    the EEM has been pre-multiplied prior to creating the FEEM object,
+    you can set the multiplier here.
   }
+  \item{format}{\describe{
+    \item{table}{
+      The FEEM is assumed to be stored as a plain text matrix, readable
+      using \code{\link{read.table}}, with the first column and the
+      first row containing wavelengths. For example, it is possible to
+      import CSV files obtained from a HORIBA Aqualog\regsp fluorometer
+      by using \code{feem(\var{file}, 'table', sep = ',')}.
+
+      Rows are assumed to correspond to emission wavelengths, columns
+      are assumed to correspond to excitation wavelengths; if that's
+      not the case, set the \code{transpose} argument to \code{TRUE}.
+
+      If there are unmeasured points in the spectrum (e.g. the anti-Stokes
+      area) but they are hard to distinguish from measured values
+      (e.g. stored as zeroes instead of \code{NA}), specify their
+      values as the \code{na} argument (numeric vector). The function
+      will check for triangles filled with these values (such that a
+      threshold \eqn3{\Delta}{Delta}{&#x2206;} exists where for all \eqn3{
+        \lambda_\mathrm{em} - \lambda_\mathrm{ex} > \Delta
+      }{lambda.em - lambda.ex > Delta}{
+        &lambda;<sub>em</sub> - &lambda;<sub>ex</sub> &gt; &#x2206;
+      } or \eqn3{
+        \lambda_\mathrm{em} - \lambda_\mathrm{ex} < \Delta
+      }{lambda.em - lambda.ex < Delta}{
+        &lambda;<sub>em</sub> - &lambda;<sub>ex</sub> &lt; &#x2206;},
+      \eqn3{
+        X(\lambda_\mathrm{em}, \lambda_\mathrm{ex}) \in \mathtt{na}
+      }{X(lambda.em, lambda.ex) \\\%in\\\% na}{
+        X(&lambda;<sub>em</sub>, &lambda;<sub>ex</sub>) &isin; <code>na</code>})
+      and replace them with \code{NA}s. If the unmeasured values
+      are not stored as numbers, use the \code{na.strings} argument of
+      \code{\link{read.table}} to specify them.
+
+      The \code{fileEncoding} argument is treated specially (but
+      preserving the \code{\link{read.table}} semantics). Since trying to
+      re-encode the file contents into the encoding of the current locale
+      (which may be unable to represent them) may fail, the file is passed
+      via \code{\link{readLines}} and \code{\link{textConnection}}
+      instead to obtain UTF-8-encoded text unconditionally before
+      passing it further to \code{\link{read.table}}. This only works
+      when \code{file} is a file path, not a connection.
+
+      All other arguments are passed to \code{\link{read.table}}, with
+      \code{fill} defaulting to \code{TRUE} instead of \code{FALSE}.
+    }
+    \item{panorama}{
+      Read a \file{.dat} file as created by \dQuote{Panorama} software
+      that comes with FLUORAT\reg-02-PANORAMA fluorometer.
+      Such files contain a header describing the wavelength range, e.g.:
+      \preformatted{   240.0   650.0     1.0	; Emission(columns)
+   230.0   320.0     5.0	; Excitation(rows)}
+      The header is followed by the intensity data as matrix,
+      whitespace-separated. Missing points (anti-Stokes area) stored as
+      \eqn{0} or \eqn{100} and are automatically filtered out on import.
+      No additional parameters are accepted.
+    }
+  }}
   \item{\dots}{
-    Extra arguments besides those specified above are not allowed.
+    When converting matrices and \code{\link{data.frame}}s, extra
+    arguments besides those specified above are not allowed.
+
+    When reading the FEEM from a file, additional arguments may be passed
+    to \code{format}-specific reading functions, see above.
   }
 }
 \value{
@@ -85,14 +159,18 @@
 
 \seealso{
   FEEM methods: \code{\link{plot.feem}}, \code{\link{as.data.frame.feem}},
-  \code{\link{[.feem}}, \code{\link{feemife}}, \code{\link{feemscale}},
-  \code{\link{feemscatter}}.
+  \code{\link{[.feem}}, \code{\link{feemgrid}}, \code{\link{feemife}},
+  \code{\link{feemscale}}, \code{\link{feemscatter}}.
 }
 \examples{
   feem(matrix(1:40, ncol = 8), 1:5, 1:8)
   feem(
     data.frame(x = 1:10, y = 21:30, z = 31:40),
     emission = 'x', excitation = 'y', intensity = 'z'
+  )
+  feem(
+    system.file('extdata/ho_aq.csv', package = 'albatross'),
+    'table', sep = ','
   )
 }
 \keyword{methods}

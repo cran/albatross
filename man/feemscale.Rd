@@ -29,10 +29,9 @@
     factor in the returned object is unchanged.
   }
   \item{\dots}{
-    Passed as-is to \code{feemscale} and, eventually, to
-    \code{feemscale.feem}. Also passed as-is to the norm function,
-    which is useful for passing \code{na.rm = TRUE} to functions like
-    \code{\link{sd}} or \code{\link{sumsq}}.
+    Passed as-is to \code{feemscale}, to \code{feemscale.feem}, then
+    to the \code{norm} function. Use this to set \code{na.rm = TRUE}
+    for functions like \code{\link{sd}} or \code{\link{sumsq}}.
   }
   \item{progress}{
     Set to \code{TRUE} to enable a progress bar (implemented via

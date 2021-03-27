@@ -50,7 +50,11 @@
 \details{
   \code{feemcube.list} can be used to build FEEM data cubes from lists
   of FEEM objects even if their wavelength grids do not exactly match.
-  The missing wavelengths are set to \code{NA}.
+  The missing wavelengths may be set to \code{NA}
+  (\code{all.wavelengths = TRUE}) or omitted from the cube
+  (\code{all.wavelengths = FALSE}). See \code{\link{feemgrid}} if you
+  need to adjust the wavelength grid of a list of EEMs before making it
+  into a FEEM cube.
 }
 \value{
   A FEEM data cube is a numeric three-dimensional array with the
@@ -79,7 +83,9 @@
   \code{\link{feemife}}, \code{\link{feemscale}}, \code{\link{feemscatter}}.
 }
 \examples{
-  feemcube(array(1:24, 4:2), 1:4, 1:3) # array form
-  feemcube(replicate(2, feem(matrix(1:6, 2), 1:2, 1:3), FALSE), TRUE) # list form
+  # array form
+  feemcube(array(1:24, 4:2), 1:4, 1:3)
+  # list form
+  feemcube(replicate(2, feem(matrix(1:6, 2), 1:2, 1:3), FALSE), TRUE)
 }
 \keyword{method}

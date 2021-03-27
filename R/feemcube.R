@@ -4,9 +4,9 @@ feemcube.list <- function(x, all.wavelengths, ...) {
 	# must be a list of feem objects
 	stopifnot(
 		length(list(...)) == 0,
-		sapply(x, inherits, 'feem')
+		vapply(x, inherits, logical(1), 'feem')
 	)
-	scales <- sapply(x, attr, 'scale')
+	scales <- vapply(x, attr, numeric(1), 'scale')
 	# sort because order of union(...) or intersect(...) is not guaranteed
 	dimensions <- Map(sort, Reduce(
 		# This works because Map(f(a,b), A, B) returns
@@ -21,10 +21,17 @@ feemcube.list <- function(x, all.wavelengths, ...) {
 		)
 	))
 	feemcube(
-		sapply(x, function(eem) eem[ # extract matching wavelengths or NAs
-			match(dimensions$emission, attr(eem, 'emission')),
-			match(dimensions$excitation, attr(eem, 'excitation'))
-		], simplify = 'array'), # discards feem classes; doesn't matter
+		vapply(
+			x, function(eem) eem[ # extract matching wavelengths or NAs
+				match(dimensions$emission, attr(eem, 'emission')),
+				match(dimensions$excitation, attr(eem, 'excitation'))
+			],
+			matrix(
+				numeric(),
+				length(dimensions$emission),
+				length(dimensions$excitation)
+			)
+		), # discards feem classes; doesn't matter
 		dimensions$emission, dimensions$excitation,
 		scales, names(x)
 	)
@@ -55,9 +62,6 @@ feemcube.array <- function(x, emission, excitation, scales, names = NULL, ...) {
 
 `[.feemcube` <- function(x, i, j, k, drop = TRUE) {
 	ret <- NextMethod()
-	if (missing(i)) i <- TRUE
-	if (missing(j)) j <- TRUE
-	if (missing(k)) k <- TRUE
 	# special case: returning a cube
 	if (length(dim(ret)) == 3) return(feemcube(
 		ret,
@@ -119,14 +123,13 @@ as.list.feemcube <- function(x, ...) {
 }
 
 as.data.frame.feemcube <- function(x, ...) {
-	samples <- dimnames(x)[[3]]
-	if (is.null(samples)) samples <- as.character(1:dim(x)[3])
-	if (anyDuplicated(samples)) samples <- make.unique(samples)
+	mask <- !is.na(x)
 	data.frame(
-		emission = attr(x, 'emission')[slice.index(x, 1)][!is.na(x)],
-		excitation = attr(x, 'excitation')[slice.index(x, 2)][!is.na(x)],
-		intensity = x[!is.na(x)],
-		sample = samples[slice.index(x, 3)][!is.na(x)]
+		emission = attr(x, 'emission')[slice.index(x, 1)][mask],
+		excitation = attr(x, 'excitation')[slice.index(x, 2)][mask],
+		intensity = x[mask],
+		sample = .feemcsamples(x)[slice.index(x, 3)][mask],
+		...
 	)
 }
 
@@ -139,3 +142,9 @@ plot.feemcube <- function(
 		data = as.data.frame(x), xlab = xlab, ylab = ylab, cuts = cuts,
 		col.regions = col.regions, as.table = as.table, ...
 	)
+
+.feemcsamples <- function(cube) if (is.null(dimnames(cube)[[3]])) {
+	as.factor(seq_len(dim(cube)[3]))
+} else {
+	make.unique(dimnames(cube)[[3]])
+}

@@ -4,9 +4,11 @@
 \title{Transform a FEEM object into a data.frame}
 \description{
   Transform a FEEM object from its matrix form accompanied by vectors of
-  wavelengths into a three-column form consisting of \eqn{
-  (\lambda_\mathrm{em}, \lambda_\mathrm{ex}, I)}{%
-  (\lambda.em, \lambda.ex, intensity)} tuples, which could be useful for
+  wavelengths into a three-column form consisting of \eqn3{
+    (\lambda_\mathrm{em}, \lambda_\mathrm{ex}, I)
+  }{(\lambda.em, \lambda.ex, intensity)}{
+    (&lambda;<sub>em</sub>, &lambda;<sub>ex</sub>, I)
+  } tuples, which could be useful for
   export or plotting with \pkg{lattice} or \pkg{ggplot2}.
 }
 \usage{
@@ -37,12 +39,15 @@
 }
 \value{
   A \code{\link{data.frame}} containing three numeric columns:
-  \item{emission  }{Emission wavelength, nm}
-  \item{excitation}{Excitation wavelentgh, nm}
+  \item{emission  }{Emission wavelength, nm.}
+  \item{excitation}{Excitation wavelength, nm.}
   \item{intensity }{
     Fluorescence intensity at
-    \eqn{(\lambda_\mathrm{em}, \lambda_\mathrm{ex})}{%
-    (\lambda.em, \lambda.ex)}
+    \eqn3{
+      (\lambda_\mathrm{em}, \lambda_\mathrm{ex})
+    }{(\lambda.em, \lambda.ex)}{
+      (&lambda;<sub>em</sub>, &lambda;<sub>ex</sub>)
+    }
   }
   \item{sample}{
     For FEEM cube objects, the unique name of the sample possessing this

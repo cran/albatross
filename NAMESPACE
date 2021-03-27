@@ -11,6 +11,9 @@ importFrom(parallel, clusterEvalQ, clusterMap, parLapply)
 export(feem)
 S3method(feem, matrix)
 
+S3method(feem, character)
+S3method(feem, connection)
+
 importFrom(stats, reshape)
 S3method(feem, data.frame)
 
@@ -45,6 +48,12 @@ S3method(feemife, feemcube)
 S3method(feemife, feem)
 S3method(feemife, list)
 
+# feemlist.R
+export(feemlist)
+S3method(feemlist, character)
+S3method(feemlist, eemlist)
+S3method(feemlist, EEM)
+
 # feemscale.R
 export(feemscale)
 
@@ -57,12 +66,21 @@ S3method(feemscale, list)
 # feemscatter.R
 export(feemscatter)
 
-importFrom(pracma, pchip, kriging)
-importFrom(stats, predict, loess)
+importFrom(pracma, pchip, kriging, interp1)
+importFrom(stats, predict, loess, dnorm)
 S3method(feemscatter, feem)
 
 S3method(feemscatter, feemcube)
 S3method(feemscatter, list)
+
+# grid.R
+export(feemgrid)
+S3method(feemgrid, feem)
+S3method(feemgrid, feemcube)
+S3method(feemgrid, list)
+
+# import.R
+importFrom(utils, read.table)
 
 # jackknife.R
 importFrom(pracma, pinv)
@@ -72,6 +90,7 @@ export(feemjackknife)
 importFrom(lattice, ltext, panel.abline, panel.xyplot, xyplot)
 importFrom(stats, quantile, resid)
 S3method(plot, feemjackknife)
+S3method(coef, feemjackknife)
 
 # parafac.R
 importFrom(multiway, parafac)
@@ -82,6 +101,9 @@ S3method(fitted, feemparafac)
 
 importFrom(stats, residuals)
 S3method(residuals, feemparafac)
+
+importFrom(stats, coef)
+S3method(coef, feemparafac)
 
 importFrom(graphics, plot)
 importFrom(lattice, xyplot)
@@ -97,6 +119,15 @@ export(feemsplithalf)
 
 S3method(print, feemsplithalf)
 
+S3method(coef, feemsplithalf)
+
 importFrom(graphics, plot)
 importFrom(lattice, bwplot, trellis.par.get, xyplot)
 S3method(plot, feemsplithalf)
+
+# whittaker.R
+importFrom(Matrix, Diagonal, sparseMatrix, crossprod, solve)
+
+# openfluor.R
+importFrom(utils, packageVersion, write.table)
+export(write.openfluor)

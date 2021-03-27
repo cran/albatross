@@ -2,8 +2,8 @@
 \alias{marine.colours}
 \title{Marine colours}
 \description{
-  Create a perceptually contigous palette of R \code{"#RRGGBB"} colours,
-  using hues typically associated with natural waters.
+  Create a perceptually contiguous palette of R colours, using hues
+  typically associated with natural waters.
 }
 \usage{
 marine.colours(
@@ -36,12 +36,13 @@ marine.colours(
   \item{gamma}{
     Provides the power coefficient for the hue/chroma/luminance/alpha
     growth formulae. May be useful when it is needed to sacrifice the
-    perceptual linearity of the palette to provide more constrast for
+    perceptual linearity of the palette to provide more contrast for
     smaller or bigger values on the plot. The gamma-corrected values
-    are obtained by computing \eqn{x ^ \gamma},
-    \eqn{x \in [0;1]}{x in [0;1]}, then scaling the result linearly to
-    the required range. Typically, linear growth (\code{gamma = 1})
-    is preferred.
+    are obtained by computing
+    \eqn3{x ^ \gamma}{x ^ \gamma}{x<sup>&gamma;</sup>},
+    \eqn3{x \in [0;1]}{x in [0;1]}{x&nbsp;&isin;&nbsp;[0;1]}, then scaling
+    the result linearly to the required range. Typically, linear growth
+    (\code{gamma = 1}) is preferred.
   }
   \item{fixup}{
     Whether to correct the palette if the resulting colours happen to

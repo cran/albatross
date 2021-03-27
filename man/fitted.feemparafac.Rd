@@ -28,7 +28,11 @@
   from the original cube in order to be comparable with it.
 
   The output of \code{residuals} is
-  \eqn{\mathbf{X} - \hat{\mathbf{X}}}{X - fitted(X)}.
+  \eqn3{
+    \mathbf{X} - \hat{\mathbf{X}}
+  }{X - fitted(X)}{
+    <b>X</b> - <b>X&#x0302;</b>
+  }.
 }
 \value{
   A FEEM cube object.
