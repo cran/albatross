@@ -3,19 +3,11 @@ feemlist <- function(x, ...) UseMethod('feemlist')
 # split single path into a vector of components
 # cannot just use .Platform$path.sep because it's only a forward slash
 # on Windows, but paths can and do contain backslashes too
-.splitpath <- function(x) {
-	base <- basename(x)
-	# note that this changes x:\ to x:/, but x isn't supposed to be
-	# a file path anyway
-	rest <- dirname(x)
-	if (rest %in% c('.', x)) { # no path separators left or x:/
-		base # no dirname; get rid of the separator
-	} else if (rest == '/') { # single-component absolute path
-		x # must keep leading separator
-	} else {
-		c(.splitpath(rest), base) # continue splitting
-	}
-}
+.splitpath <- function(x) strsplit(
+	x,
+	if (.Platform$OS.type == 'windows') '/|\\\\' else .Platform$file.sep,
+	.Platform$OS.type != 'windows'
+)
 
 feemlist.character <- function(
 	x, format, pattern = NULL, recursive = TRUE,
@@ -44,7 +36,7 @@ feemlist.character <- function(
 	})))
 	if (simplify.names) {
 		# split names into path components
-		nc <- lapply(names(x), .splitpath)
+		nc <- .splitpath(names(x))
 		while (
 			# need at least one remaining component
 			all(lengths(nc) > 1) &&

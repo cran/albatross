@@ -3,7 +3,7 @@
 \alias{plot.feemcube}
 \title{Plot a FEEM object}
 \description{
-  Plot a 2D fluorescence intensity surface as a false-colour image.
+  Plot a 2D fluorescence intensity surface as a pseudo-colour image.
 }
 \usage{
 \method{plot}{feem}(

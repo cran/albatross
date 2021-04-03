@@ -73,8 +73,7 @@
   }
   \item{scales}{
     Scale factors of the samples, corresponding to the third dimension
-    of the array. Assumed to be \eqn{1} missing if not specified by the
-    user.
+    of the array. Assumed to be \eqn{1} if not specified by the user.
   }
 }
 \seealso{

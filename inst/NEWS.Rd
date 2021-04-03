@@ -1,5 +1,16 @@
 \name{NEWS}
 \title{News for package \pkg{albatross}}
+\section{Changes in version 0.3-1 (2021-03-29)}{\itemize{
+  \item Simplified the \code{feemlist(..., simplify.names = TRUE)} logic,
+  hopefully preventing the test failure on some macOS machines.
+
+  \item Made the \code{feem(..., 'table', fileEncoding = '...')} logic
+  more robust, especially on older versions of R where it could still
+  fail when \code{fileEncoding} differed from the locale encoding.
+
+  \item \code{example(write.openfluor)} no longer leaves files it creates
+  in the per-session temporary directory.
+}}
 \section{Changes in version 0.3-0 (2021-03-24)}{\itemize{
   \item Added a new \sQuote{whittaker} interpolation method for
   \code{feemscatter} and \code{feemgrid} based on Whittaker smoothing
@@ -14,7 +25,7 @@
   defined points, falling back to linear interpolation instead.
 
   \item Added \code{feem} methods for strings and connections, making
-  it possible to read EEMs from files in simple table format, including
+  it possible to read EEMs from files in simple table formats, including
   those produced by Horiba and Panorama software.
 
   \item Added the \code{feemlist} generic to construct lists of
@@ -36,13 +47,13 @@
   \item Added function \code{write.openfluor} to export a fitted
   \code{feemparafac} object for the OpenFluor service.
 
-  \item Equations in the HTML documents are now typeset using HTML
+  \item Equations in the HTML help pages are now typeset using HTML
   features instead of plain ASCII.
 
-  \item Dependency on \code{R >= 3.3} is now acknowledged. The package
-  doesn't actually pass \code{R CMD check} on \code{R < 3.3}. Patches
-  to lower the required version are welcome if they don't result in
-  extensive rewrites.
+  \item Dependency on \code{R >= 3.3} is now acknowledged. The
+  package doesn't actually pass \code{R CMD check} on prior versions
+  of \R. Patches to lower the required \R version are welcome if they
+  don't result in extensive rewrites.
 
   \item Other documentation improvements.
 }}

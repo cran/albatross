@@ -46,6 +46,7 @@
 	eem[wldiff %in% toremove] <- NA
 	eem
 }
+
 read.panorama <- function(filename) {
 	lines <- readLines(filename)
 
@@ -120,7 +121,11 @@ read.matrix <- function(
 	# this is only possible if we are the ones to open the connection
 	if (nzchar(fileEncoding)) {
 		stopifnot(is.character(file))
-		file <- textConnection(readLines(file(file, encoding = fileEncoding)))
+		decoded_content <- iconv(
+			readLines(file(file, encoding = fileEncoding)),
+			fileEncoding, 'ASCII', '_'
+		)
+		file <- textConnection(decoded_content)
 	}
 
 	# read the table itself

@@ -20,12 +20,16 @@ mktree <- function(root, tree) for (n in names(tree)) {
 	}
 }
 
-assertnames <- function(actual, desired.names)
-	stopifnot(setequal(
-		names(actual),
-		# to allow hardcoding desired.names with '/' in them
-		gsub('/', .Platform$file.sep, desired.names, fixed = TRUE)
-	))
+failures <- list()
+assertnames <- function(actual, desired.names) {
+	a <- names(actual)
+	# to allow hardcoding desired.names with '/' in them
+	b <- gsub('/', .Platform$file.sep, desired.names, fixed = TRUE)
+	if (!setequal(a, b)) {
+		warning(deparse(a), ' not equal to ', deparse(b))
+		failures <<- c(failures, list(sys.call()))
+	}
+}
 
 # format support already tested in import.R; the important part here is
 # filesystem walking
@@ -153,3 +157,8 @@ assertnames(
 )
 
 unlink(c(dir, dir2, dir3, dir4, dir5), recursive = TRUE)
+
+if (length(failures) > 0) {
+	for (f in failures) message('Failed test: ', deparse(f))
+	stop('Some tests failed', call. = FALSE)
+}

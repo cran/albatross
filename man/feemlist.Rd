@@ -59,8 +59,8 @@
   would be \file{foo/baz.txt}.
 
   When importing many files from the same directory, the
-  \code{simplify.names} option could is useful to avoid duplication in
-  resulting names. For example,
+  \code{simplify.names} option is useful to avoid duplication in resulting
+  names. For example,
   \code{feemlist('.', simplify.names = FALSE)} results in a list with
   all names starting with \code{./}, while
   \code{feemlist('foo/bar/baz', simplify.names = TRUE)} (default) would

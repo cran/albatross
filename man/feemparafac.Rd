@@ -71,13 +71,13 @@
     }
 
     With \eqn3{\mathbf{A}}{A}{<b>A</b>} corresponding to fluorescence
-    emission spectra, \eqn3{\mathbf{B}}{B}{<b>B</b>} corresponding to
-    fluorescence excitation spectra, and \eqn3{\mathbf{C}}{C}{<b>C</b>}
+    emission loadings, \eqn3{\mathbf{B}}{B}{<b>B</b>} corresponding to
+    fluorescence excitation loadings, and \eqn3{\mathbf{C}}{C}{<b>C</b>}
     corresponding to the scores of the components in different samples,
     the following plots can be produced:
     \describe{
       \item{image}{
-        Plot the factors (\dQuote{loadings}) as a series of false-colour
+        Plot the factors (\dQuote{loadings}) as a series of pseudo-colour
         images of outer products
         \eqn3{
           \mathbf{a}_r \times \mathbf{b}_r^\top

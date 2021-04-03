@@ -185,6 +185,7 @@ write.openfluor(
   # all defaults
   write.openfluor(factors, f1 <- tempfile(fileext = '.txt'))
   if (interactive()) file.show(f1)
+  unlink(f1)
   # all non-default arguments
   write.openfluor(
     factors, f2 <- tempfile(fileext = '.txt'), name = 'example',
@@ -198,8 +199,9 @@ write.openfluor(
     preprocess = 'Scatter region excised (replaced with NaNs)',
     sources = 'freshwater', ecozones = 'Balkash',
     description = 'not a real model', shift = FALSE, scale = TRUE
- )
- if (interactive()) file.show(f2)
+  )
+  if (interactive()) file.show(f2)
+  unlink(f2)
 }
 \keyword{IO}
 \keyword{file}
