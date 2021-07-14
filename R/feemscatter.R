@@ -75,16 +75,16 @@ interpolate.loess <- function(feem, mask, span = .05, ...) {
 
 	x0 <- l.em[row(feem)][mask]
 	y0 <- l.ex[col(feem)][mask]
-
-	feem[mask] <- predict(
+	z0.hat <- predict(
 		loess(
 			zz ~ xx + yy, data.frame(xx = xx, yy = yy, zz = zz),
 			span = span, ...
 		),
 		data.frame(xx = x0, yy = y0)
 	)
+	z0.hat[z0.hat < 0] <- 0 # LOESS does sometimes return negative values
 
-	feem[feem < 0] <- 0 # LOESS does sometimes return negative values
+	feem[mask] <- z0.hat
 
 	feem
 }
@@ -100,8 +100,10 @@ interpolate.kriging <- function(feem, mask, ...) {
 
 	x0 <- l.em[row(feem)][mask]
 	y0 <- l.ex[col(feem)][mask]
+	z0.hat <- kriging(cbind(xx, yy), zz, cbind(x0, y0), ...)
+	z0.hat[z0.hat < 0] <- 0 # last resort against negative values
 
-	feem[mask] <- kriging(cbind(xx, yy), zz, cbind(x0, y0), ...)
+	feem[mask] <- z0.hat
 
 	feem
 }

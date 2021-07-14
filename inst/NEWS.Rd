@@ -1,12 +1,27 @@
 \name{NEWS}
 \title{News for package \pkg{albatross}}
+\section{Changes in version 0.3-2 (2021-07-14)}{\itemize{
+  \item Fixed a bug in numerical differentiation code for
+  \code{feemscatter(method = 'whittaker')} that resulted in \eqn{d}-th
+  order derivatives being \eqn{2^d} times smaller than they should have
+  been. Existing optimal \code{lambda} values will have to be updated by
+  dividing them by \eqn{2^{2d}}{2^(2d)}.
+
+  \item When interpolating using \dQuote{loess} or \dQuote{kriging}
+  methods, predicted negative values are replaced with zeroes. Previously,
+  this happened for the whole FEEM, but only with \dQuote{loess}.
+
+  \item \code{feemcube} now can also extract the original cube from
+  \code{feemparafac} objects.
+}}
 \section{Changes in version 0.3-1 (2021-03-29)}{\itemize{
   \item Simplified the \code{feemlist(..., simplify.names = TRUE)} logic,
   hopefully preventing the test failure on some macOS machines.
 
   \item Made the \code{feem(..., 'table', fileEncoding = '...')} logic
-  more robust, especially on older versions of R where it could still
-  fail when \code{fileEncoding} differed from the locale encoding.
+  more robust, especially on older versions of \R where it could still
+  fail when \code{fileEncoding} could not be represented in the locale
+  encoding.
 
   \item \code{example(write.openfluor)} no longer leaves files it creates
   in the per-session temporary directory.

@@ -1,55 +1,69 @@
+# Return coefficients to mutiply f(x) by to estimate the
+# `length(x)-1`-th derivative. Estimate is calculated either at midpoint
+# or between the two middle points, depending on whether length(x) is
+# odd or even, respectively.
+vandermonde <- function(x0) {
+	x <- if (length(x0) %% 2 == 1) { # midpoint for odd-length vectors
+		x0[(length(x0) + 1) / 2]
+	} else mean(x0[length(x0)/2] + 0:1) # between midpoints otherwise
+	k <- seq_along(x0) - 1 # derivative orders
+	# build the Vandermonde matrix
+	V <- outer(k, x0, function(k, x0) (x0 - x)^k / factorial(k))
+	# find the coefficients for n-1-th derivative estimate
+	solve(V, 1 * (k == length(x0) - 1))
+}
+
 # x - rows of the grid, y - columns of the grid, d - integer scalar >= 1.
 # returns the matrix that, when multiplied with as.vector(z), gives
 # a vector of d-th order derivatives of z by x followed by a vector
 # of d-th order derivatives of z by y.
 diffmat <- function(x, y, d) {
 	# obtain a mapping from [i,j] to index in as.vector(z)
-	idx.x <- idx.y <- matrix(seq_len(length(x) * length(y)), nrow = length(x))
-	# establish the invariant that Dx, Dy are matrices, build them iteratively
-	Dx <- Dy <- Diagonal(length(x) * length(y))
-	for (i in seq_len(d)) {
-		r.dx <- .5 / diff(x)
-		r.dy <- .5 / diff(y)
-		# using the matrix of indices, build a single-order difference
-		# matrix calculating dz/dx
-		Dx <- sparseMatrix(
-			# rows of Dx: enough for z minus one row
-			i = rep(seq_len(length(r.dx) * ncol(idx.x)), times = 2),
-			# columns of D: choose by index from as.vector(z)
-			j = c(idx.x[-1,], idx.x[-nrow(idx.x),]),
-			# values of Dx: +/- 1 / dx
-			# NB: row numbers change the fastest, so we go over dx
-			# as element numbers increase
-			x = c(
-				rep(+r.dx, times = ncol(idx.x)),
-				rep(-r.dx, times = ncol(idx.x))
-			)
-		) %*% Dx # multiply it by D to make it higher order
-
-		# build a matrix calculating dz/dy
-		Dy <- sparseMatrix(
-			# rows of Dy: enough for z minus one column
-			i = rep(seq_len(length(r.dy) * nrow(idx.y)), times = 2),
-			# columns of Dy: choose by index from as.vector(z)
-			j = c(idx.y[,-1], idx.y[,-ncol(idx.y)]),
-			# values of Dy: +/- 1 / dy
-			# NB: column number changes the slowest, so we go over same dy
-			# multiple times as element numbers increase
-			x = c(
-				rep(+r.dy, each = nrow(idx.y)),
-				rep(-r.dy, each = nrow(idx.y))
-			)
-		) %*% Dy # increases the order of Dy
-		# we use the central difference formula, so the resulting
-		# derivative values lie in the middle between each pair
-		# of points, losing a row and a column each time
-		idx.x <- matrix(seq_along(idx.x[-1,]), nrow = length(x) - 1)
-		idx.y <- matrix(seq_along(idx.y[,-1]), ncol = length(y) - 1)
-		x <- (x[-1] + x[-length(x)]) / 2
-		y <- (y[-1] + y[-length(y)]) / 2
-	}
-	# eventually we have (D %*% D %*% ...)
-	# ready to be multiplied by as.vector(z)
+	idx <- matrix(seq_len(length(x) * length(y)), nrow = length(x))
+	Dx <- sparseMatrix(
+		# Differentiating each column gives us less points than its
+		# length. The difference is exactly d.
+		i = rep(seq_len((length(x) - d) * length(y)), each = d + 1),
+		j = as.vector(vapply(
+			1:length(y), # for every column...
+			function(j) as.vector(vapply(
+				1:(length(x) - d), # ...move a window of d over it
+				function(i) idx[i + 0:d, j],
+				integer(d+1)
+			)),
+			integer((d+1) * (length(x) - d))
+		)),
+		x = rep( # for every column...
+			as.vector(vapply(
+				1:(length(x) - d), # ...move a window of d over it
+				function(i) vandermonde(x[i + 0:d]),
+				numeric(d+1)
+			)),
+			times = length(y)
+		)
+	)
+	Dy <- sparseMatrix(
+		# Similarly, we differentiate each row, taking d points off each
+		i = rep(seq_len((length(y) - d) * length(x)), each = d + 1),
+		j = as.vector(vapply(
+			1:length(x), # for every row...
+			function(i) as.vector(vapply(
+				1:(length(y) - d), # ...move a window of d over it
+				function(j) idx[i, j + 0:d],
+				integer(d+1)
+			)),
+			integer((d+1) * (length(y) - d))
+		)),
+		x = rep( # for every row...
+			as.vector(vapply(
+				1:(length(y) - d), # ...move a window of d over it
+				function(j) vandermonde(y[j + 0:d]),
+				numeric(d+1)
+			)),
+			times = length(x)
+		)
+	)
+	# D must be ready to be multiplied by as.vector(z)
 	rbind(Dx, Dy)
 }
 

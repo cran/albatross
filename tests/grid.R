@@ -13,3 +13,16 @@ feemgrid(
 	feemscatter(feemcube(feems, TRUE), rep(0, 4), progress = FALSE),
 	method = 'pchip'
 )
+
+# when requested only one wavelength along either axis, should return
+# a FEEM, not a named vector
+# a.k.a. yet another drop = FALSE bug
+x <- feems$a
+stopifnot(inherits(
+	feemgrid(x, emission = attr(x, 'emission'), excitation = 254),
+	'feem'
+))
+stopifnot(inherits(
+	feemgrid(x, emission = 300.5, excitation = attr(x, 'excitation')),
+	'feem'
+))

@@ -51,7 +51,7 @@ plot.feemjackknife <- function(x, kind = c('estimations', 'RIP', 'IMP'), ...)
 	)
 
 jksumm <- function(jk) {
-	ovcube <- .pfcube(jk$overall)
+	ovcube <- feemcube(jk$overall)
 	samples <- .feemcsamples(ovcube)
 	do.call(rbind, lapply(seq_along(jk$leaveone), function(i) rbind(
 		data.frame(
@@ -90,7 +90,7 @@ jksummrip <- function(jk) {
 		Emission = mean((fac$A - jk$overall$A)^2),
 		Excitation = mean((fac$B - jk$overall$B)^2)
 	)))
-	RIP$omitted <- .feemcsamples(.pfcube(jk$overall))
+	RIP$omitted <- .feemcsamples(feemcube(jk$overall))
 	RIP
 }
 
@@ -119,7 +119,7 @@ jksummimp <- function(jk) {
 		score.overall = as.vector(jk$overall$C),
 		score.predicted = as.vector(Chat),
 		factor = as.factor(col(Chat)),
-		omitted = .feemcsamples(.pfcube(jk$overall))
+		omitted = .feemcsamples(feemcube(jk$overall))
 	)
 }
 

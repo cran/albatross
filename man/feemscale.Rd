@@ -49,6 +49,20 @@
   \code{feemscale.list}: a list consisting of results of
   \code{feemscale} generic applied to its elements.
 }
+\references{
+  \bibentry{'Article',
+    author = c(
+      person('Rasmus', 'Bro'), person(c('Age', 'K.'), 'Smilde')
+    ),
+    title = 'Centering and scaling in component analysis',
+    journal = 'Journal of Chemometrics',
+    volume = 17,
+    number = 1,
+    pages = '16-33',
+    doi = '10.1002/cem.773',
+    year = 2003
+  }
+}
 
 \seealso{
   \code{\link{feem}}

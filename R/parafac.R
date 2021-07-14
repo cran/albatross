@@ -31,20 +31,21 @@ feemparafac <- function(
 }
 
 # extract the cube from a feemcube object, directly or by reference
-.pfcube <- function(X) {
+feemcube.feemparafac <- function(x, ...) {
+	stopifnot(length(list(...)) == 0)
 	# the cube could have been stored directly or in an environment
-	cube <- attr(X, 'cube')
-	if (!is.null(envir <- attr(X, 'envir')))
+	cube <- attr(x, 'cube')
+	if (!is.null(envir <- attr(x, 'envir')))
 		cube <- get(cube, envir = envir)
 	# we may have been asked to process a subset of the samples
-	if (is.null(subs <- attr(X, 'subset'))) subs <- TRUE
+	if (is.null(subs <- attr(x, 'subset'))) subs <- TRUE
 	cube[,,subs]
 }
 
 fitted.feemparafac <- function(object, ...) {
 	stopifnot(length(list(...)) == 0)
 	# access and subset the cube
-	cube <- .pfcube(object)
+	cube <- feemcube(object)
 	# since scaling originally present in the cube is undone for object$C,
 	# the fitted cube has to undergo an opposite transformation to match
 	feemcube(
@@ -58,7 +59,7 @@ fitted.feemparafac <- function(object, ...) {
 
 residuals.feemparafac <- function(object, ...) {
 	stopifnot(length(list(...)) == 0)
-	.pfcube(object) - fitted(object)
+	feemcube(object) - fitted(object)
 }
 
 coef.feemparafac <- function(
@@ -67,7 +68,7 @@ coef.feemparafac <- function(
 	), ...
 ) {
 	stopifnot(length(list(...)) == 0)
-	cube <- .pfcube(object)
+	cube <- feemcube(object)
 	comps <- list(
 		emission = list(comp = 'A', name = 'wavelength', val = attr(cube, 'emission')),
 		excitation = list(comp = 'B', name = 'wavelength', val = attr(cube, 'excitation')),
@@ -102,7 +103,7 @@ coef.feemparafac <- function(
 }
 
 compplot.surf <- function(X, ...) {
-	cube <- .pfcube(X)
+	cube <- feemcube(X)
 	plot(feemcube(with(X,
 		lapply(setNames(nm = 1:ncol(A)), function (i)
 			feem(

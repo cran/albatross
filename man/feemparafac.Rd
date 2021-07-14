@@ -163,12 +163,8 @@
     the \code{A}, \code{B}, \code{C} components of the list returned
     by \code{\link{parafac}}.
 
-    If \code{envir} attribute is not \code{NULL}, use \code{\link{get}}
-    together with the \code{cube} attribute to access the FEEM cube.
-    Remember to use the \code{subset} attribute to access the samples that
-    took part in the decomposition. Normally, this is only used to save
-    memory when performing cross-validation; otherwise,
-    \code{attr(pf, 'cube')} is enough.
+    Use \code{\link{feemcube}} on the return value to access the original
+    data cube.
   }
   \item{plot.feemparafac}{
     A \pkg{lattice} plot object. Its \code{print} or \code{plot} method
@@ -196,8 +192,8 @@
 \seealso{
   \code{\link{parafac}} for the \code{parafac} class structure;
   \code{\link{fitted.feemparafac}}, \code{\link{residuals.feemparafac}},
-  \code{\link{write.openfluor}} for methods specific to values returned
-  from this function.
+  \code{\link{write.openfluor}}, \code{\link{feemcube.feemparafac}} for
+  methods specific to values returned from this function.
 }
 \examples{
   data(feems)
@@ -211,6 +207,7 @@
   plot(factors, 'line')
   head(coef(factors, 'loadings'))
   str(coef(factors, 'all'))
+  str(feemcube(factors)) # original cube is retained
 }
 \keyword{hplot}
 \keyword{method}

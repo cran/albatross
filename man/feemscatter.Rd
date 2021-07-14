@@ -128,15 +128,17 @@
   results to make the resulting artefacts less severe [2, see the
   \pkg{staRdom} package itself].
 
-  The \dQuote{loess} method feeds the whole FEEM except the area to be
-  interpolated to \code{\link{loess}}, then asks it to predict the
-  remaining part of the spectrum.
+  The \dQuote{loess} method feeds the whole FEEM except the area to
+  be interpolated to \code{\link{loess}}, then asks it to predict the
+  remaining part of the spectrum. Any negative values predicted by
+  \code{\link{loess}} are replaced by \eqn{0}.
 
   The \dQuote{kriging} method [3] is much more computationally expensive
   than the previous two, but, on some spectra, provides best results,
   not affected by artefacts resulting from line-by-line one-dimensional
   interpolation (\code{pchip}) or varying degrees of smoothness in
-  different areas of the spectrum (\code{loess}).
+  different areas of the spectrum (\code{loess}). Any negative values
+  returned by \code{\link{kriging}} are replaced by \eqn{0}.
 
   The \dQuote{whittaker} method [4] works by unfolding \code{x}
   into a vector \eqn3{\mathbf z}{z}{<b>z</b>} and looking for a vector
@@ -165,16 +167,11 @@
   \eqn3{\mathbf D_n}{D(n)}{<b>D</b><sub>n</sub>} is constructed in
   such a way that multiplying it by
   \eqn3{\hat{\mathbf z}}{z.hat}{<b>z&#x0302;</b>}
-  results in a vector of \eqn{n}-th order differences between rows
-  of \eqn3{\hat{\mathbf z}}{z.hat}{<b>z&#x0302;</b>} as a matrix
-  followed by \eqn{n}-th order differences between columns of the
-  same. The wavelength grid is correctly taken into account by sorting
-  the points first, dividing the differences by
-  \eqn3{\Delta \lambda_\mathrm{em}}{diff(\lambda.em)}{&#x2206;&lambda;<sub>em<sub>}
-  and
-  \eqn3{\Delta \lambda_\mathrm{ex}}{diff(\lambda.ex)}{&#x2206;&lambda;<sub>ex<sub>}
-  where applicable and iteratively averaging the adjacent coordinate
-  values for higher orders, following the central difference formula.
+  results in a vector of \eqn{n}-th order derivative estimates in both
+  directions and in all applicable points of
+  \eqn3{\hat{\mathbf z}}{z.hat}{<b>z&#x0302;</b>} as a matrix. The
+  wavelength grid is correctly taken into account by solving a
+  Vandermonde system for every \eqn{n+1} consecutive points.
 
   The parameters \code{d} and \code{lambda} should be numeric vectors
   of the same length, choosing the difference orders

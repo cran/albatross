@@ -68,5 +68,5 @@ feemgrid.feem <- function(
 	# interpolate anything unknown
 	temp.x <- .feeminterpolate(temp.x, match.arg(method), is.na(temp.x), ...)
 	# only return the requested grid
-	temp.x[match(emission, temp.em), match(excitation, temp.ex)]
+	temp.x[match(emission, temp.em), match(excitation, temp.ex), drop = FALSE]
 }

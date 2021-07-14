@@ -2,6 +2,7 @@
 \alias{feemcube}
 \alias{feemcube.array}
 \alias{feemcube.list}
+\alias{feemcube.feemparafac}
 \title{Build a data cube of FEEMs}
 \description{
   This function builds tagged 3-dimensional arrays of fluorescence
@@ -14,12 +15,13 @@
   feemcube(x, \dots)
   \method{feemcube}{list}(x, all.wavelengths, \dots)
   \method{feemcube}{array}(x, emission, excitation, scales, names = NULL, \dots)
+  \method{feemcube}{feemparafac}(x, \dots)
 }
 \arguments{
   \item{x}{
-    A list of FEEM objects, possibly named.
+    A list of FEEM objects, possibly named, or a numeric array.
 
-    Alternatively, a numeric array.
+    Alternatively, a \code{\link{feemparafac}} object.
   }
   \item{all.wavelengths}{
     Logical, a flag specifying whether to include wavelengths not present
@@ -55,6 +57,9 @@
   (\code{all.wavelengths = FALSE}). See \code{\link{feemgrid}} if you
   need to adjust the wavelength grid of a list of EEMs before making it
   into a FEEM cube.
+
+  \code{feemcube.feemparafac} returns the original data analysed by
+  \code{\link{feemparafac}}.
 }
 \value{
   A FEEM data cube is a numeric three-dimensional array with the

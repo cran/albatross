@@ -109,6 +109,8 @@ importFrom(graphics, plot)
 importFrom(lattice, xyplot)
 S3method(plot, feemparafac)
 
+S3method(feemcube, feemparafac)
+
 # marine.R
 importFrom(grDevices, hcl)
 export(marine.colours)

@@ -106,13 +106,11 @@
       \code{\link{read.table}} to specify them.
 
       The \code{fileEncoding} argument is treated specially (but
-      preserving the \code{\link{read.table}} semantics). Since trying to
-      re-encode the file contents into the encoding of the current locale
-      (which may be unable to represent them) may fail, the file is passed
-      via \code{\link{readLines}} and \code{\link{textConnection}}
-      instead to obtain UTF-8-encoded text unconditionally before
-      passing it further to \code{\link{read.table}}. This only works
-      when \code{file} is a file path, not a connection.
+      preserving the \code{\link{read.table}} semantics regarding
+      numbers). The file contents are decoded into ASCII, dropping the
+      unrepresentable bytes (since we only care about numbers), before
+      being passed to \code{\link{read.table}}. This only works when
+      \code{file} is a file path, not a connection.
 
       All other arguments are passed to \code{\link{read.table}}, with
       \code{fill} defaulting to \code{TRUE} instead of \code{FALSE}.

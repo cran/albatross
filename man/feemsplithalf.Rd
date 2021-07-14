@@ -144,7 +144,7 @@
   To conserve memory, \code{feemsplithalf} puts the user-provided
   \code{cube} in an environment and passes it via \code{envir} and
   \code{subset} options of \code{\link{feemparafac}}. This means that,
-  unlike in \code{\link{feemparafac}}. the \code{cube} argument has
+  unlike in \code{\link{feemparafac}}, the \code{cube} argument has
   to be a \code{\link{feemcube}} object and passing \code{envir} and
   \code{subset} options to \code{feemsplithalf} is not supported.
 

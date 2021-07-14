@@ -12,13 +12,16 @@ cube <- feemscale(
 
 # check subsetting
 subs <- c(1, 2, 4, 8)
+pf <- feemparafac(cube, nfac = 3, subset = subs)
 # checking values of components would be hard,
 # so instead we check that dimnames are consistent
 stopifnot(all.equal(
 	dimnames(cube[,,subs]),
 	# resid() uses fitted(), both need to account for subset
-	dimnames(resid(feemparafac(cube, nfac = 3, subset = subs)))
+	dimnames(resid(pf))
 ))
+# also check the equivalence of the cube
+stopifnot(all.equal(cube[,,subs], feemcube(pf)))
 
 factors <- feemparafac(cube, nfac = 3, const = rep('nonneg', 3))
 
@@ -40,10 +43,12 @@ stopifnot(is.null(attr.all.equal(cube, residuals(factors))))
 env <- new.env(parent = emptyenv())
 env$blablabla <- cube
 factors <- feemparafac(
-	'blablabla', nfac = 3, const = rep('nonneg', 3), envir = env
+	'blablabla', nfac = 3, const = rep('nonneg', 3),
+	envir = env
 )
 fitted(factors)
 resid(factors)
+stopifnot(all.equal(cube, feemcube(factors)))
 
 # dimnames should be assigned
 stopifnot(

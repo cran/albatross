@@ -24,7 +24,7 @@ write.openfluor <- function(
 	if (missing(date)) date <- format(Sys.Date(), '%Y-%m-%d')
 	if (missing(constraints)) constraints <- model$const
 	stopifnot(nchar(description) <= 256)
-	cube <- .pfcube(model)
+	cube <- feemcube(model)
 
 	fh <- file(filename, 'wt')
 	on.exit(close(fh))
