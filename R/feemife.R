@@ -7,37 +7,58 @@ abs2list.matrix <- abs2list.data.frame <- function(x) lapply(
 abs2list.list <- identity
 
 # arrange: return x[n] if names match
-# or just x if x is not named but the lengths match
-arrange <- function(x, n, m) if (
+# or just x if either is not named but the lengths match
+arrange <- function(x, n, m, kind) if (
 	!is.null(names(x)) && !is.null(n) &&
 	!anyDuplicated(n) && all(n %in% names(x))
 ) {
 	x[n]
 } else if (length(x) == m && (is.null(names(x)) || is.null(n))) {
 	x
-} else {
-	stop(
-		'Names of ', deparse(substitute(x)), ' must exactly match ',
-		'(unique) names of samples. Otherwise, length must match the ',
-		'number of samples while some of the names are missing.'
-	)
-}
+} else stop(
+	'Failed to look up ', kind, ' corresponding to the ',
+	'fluorescence spectra:\n',
+	if (is.null(names(x)) || is.null(n)) c(
+		if (is.null(names(x))) ' * No names for ', kind, '\n',
+		if (is.null(n)) ' * No names for fluorescence spectra\n',
+		if (length(x) != m) paste(
+			' * Have', m, 'fluorescence spectra but', length(x),
+			kind, '\n'
+		)
+	) else c(
+		if (anyDuplicated(n)) paste(
+			' * The following fluorescence spectra have duplicated names:',
+			paste(dQuote(unique(n[duplicated(n)])), collapse = ', '), '\n'
+		),
+		if (any(!n %in% names(x))) paste0(
+			' * The following fluorescence spectra don\'t have ',
+			'corresponding ', kind, ': ',
+			paste(dQuote(setdiff(n, names(x))), collapse = ', '), '\n'
+		),
+		if (length(x) == m) paste(
+			' * Since both fluorescence spectra and', kind,
+			'are named, refusing to match them despite having', m,
+			'spectra in both datasets\n'
+		)
+	),
+	call. = FALSE
+)
 
 feemife <- function(x, ...) UseMethod('feemife')
 
 feemife.list <- function(x, absorbance, abs.path, ..., progress = FALSE) {
 	if (missing(abs.path)) abs.path <- rep(1, length(x))
-	stopifnot(
-		length(list(...)) == 0,
-		length(abs.path) == length(x)
-	)
+	stopifnot(length(list(...)) == 0)
 	cubeapply(
-		x, feemife, arrange(abs2list(absorbance), names(x), length(x)),
-		arrange(abs.path, names(x), length(x)),
+		x, feemife,
+		arrange(abs2list(absorbance), names(x), length(x), 'absorbance spectra'),
+		arrange(abs.path, names(x), length(x), 'cell lengths'),
 		progress = progress, .recycle = TRUE
 	)
 }
 
+# NB: this works because cubeapply.feemcube(x, f) immediately calls
+# f(as.list(x)), landing us in feemife.list above
 feemife.feemcube <- function(x, absorbance, abs.path, ..., progress = FALSE)
 	cubeapply(x, feemife, absorbance, abs.path, ..., progress = progress)
 

@@ -11,7 +11,7 @@
 }
 \usage{
   feemsplithalf(
-    cube, nfac, splits, random, groups, \dots, progress = TRUE
+    cube, nfac, splits, random, groups, fixed, \dots, progress = TRUE
   )
   \method{plot}{feemsplithalf}(x, kind = c('tcc', 'factors'), \dots)
   \method{print}{feemsplithalf}(x, \dots)
@@ -25,16 +25,27 @@
     An integer vector of numbers of factors to check.
   }
   \item{splits}{
-    Number of parts to split the data cube into. Must be even. After
-    splitting, all ways to recombine the parts into non-intersecting
-    halves are enumerated [2], the halves are subjected to PARAFAC
+    A scalar or a two-element vector consisting of whole numbers.
+
+    The first element is the number of parts to split the data cube
+    into, which must be even. After splitting, the parts are recombined
+    into non-intersecting halves [2], which are subjected to PARAFAC
     decomposition and compared against each other.
 
-    The number of PARAFAC models fitted is \eqn{
-      \mathtt{splits} \choose {\mathtt{splits}/2}
-    }{choose(splits, splits/2)}.
+    The second element, if specified, limits the total number of
+    comparisons between the pairs, since the number of potential ways to
+    recombine the parts of the data cube into halves grows very quickly.
 
-    Mutually incompatible with the \code{random} parameter.
+    The number of PARAFAC models fitted is
+    \eqn3{
+      2 \cdot \mathtt{splits[2]}
+    }{2 * splits[2]}{
+      2 &middot; <code>splits[2]</code>}. If only \code{splits[1]} is
+    specified, \code{splits[2]} defaults to \eqn{
+      \mathtt{splits[1]} \choose {\mathtt{splits[1]}/2}
+    }{choose(splits[1], splits[1]/2)}.
+
+    Mutually incompatible with the parameters \code{random}, \code{fixed}.
   }
   \item{random}{
     Number of times to shuffle the dataset, split into non-intersecting
@@ -45,7 +56,7 @@
     \eqn3{2 \cdot \mathtt{random}}{2 * random}{
       2 &middot; <code>random</code>}.
 
-    Mutually incompatible with the \code{splits} parameter.
+    Mutually incompatible with the parameters \code{splits}, \code{fixed}.
   }
   \item{groups}{
     Use this argument to preserve the ratios between the groups present
@@ -60,6 +71,20 @@
     should be close to a multiple of \code{splits}. For the randomised
     split-half method (\code{random}), each group should have at least
     \eqn{2} elements.
+
+    Mutually incompatible with the \code{fixed} parameter.
+  }
+  \item{fixed}{
+    Use this argument to manually specify the contents of the halves to
+    test. The argument must be a list containing two-element lists
+    specifying the halves to compare. Each half must be a vector
+    consisting of whole numbers specifying sample indices in the cube
+    (see the example).
+
+    It is considered an error to specify a sample in both halves.
+
+    Mutually incompatible with the parameters \code{splits}, \code{random},
+    \code{groups}.
   }
   \item{progress}{
     Set to FALSE to disable the progress bar.
@@ -150,7 +175,7 @@
 
   \code{plot.feemsplithalf} plots results of the split-half procedure
   (TCC or loading values depending on the \code{kind} argument)
-  using \pkg{lattice} graphics. Sane defaults are provided for
+  using \CRANpkg{lattice} graphics. Sane defaults are provided for
   \code{\link{xyplot}} parameters \code{xlab}, \code{ylab},
   \code{as.table}, but they can be overridden.
 
@@ -186,7 +211,7 @@
     }
   }
   \item{plot.feemsplithalf}{
-    A \pkg{lattice} plot object. Its \code{print} or \code{plot} method
+    A \CRANpkg{lattice} plot object. Its \code{print} or \code{plot} method
     will draw the plot on an appropriate plotting device.
   }
   \item{coef.feemsplithalf}{
@@ -306,16 +331,23 @@
 }
 \examples{\donttest{
   data(feems)
-  cube <- feemscale(
-    feemscatter(feemcube(feems, FALSE), rep(24, 4))[1:30*6, 1:9*6,],
-    na.rm = TRUE
-  )
-  (sh <- feemsplithalf( # takes a long time
-    cube, 2:4, splits = 4, # 4 splits => S4C6T3
-    # the rest is passed to multiway::parafac
-    const = rep('nonneg', 3) # setting ctol and maxit is recommended
+  cube <- feemscale(feemscatter(cube, rep(14, 4)), na.rm = TRUE)
+
+  (sh <- feemsplithalf(
+    cube, 1:4, splits = 4 # => S4C6T3
+    # splits = c(4, 2) would be S4C4T2, and so on
+    # the rest is passed to multiway::parafac;
+    # setting ctol and maxit is recommended
   ))
-  # feemparafac methods should be able to use the environment and subset
+
+  # specifying fixed halves to compare as list of 2-element lists
+  fixed <- list(
+    list(1:6, 7:12),
+    list(seq(1, 11, 2), seq(2, 12, 2))
+  )
+  sh.f <- feemsplithalf(cube, 2:3, fixed = fixed)
+
+  # can use feemparafac methods for individual models in $factors
   plot(sh$factors[[1]])
   plot(sh)
   plot(sh, 'factors')

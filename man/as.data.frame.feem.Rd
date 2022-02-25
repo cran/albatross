@@ -9,7 +9,7 @@
   }{(\lambda.em, \lambda.ex, intensity)}{
     (&lambda;<sub>em</sub>, &lambda;<sub>ex</sub>, I)
   } tuples, which could be useful for
-  export or plotting with \pkg{lattice} or \pkg{ggplot2}.
+  export or plotting with \CRANpkg{lattice} or \CRANpkg{ggplot2}.
 }
 \usage{
   \method{as.data.frame}{feem}(x, row.names = NULL, optional = FALSE, ...)

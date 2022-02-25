@@ -6,7 +6,7 @@
 \title{Create lists of FEEM objects}
 \description{
   Convert vectors of file names or objects from other packages (such as
-  \pkg{eemR} or \pkg{EEM}) into flat named lists of \code{\link{feem}}
+  \CRANpkg{eemR} or \CRANpkg{EEM}) into flat named lists of \code{\link{feem}}
   objects.
 }
 \usage{
@@ -23,12 +23,18 @@
     A character vector containing names of files and directories to
     import using \code{\link{feem}}.
 
-    Alternatively, an \code{eemlist} object from \pkg{eemR} package or
-    an \code{EEM} object from \pkg{EEM} package.
+    Alternatively, an \code{eemlist} object from \CRANpkg{eemR} package or
+    an \code{EEM} object from \CRANpkg{EEM} package.
   }
   \item{format}{
     Corresponds to the \code{format} argument of \code{\link{feem}}.
     Currently, one format is assumed for all files to be imported.
+
+    Alternatively, can be a function that takes a path to a file and
+    anything passed in \code{\dots} and returns a \code{\link{feem}}
+    object corresponding to the file. This is done to make it easier to
+    import groups of files in formats not yet supported by
+    \code{\link{feem}} itself.
   }
   \item{pattern, recursive, ignore.case}{
     These options are passed to \code{\link{list.files}} for directories
@@ -44,7 +50,8 @@
   }
   \item{\dots}{
     When importing files, remaining options are passed to
-    \code{\link{feem}}. Otherwise, no options are allowed.
+    \code{\link{feem}} or the import function passed in the
+    \code{format} argument. Otherwise, no options are allowed.
   }
 }
 \details{
@@ -53,10 +60,10 @@
   in partially-named \code{x}. Every directory in \code{x} is replaced
   with its contents (as returned by \code{\link{list.files}}), their
   names obtained by concatenating the name of the directory element with
-  their paths inside the directory (with \code{.Platform$file.sep} as a
-  separator). For example, when importing \code{x = c('foo' = 'bar')}
-  with directory \file{bar} containing \file{baz.txt}, resulting name
-  would be \file{foo/baz.txt}.
+  their paths inside the directory (with \code{\link{.Platform}$file.sep}
+  as a separator). For example, when importing
+  \code{x = c('foo' = 'bar')} with directory \file{bar} containing
+  \file{baz.txt}, resulting name would be \file{foo/baz.txt}.
 
   When importing many files from the same directory, the
   \code{simplify.names} option is useful to avoid duplication in resulting
@@ -69,14 +76,22 @@
   Mixing files and directories in \code{x} will most likely not preserve
   the order of the elements.
 
-  \emph{Note}: Please don't rely on this mechanism behaving exactly as
-  specified as it may be changed in the future versions.
+  \emph{Note}: Please don't rely on the name generation behaving exactly
+  as specified as it may be changed in the future versions.
+
+  When importing custom file formats, the \code{format} function should
+  typically take the following form: \preformatted{
+  function(filename, ...) {
+    # read data from filename
+    # take additional arguments passed from feemlist(...) if needed
+    return(feem(data))
+  }}
 }
 \value{
   A flat named list of \code{\link{feem}} objects.
 }
 \seealso{
-  \code{\link{feem}}; the packages \pkg{eemR} and \pkg{EEM}.
+  \code{\link{feem}}; the packages \CRANpkg{eemR} and \CRANpkg{EEM}.
 }
 \examples{
   feemlist(
@@ -90,6 +105,10 @@
   if (requireNamespace('EEM')) feemlist(EEM::readEEM(
     system.file('extdata/ho_aq.dat', package = 'albatross')
   ))
+  feemlist(
+    system.file('extdata/custom.rds', package = 'albatross'),
+    readRDS
+  )
 }
 \keyword{methods}
 \keyword{utilities}

@@ -1,0 +1,5 @@
+library(albatross)
+data(feems)
+f <- feemflame(feemscale(cube), ffac = 3, sfac = 1)
+stopifnot(inherits(fitted(f), 'feemcube'))
+stopifnot(inherits(resid(f), 'feemcube'))

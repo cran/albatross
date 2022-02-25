@@ -1,40 +1,42 @@
 \name{feems}
 \alias{feems}
 \alias{absorp}
+\alias{cube}
 \docType{data}
 \title{
-  Fluorescence excitation-emission matrices and absorbance spectra
+  Synthetic fluorescence excitation-emission matrices and absorbance spectra
 }
 \description{
-  This dataset contains: \itemize{
-    \item Twelve FEEMs with anti-Stokes zone missing and scattering
-    signal not handled, captured at different wavelength grids and with
-    some points missing.
-    \item Twelve absorbance spectra for purposes of IFE correction.
-  }
+  This dataset consists of twelve fluorescence and absorbance spectra
+  simulated from three trilinear components, with scattering signal
+  added and divided by a correction factor to simulate inner filter
+  effect.
 }
 \usage{data("feems")}
 \format{\describe{
   \item{feems}{
-    A named list of 12 \code{\link{feem}} objects containing fluorescence
-    data measured at different wavelength grids (excitation wavelengths
-    between \eqn{230} nm and \eqn{500} or \eqn{550} nm; emission
-    wavelengths between \eqn{240} nm and \eqn{600} or \eqn{650} nm).
-    Intensity at \eqn3{
-      \lambda_\mathrm{em} < \lambda_\mathrm{ex} + 10\;\mathrm{nm}
-    }{\lambda.em < \lambda.ex + 10 nm}{
-      &lambda;<sub>em</sub> &lt; &lambda;<sub>ex</sub> + 10
-      <span style="font-style: normal;">nm</span>
-    } is not measured.
+    A named list of 12 \code{\link{feem}} objects containing
+    fluorescence data measured with excitation wavelengths between
+    \eqn{230} nm and \eqn{350} nm (with a step of \eqn{2} nm) and
+    emission wavelengths between \eqn{240} nm and \eqn{435} (with a step
+    of \eqn{5} nm).
+  }
+  \item{cube}{
+    A 12-sample \code{\link{feemcube}} object consisting of of 32 by 10
+    FEEMs measured at the same wavelength range as above with inner
+    filter effect corrected.
   }
   \item{absorp}{
-    A named list of 12 2-column matrices containing absorbance spectra
-    measured between \eqn{230} and \eqn{650} nm in \eqn{1} cm cells.
+    A 12-element named list containing absorbance spectra measured between
+    \eqn{230} and \eqn{450} nm in \eqn{1} cm cells. Each element of the
+    list is a two-column matrix. The first column contains the
+    wavelengths and the second column contains the absorbance values.
   }
 }}
 \examples{
   data(feems)
+  plot(cube)
   plot(feems$a)
-  plot(absorp$a)
+  matplot(absorp[[1]][,1], sapply(absorp, `[`,, 2), type = 'l', lty = 1)
 }
 \keyword{datasets}

@@ -1,8 +1,22 @@
+# argmin over c[] ||A - diag(c) %*% B||^2
+.matscale <- function(A, B) {
+	stopifnot(ncol(A) == ncol(B))
+	vapply(
+	# for every column:
+	#  min over c[j] ||A[,j] - c[j] * B[,j]||
+	#  c[j] = B[,j]^T A[,j] / B[,j]^T B[,j]
+		1:ncol(A), function(j)
+			crossprod(B[,j,drop=FALSE], A[,j,drop=FALSE]) /
+				crossprod(B[,j,drop=FALSE]),
+		numeric(1)
+	)
+}
+
 match.factors <- function(target, current) {
 	nfac <- ncol(target$A)
 
 	# Tucker's congruence coefficient for emission & excitation components
-	tcc <- pmin(congru(target$A, current$A), congru(target$B, current$B))
+	tcc <- as.matrix(pmin(congru(target$A, current$A), congru(target$B, current$B)))
 
 	# 1. reorder maximally matching components together
 	perm <- integer(nfac)
@@ -16,30 +30,18 @@ match.factors <- function(target, current) {
 		tcc[next.match[1],] <- -Inf
 		tcc[,next.match[2]] <- -Inf
 	}
-	current <- reorder(current, perm)
+	# NB: multiway <= 1.0-6 doesn't reorder 1-component models correctly
+	if (nfac > 1) current <- reorder(current, perm)
 
 	# 2. rescale the matching components
 	# by minimizing L2 norm of reconstruction error per each mode
 	scaling <- cbind(
-		optim(
-			par = rep(1, nfac), fn = function(x)
-				sum((t(t(current[["A"]]) * x) - target[["A"]])^2),
-			gr = function(x)
-				colSums((t(t(current[["A"]]) * x) - target[["A"]]) * current$A),
-			method = 'BFGS'
-		)$par,
-		optim(
-			par = rep(1, nfac), fn = function(x)
-				sum((t(t(current[["B"]]) * x) - target[["B"]])^2),
-			gr = function(x)
-				colSums((t(t(current[["B"]]) * x) - target[["B"]]) * current$B),
-			method = 'BFGS'
-		)$par
+		.matscale(target$A, current$A), .matscale(target$B, current$B)
 	)
 	# scaling matrix such that
 	# Acurrent[r] * scaling[r,1] ~ Atarget
-	# Bcurrent[r] * scaling[r,1] ~ Btarget
-	# Ccurrent[r] * scaling[r,1] ~ Ctarget
+	# Bcurrent[r] * scaling[r,2] ~ Btarget
+	# Ccurrent[r] * scaling[r,3] ~ Ctarget
 	# and product over rows == 1
 	scaling <- cbind(scaling, 1 / apply(scaling, 1, prod))
 

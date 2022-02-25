@@ -173,3 +173,54 @@ read.matrix <- function(
 		na
 	)
 }
+
+read.F900txt <- function(f, fileEncoding = 'latin1', sep = ';') {
+	# readLines doesn't support arbitrary encodings by itself
+	f <- file(f, encoding = fileEncoding)
+	on.exit(close(f))
+	lines <- readLines(f)
+
+	blocks <- rle(lines == '')
+	blocks$end <- cumsum(blocks$lengths)
+	# assuming that the file consists of three blocks separated by empty lines
+	stopifnot(identical(blocks$values, c(FALSE, TRUE, FALSE, TRUE, FALSE)))
+
+	# first block is typically one line with the sample name
+	label <- lines[1:blocks$lengths[1]]
+
+	# Second block is the metadata, a horizontal table which we'll
+	# transform into a data.frame. Transposing a data.frame is a bit
+	# painful.
+	metadata <- t(read.table(
+		text = lines[(blocks$end[2]+1):blocks$end[3]], sep = sep,
+		colClasses = 'character', header = FALSE, na.strings = ''
+	)) # returns a matrix
+	colnames(metadata) <- metadata[1,]
+	metadata <- as.data.frame(
+		metadata[-1,, drop = FALSE], stringsAsFactors = FALSE, check.names = FALSE
+	)
+	for (i in seq_along(metadata)) metadata[[i]] <- type.convert(
+		metadata[[i]], na.strings = character(0), as.is = TRUE
+	)
+
+	# last column is typically empty
+	if (all(is.na(metadata[nrow(metadata),])))
+		metadata <- metadata[-nrow(metadata),]
+
+	# we only support "emission maps"
+	stopifnot(metadata[['Type']] == 'Emission Scan')
+
+	# third block is the data
+	data <- read.table(text = lines[(blocks$end[4]+1):blocks$end[5]], sep = ';')
+	# first column of the data is the scan wavelength
+	em <- data[[1]]; data <- data[-1]
+	ex <- metadata[['Fixed/Offset']]
+	# the last column is typically empty
+	if (all(is.na(data[ncol(data)]))) data <- data[-ncol(data)]
+
+	structure(
+		albatross::feem(as.matrix(data), em, ex),
+		F900.metadata = metadata,
+		F900.label = label
+	)
+}

@@ -162,3 +162,10 @@ if (length(failures) > 0) {
 	for (f in failures) message('Failed test: ', deparse(f))
 	stop('Some tests failed', call. = FALSE)
 }
+
+# Some of those aren't Panorama files and should fail parsing.
+# We need to see the name of the failing file.
+(tools::assertCondition(
+	feemlist(system.file('extdata', package = 'albatross'), 'panorama'),
+	'feem.wrapped.error', verbose = TRUE
+))

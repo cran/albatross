@@ -44,7 +44,7 @@
   }
 }
 \value{
-  A \pkg{lattice} plot object. Its \code{print} or \code{plot} method
+  A \CRANpkg{lattice} plot object. Its \code{print} or \code{plot} method
   will draw the plot on an appropriate plotting device.
 }
 

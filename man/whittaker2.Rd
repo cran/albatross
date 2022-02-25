@@ -12,7 +12,7 @@
   output are supported.
 
   \emph{This is not a public interface.} Subject to change without
-  further notice. Please do not call from outside \pkg{albatross}.
+  further notice. Please do not call from outside \CRANpkg{albatross}.
 }
 \usage{
   whittaker2(x, y, z, lambda, d, p, logscale, nonneg)
@@ -65,7 +65,9 @@
 \details{
   \subsection{Whittaker smoothing}{
     Whittaker smoothing works by minimising a sum of penalties [1].
-    Taking weights into account, we get: \deqn3{
+    Taking weights into account, we get:
+
+    \deqn3{
       \min_{\mathbf{\hat z}} \:
       (\mathbf{\hat z} - \mathbf{z})^\top
         \mathrm{diag}(\mathbf w)
@@ -84,7 +86,9 @@
 
     By writing down the derivatives over
     \eqn3{\mathbf{\hat z}}{z.hat}{<b>z&#x0302;</b>} and equating them to
-    \eqn{0}, we get the normal equation: \deqn3{
+    \eqn{0}, we get the normal equation:
+
+    \deqn3{
       (
         \mathrm{diag}(\mathbf w) +
         \lambda \mathbf{D}^\top \mathbf{D}
@@ -108,6 +112,11 @@
     then strategically position the coefficients in the difference
     matrix to obtain both row-wise and column-wise differences in the
     resulting vector.
+
+    % TODO:
+    % - explain how Dx and Dy could be calculated
+    % - explain how unfolding is related to positioning of vandermonde() inside D matrix
+    % - move this section below finite differente approximation?
   }
   \subsection{Finite difference approximation}{
     How to differentiate a function tabulated on a fixed, potentially
@@ -122,41 +131,78 @@
     grid. Here's the Taylor series expansion for \eqn{f} around \eqn{x},
     with the Lagrange form of the reminder:
 
-    \ifelse{latex}{}{\strong{Honestly, just read the LaTeX version.}}
-
-    \deqn{
+    \deqn3{
       f \left(x + \frac{h}{2}\right) =
         f(x) + \frac{h}{2} f'(x) + \frac{h^2}{8} f''(x) +
         \frac{h^3}{48} f'''(\zeta)
-    }{f(x + h/2) = f(x) + h/2 f'(x) + h^2/8 f''(x) + h^3/48 f'''(\zeta)}
+    }{f(x + h/2) = f(x) + h/2 f'(x) + h^2/8 f''(x) + h^3/48 f'''(\zeta)}{
+      f (x + <sup>h</sup>/<sub>2</sub>) =
+        f(x) + <sup>h</sup>/<sub>2</sub> f'(x)
+        + <sup>h<sup>2</sup></sup>/<sub>8</sub> f''(x)
+        + <sup>h<sup>3</sup></sup>/<sub>48</sub> f'''(&zeta;)
+    }
 
-    \deqn{
+    \deqn3{
       f \left(x - \frac{h}{2}\right) =
         f(x) - \frac{h}{2} f'(x) + \frac{h^2}{8} f''(x) -
         \frac{h^3}{48} f'''(\eta)
-    }{f(x - h/2) = f(x) - h/2 f'(x) + h^2/8 f''(x) - h^3/48 f'''(\eta)}
+    }{f(x - h/2) = f(x) - h/2 f'(x) + h^2/8 f''(x) - h^3/48 f'''(\eta)}{
+      f (x - <sup>h</sup>/<sub>2</sub>) =
+        f(x) - <sup>h</sup>/<sub>2</sub> f'(x)
+        + <sup>h<sup>2</sup></sup>/<sub>8</sub> f''(x)
+        - <sup>h<sup>3</sup></sup>/<sub>48</sub> f'''(&eta;)
+    }
 
-    \deqn{
+    \deqn3{
       f \left(x + \frac{h}{2}\right) -
         f \left(x - \frac{h}{2}\right) = h f'(x) +
         \frac{h^3}{48} \left(f'''(\zeta) + f'''(\eta)\right)
-    }{f(x + h/2) - f(x - h/2) = h f'(x) + h^3/48 (f'''(\zeta) + f'''(\eta))}
+    }{f(x + h/2) - f(x - h/2) = h f'(x) + h^3/48 (f'''(\zeta) + f'''(\eta))}{
+      f(x + <sup>h</sup>/<sub>2</sub>) - f(x - <sup>h</sup>/<sub>2</sub>) =
+      h f'(x) + <sup>h<sup>3</sup></sup>/<sub>48</sub> (f'''(&zeta;) + f'''(&eta;))
+    }
 
-    \deqn{
+    \deqn3{
       f'(x) = \frac{
         f\left(x + \frac{h}{2}\right) - f\left(x - \frac{h}{2}\right)
       }{h} - \frac{h^2}{48} \left(f'''(\zeta) + f'''(\eta)\right)
-    }{f'(x) = (f(x + h/2) - f(x - h/2))/h - h^2/48 (f'''(\zeta) + f'''(\eta))}
+    }{f'(x) = (f(x + h/2) - f(x - h/2))/h - h^2/48 (f'''(\zeta) + f'''(\eta))}{
+      f'(x) = <sup>1</sup>/<sub>h</sub> (
+        f(x + <sup>h</sup>/<sub>2</sub>) - f(x - <sup>h</sup>/<sub>2</sub>)
+      )
+      - <sup>h<sup>2</sup></sup>/<sub>48</sub> (f'''(&zeta;) + f'''(&eta;))
+    }
 
-    \deqn{
+    \deqn3{
       |\delta f'(x)| \le \max_{
         \xi \in [x - \frac{h}{2}, x + \frac{h}{2}]
       } \frac{h^2}{24} f'''(\xi)
+    }{|\delta f'(x)| \le h^2/24 max f'''(\xi) over \xi in [x - h/2; x + h/2]}{
+      |&delta; f'(x)| &le;
+        <sup>h<sup>2</sup></sup>/<sub>24</sub>
+        <span style="font-style:normal;">max</span> f'''(&xi;)
+        <span style="font-style:normal;">over</span>
+          &xi; &in; [x - <sup>h</sup>/<sub>2</sub>; x + <sup>h</sup>/<sub>2</sub>]
     }
 
+    Suppose the three grid points
+    \eqn3{\xi_1 = x_1 - \frac{h_1}{2}}{\xi1 = x1 - h1/2}{
+      &xi;<sub>1</sub> = x<sub>1</sub> - <sup>h<sub>1</sub></sup>/<sub>2</sub>
+    },
+    \eqn3{
+      \xi_2 = x_1 + \frac{h_1}{2} = x_2 - \frac{h_2}{2}
+    }{\xi2 = x1 + h1/2 = x2 - h2/2}{
+      &xi;<sub>2</sub> = x<sub>1</sub> + <sup>h<sub>1</sub></sup>/<sub>2</sub>
+      = x<sub>2</sub> - <sup>h<sub>2</sub></sup>/<sub>2</sub>
+    },
+    \eqn3{\xi_3 = x_2 + \frac{h_2}{2}}{\xi3 = x2 + h2/2}{
+      &xi;<sub>3</sub> = x<sub>2</sub> + <sup>h<sub>2</sub></sup>/<sub>2</sub>
+    } are adjacent on the grid, and we
+    know the \eqn{f'} estimates in \eqn3{x_1}{x1}{x<sub>1</sub>} and
+    \eqn3{x_2}{x2}{x<sub>2</sub>}:
+
     \if{latex,html}{
-      \Sexpr[stage=build]{
-        if (!dir.exists('man/figures')) dir.create('man/figures')
+      \makefigure{
         pdf('man/figures/whittaker2points.pdf', 3, 1.3, pointsize = 9)
         dev.control(displaylist = 'enable')
         x <- cumsum(c(0, 2, 2, 5, 5))
@@ -178,16 +224,13 @@
           width = 3, height = 1.3, pointsize = 9
         )
         dev.off()
-        ''
-      } % FIXME: with results=hide we get <pre>newlines</pre> in HTML
+      }
       \center{
-        \if{latex}{
-          \figure{whittaker2points.pdf}{options: width=2.5in}
-        }
-        \if{html}{\figure{whittaker2points.svg}}
+        \if{latex}{\figure{whittaker2points.pdf}{options: width=2.5in}}
+        \if{html}{ \figure{whittaker2points.svg}{options: width="400"}}
       }
     }
-    \if{text}{\preformatted{
+    \if{text}{\figure{}{
            h1  <--------------->
        <------->       h2
              (x1+x2)/2
@@ -196,40 +239,83 @@
       xi1     xi2             xi3
     }}
 
-    Suppose the three grid points \eqn{\xi_1 = x_1 - \frac{h_1}{2}},
-    \eqn{\xi_2 = x_1 + \frac{h_1}{2} = x_2 - \frac{h_2}{2}},
-    \eqn{\xi_3 = x_2 + \frac{h_2}{2}} are adjacent on the grid, and we
-    know the \eqn{f'} estimates in \eqn{x_1} and \eqn{x_2}.  On the one
-    hand, Taylor series expansion for \eqn{f'(x)} around
-    \eqn{\frac{x_1 + x_2}{2}} gives:
+    On the one hand, Taylor series
+    expansion for \eqn{f'(x)} around
+    \eqn3{\frac{x_1 + x_2}{2}}{(x1 + x2)/2}{
+      <sup>1</sup>/<sub>2</sub>(x<sub>1</sub> + x<sub>2</sub>)
+    } gives:
 
-    \deqn{
+    \deqn3{
       f'(x_2) = f'\left(\frac{x_1 + x_2}{2}\right)
         + f''\left(\frac{x_1 + x_2}{2}\right)\frac{x_2 - x_1}{2}
         + f'''\left(\frac{x_1 + x_2}{2}\right)\frac{(x_2 - x_1)^2}{8}
         + f''''(\zeta)\frac{(x_2 - x_1)^3}{48}
+    }{
+      f'(x2) =    f'((x1 + x2) / 2)
+             +   f''((x1 + x2) / 2) (x2 - x1)   /  2 +
+             +  f'''((x1 + x2) / 2) (x2 - x1)^2 /  8 +
+             + f''''(zeta)          (x2 - x1)^3 / 48
+    }{
+      f'(x<sub>2</sub>)
+      = f'(<sup>1</sup>/<sub>2</sub> (x<sub>1</sub> + x<sub>2</sub>))
+      + f''(<sup>1</sup>/<sub>2</sub> (x<sub>1</sub> + x<sub>2</sub>))
+        (x<sub>2</sub> - x<sub>1</sub>) <sup>1</sup>/<sub>2</sub>
+      + f'''(<sup>1</sup>/<sub>2</sub> (x<sub>1</sub> + x<sub>2</sub>))
+        (x<sub>2</sub> - x<sub>1</sub>)<sup>2</sup> <sup>1</sup>/<sub>8</sub>
+      + f''''(&zeta;)
+        (x<sub>2</sub> - x<sub>1</sub>)<sup>3</sup> <sup>1</sup>/<sub>48</sub>
     }
-    \deqn{
+    \deqn3{
       f'(x_1) = f'\left(\frac{x_1 + x_2}{2}\right)
         - f''\left(\frac{x_1 + x_2}{2}\right)\frac{x_2 - x_1}{2}
         + f'''\left(\frac{x_1 + x_2}{2}\right)\frac{(x_2 - x_1)^2}{8}
         - f''''(\eta)\frac{(x_2 - x_1)^3}{48}
+    }{
+      f'(x1) =    f'((x1 + x2) / 2)
+             -   f''((x1 + x2) / 2) (x2 - x1)   /  2 +
+             +  f'''((x1 + x2) / 2) (x2 - x1)^2 /  8 +
+             - f''''(eta)           (x2 - x1)^3 / 48
+    }{
+      f'(x<sub>1</sub>)
+      = f'(<sup>1</sup>/<sub>2</sub> (x<sub>1</sub> + x<sub>2</sub>))
+      - f''(<sup>1</sup>/<sub>2</sub> (x<sub>1</sub> + x<sub>2</sub>))
+        (x<sub>2</sub> - x<sub>1</sub>) <sup>1</sup>/<sub>2</sub>
+      + f'''(<sup>1</sup>/<sub>2</sub> (x<sub>1</sub> + x<sub>2</sub>))
+        (x<sub>2</sub> - x<sub>1</sub>)<sup>2</sup> <sup>1</sup>/<sub>8</sub>
+      - f''''(&eta;)
+        (x<sub>2</sub> - x<sub>1</sub>)<sup>3</sup> <sup>1</sup>/<sub>48</sub>
     }
-    \deqn{
+    \deqn3{
       f''\left(\frac{x_1 + x_2}{2}\right) =
         \frac{f'(x_2) - f'(x_1)}{x_2 - x_1} -
         \frac{(x_2 - x_1)^2}{48}(f''''(\zeta) + f''''(\eta))
+    }{
+      f''((x1 + x2)/2) = (f'(x2) - f'(x1)) / (x2 - x1) -
+         - (x2 - x1)^2 / 48 (f''''(zeta) + f''''(eta))
+    }{
+      f''(<sup>1</sup>/<sub>2</sub> (x<sub>1</sub> + x<sub>2</sub>)) =
+      <sup>f'(x<sub>2</sub>) -
+      f'(x<sub>1</sub>)</sup>/<sub>x<sub>2</sub> - x<sub>1</sub></sub>
+      - <sup>1</sup>/<sub>48</sub>
+        (x<sub>2</sub> - x<sub>1</sub>)<sup>2</sup>
+        (f''''(&zeta;) + f''''(&eta;))
     }
-    \deqn{
+    \deqn3{
       |\delta f''(x)| \le \max_{
         \xi \in [x_1, x_2]
       } \frac{(x_2 - x_1)^2}{24} f''''(\xi)
+    }{|delta f''(x)| \le (x2 - x1)^2 / 24 max f''''(xi) over xi in [x1, x2]}{
+      |&delta; f''(x)| &le; <sup>1</sup>/<sub>24</sub>
+      (x<sub>2</sub> - x<sub>1</sub>)<sup>2</sup>
+      <span style="font-style:normal;">max</span> f''''(&xi;)
+      <span style="font-style:normal;">over</span> &xi; &in;
+      [x<sub>1</sub>, x<sub>2</sub>]
     }
 
     On the other hand, if we substitute the estimations of \eqn{f'(x)}
     from above, we get:
 
-    \deqn{
+    \deqn3{
       f''\left(\frac{x_1 + x_2}{2}\right) = \frac{
         h_1 f(\xi_3) - h_1 f(\xi_2)
         - h_2 f(\xi_2) + h_2 f(\xi_1)
@@ -238,70 +324,148 @@
         - h_1^2 f'''(\zeta_1)
       }{24(x_2 - x_1)}
       - \frac{(x_2 - x_1)^2}{24} f''''(\eta)
+    }{
+         (x1 + x2)
+      f''(-------) =
+         (   2   )
+
+        h1 f(xi3) - h1 f(xi2) - h2 f(xi2) + h2 f(xi1)
+        --------------------------------------------- -
+                        h1 h2 (x2 - x1)
+
+          h2^2 f'''(xi2) - h1^2 f'''(xi1)   (x2 - x1)^2
+        - ------------------------------- - ----------- f''''(eta)
+                   24 (x2 - x1)                  24
+    }{<!-- here comes the really painful part -->
+      f''(<sup>1</sup>/<sub>2</sub>(x<sub>1</sub> + x<sub>2</sub>)) =
+        (h<sub>1</sub> f(&xi;<sub>3</sub>)
+        - h<sub>1</sub> f(&xi;<sub>2</sub>)
+        - h<sub>2</sub> f(&xi;<sub>2</sub>)
+        + h<sub>2</sub> f(&xi;<sub>1</sub>))
+        (h<sub>1</sub> h<sub>2</sub> (x<sub>2</sub> - x<sub>1</sub>))
+        <sup>-1</sup>
+      -
+        (h<sub>2</sub><sup>2</sup> f'''(&xi;<sub>2</sub>)
+        - h<sub>1</sub><sup>2</sup> f'''(&xi;<sub>1</sub>))
+        (24 (x<sub>2</sub> - x<sub>1</sub>)) <sup>-1</sup>
+      - <sup>1</sup>/<sub>24</sub>
+        (x<sub>2</sub> - x<sub>1</sub>)<sup>2</sup>
+        f''''(&eta;)
     }
 
     This is why we can't just keep using central differences and get
-    second order accurate results.
+    \eqn{n+1}th order accurate results.
 
     What are the general methods of finding the coefficients for the
     \eqn3{\mathbf D}{D}{<b>D</b>} matrix? Start with a system of Taylor
     series expansions for every grid point:
 
-    \deqn{
+    \deqn3{
       f(x_i) = \sum_{k=0}^{n-1} f^{(k)}(x) \frac{(x_i - x)^k}{k!}
-      + f^{(n)}(\xi) \frac{(x_i - x)^{n}}{(n)!}
+      + f^{(n)}(\xi) \frac{(x_i - x)^{n}}{n!}
       \; \forall i = 1 \dots n
+    }{
+                n-1 (k)  (x[i] - x)^k   (n)   (x[i] - x)^n
+      f(x[i]) = sum f(x) ------------ + f(xi) ------------, i = 1..n
+                k=0           k!                   n!
+    }{
+      f(x<sub>i</sub>) = &sum;<sub>k=0..n-1</sub>
+        f<sup>(k)</sup>(x)
+        <sup>(x<sub>i</sub> - x)<sup>k</sup></sup>/<sub>k!</sub>
+      + f<sup>(n)</sup>(&xi;)
+        <sup>(x<sub>i</sub> - x)<sup>n</sup></sup>/<sub>n!</sub>
     }
 
-    We can solve this system for coefficients \eqn{c_i} giving the
-    needed the desired \eqn{l}-th derivative estimate with highest
-    accuracy \eqn{p} possible [4]:
+    We can solve this system for coefficients
+    \eqn3{c_i}{c[i]}{c<sub>i</sub>} giving the desired \eqn{l}-th
+    derivative estimate with highest accuracy \eqn{p} possible [4]:
 
-    \deqn{
+    \deqn3{
       \sum_{i = 1}^n c_i f(x_i) = f^{(l)}(x) + o(h^p)
+    }{
+      sum over i=1:n { c[i] f(x[i]) } = d^l/dx^l f(x[i]) + o(h^p)
+    }{
+      &sum;<sub>i=1..n</sub> c<sub>i</sub> f(x<sub>i</sub>) =
+      f<sup>(l)</sup>(x) + o(h<sup>p</sup>)
     }
 
-    Substituting the approximations for \eqn{f(x_i)} into the equation,
-    we get the following condition for the multiplier in front of each
-    \eqn{f^{(k)}(x)}:
+    Substituting the approximations for
+    \eqn3{f(x_i)}{f(x[i])}{f(x<sub>i</sub>)} into the equation, we get the
+    following condition for the multiplier in front of each
+    \eqn3{f^{(k)}(x)}{d^k/dx^k f(x)}{f<sup>(k)</sup>(x)}:
 
-    \deqn{
+    \deqn3{
       \frac{1}{k!} \sum_{i = 1}^n c_i (x_i - x)^k = \mathbf{1}_{k = l}
       \; \forall k = 0 \dots n-1
+    }{1/k! sum over i=1:n { c[i] (x[i] - x)^k } = (k == l), k = 0..n-1}{
+      <sup>1</sup>/<sub>k!</sub>
+      &sum;<sub>i=1..n</sub>
+        c<sub>i</sub> (x<sub>i</sub> - x)<sup>k</sup>
+      = <b>1</b><sub>k=l</sub>
+      &forall;k = 0..n-1
     }
 
-    In the matrix form this becomes a Vandermonde system:
+    In the matrix form, this becomes a Vandermonde system:
 
-    \deqn{V_{k,i} = \frac{(x_i - x)^k}{k!}}
-    \deqn{b_k = \mathbf{1}_{k = l}}
-    \deqn{\mathbf c = \mathbf{V}^{-1} \mathbf b}
+    \deqn3{
+      V_{k,i} = \frac{(x_i - x)^k}{k!}
+    }{V[k,i] = (x[i] - x)^k/k!}{
+      V<sub>k,i</sub> = <sup>(x<sub>i</sub> -
+        x)<sup>k</sup></sup>/<sub>k!</sub>
+    }
+    \deqn3{
+      b_k = \mathbf{1}_{k = l}
+    }{b[k] = (k == l)}{
+      b<sub>k</sub> = <b>1</b><sub>k=l</sub>
+    }
+    \deqn3{
+      \mathbf c = \mathbf{V}^{-1} \mathbf b
+    }{c = V^-1 \\\%*\\\% b}{
+      <b>c</b> = <b>V</b><sup>-1</sup> <b>b</b>
+    }
 
-    Unfortunately, this system becomes ill-conditioned for
-    \dQuote{large} numbers of points. (Experiment shows noticeably
-    growing \eqn{c_i} even for third derivative from \eqn{10} points and
-    no solution for \eqn{32} points on a uniform grid.) Fornberg [5]
-    suggests a more numerically stable procedure, but it still breaks
-    down for \eqn{1000} points.
+    Unfortunately, this system becomes ill-conditioned for \dQuote{large}
+    numbers of points. (Experiment shows noticeably growing
+    \eqn3{c_i}{c[i]}{c<sub>i</sub>} even for third derivative from \eqn{10}
+    points and no solution for \eqn{32} points on a uniform grid.) Fornberg [5]
+    suggests a more numerically stable procedure, but it still breaks down for
+    \eqn{1000} points.
 
     It is important to note that the performance of the method depends
-    on the matrix \eqn{\mathbf D} being sparse. While the methods
-    described above could give more accurate results, they do so at the
-    cost of providing nonzero weights for a lot of points, and the
-    weights get larger as the number of points increases. Therefore,
-    with the knowledge that difference orders above \eqn{3} are used
-    very rarely and the interest in simplicity and performance, we'll
-    minimise the number of coefficients and their values by solving the
-    Vandermonde system for the minimally accurate derivative
-    estimations, taking exactly \eqn{k + 1} points for \eqn{k}-th
-    derivative. For ever
+    on the matrix \eqn3{\mathbf D}{D}{<b>D</b>} being sparse. While the methods
+    described above could give more accurate results, they do so at the cost of
+    providing nonzero weights for a lot of points, and the weights get larger
+    as the number of points increases. Therefore, with the knowledge that
+    difference orders above \eqn{3} are used very rarely and the interest in
+    simplicity and performance, we'll minimise the number of coefficients and
+    their values by solving the Vandermonde system for the minimally accurate
+    derivative estimations, taking exactly \eqn{k + 1} points for \eqn{k}-th
+    derivative.
 
     What is the error of such estimation? Substituting the Lagrange form
-    of the remainder into \eqn{\mathbf{c}^\top f(\mathbf x)}, we get:
+    of the remainder into \eqn3{
+      \mathbf{c}^\top f(\mathbf x)
+    }{t(c) \\\%*\\\% x}{
+      <b>c</b><sup><span style="font-style:normal;">T</span></sup>
+      f(<b>x</b>)}, we get:
 
-    \deqn{
+    \deqn3{
       \sum_{i = 1}^n c_i f(x_i) = f^{(n-1)}(x) +
         \sum_{i = 1}^n c_i f^{(n)}(\xi_i) \frac{(x_i - x)^n}{n!},
       \; \xi_i \in [ x_i, x ]
+    }{
+       n                 (n-1)   n       (n)      (x[n] - x)^n
+      sum c[i] f(x[i]) = f(x) + sum c[i] f(xi[i]) ------------,
+      i=1                       i=1                     n!
+
+                                           xi[i] in [x[i], x]
+    }{
+      &sum;<sub>i=1..n</sub> c<sub>i</sub> f(x<sub>i</sub>) =
+      f<sup>(n-1)</sup>(x) +
+      &sum;<sub>i=1..n</sub> c<sub>i</sub>
+        f<sup>(n)</sup>(&xi;<sub>i</sub>)
+        <sup>(x<sub>i</sub> - x)<sup>n</sup></sup>/<sub>n!</sub>,
+      &xi;<sub>i</sub> &in; [x<sub>i</sub>, x]
     }
 
     Our choice of \eqn{x} (middle point for odd \eqn{n}, average of
@@ -321,14 +485,19 @@
     multiplied by \eqn3{\mathrm{vec}(\mathbf{Z})}{vec(Z)}{
       <span style="font-style: normal;">vec</span>(<b>Z</b>)},
     returns a vector of estimated derivatives of \eqn3{\mathbf
-    Z}{Z}{<b>Z</b>} of given order by \eqn{x} and \eqn{y}.
+    Z}{Z}{<b>Z</b>} of given order by \eqn{x} and \eqn{y} in every available
+    point (see below).
   }
-  \item{\code{Vandermonde}}{
-    A vector \eqn{\mathbf c} of length \eqn{n} such that
-    \eqn{\mathbf{c}^\top f(\mathbf{x_0}) \approx f^{(n-1)}(x)}. The
+  \item{\code{vandermonde}}{
+    A vector \eqn3{\mathbf c}{c}{<b>c</b>} of length \eqn{n =}
+    \code{length(x0)} such that
+    \eqn3{
+      \mathbf{c}^\top f(\mathbf{x_0}) \approx f^{(n-1)}(x)
+    }{t(c) \\\%*\\\% f(x0) =~ d^(n-1)/dx^(n-1) f(x)}{
+      <b>c</b><sup><span style="font-style:normal;">T</span></sup>
+      f(<b>x<sub>0</sub></b>) &approx; f<sup>(n-1)</sup>(x)}. The
     \eqn{x} is either the median point of \code{x0} or the average of
-    two points in the middle, depending on whether \code{length(x0)} is
-    odd or even.
+    two points in the middle, depending on whether \eqn{n} is odd or even.
   }
 }
 \references{\enumerate{

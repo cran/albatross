@@ -58,7 +58,7 @@
   If you receive errors alleging that some names don't match, but
   are absolutely sure that the absorbance spectra and path lengths are
   present in the same order as in \code{x}, remove the names from either
-  of the objects.
+  of the objects, e.g. by passing \code{\link{unname}(absorbance)}.
 
   The formula used to correct for inner filter effect is:
 
@@ -87,7 +87,8 @@
     title = 'Principles of Fluorescence Spectroscopy, 3rd ed.',
     year = '2006',
     publisher = 'Springer US',
-    url = 'https://www.springer.com/la/book/9780387312781'
+    url = 'https://link.springer.com/la/book/9780387312781',
+    doi = '10.1007/978-0-387-46312-4'
   }
 
   \bibentry{'Article',
@@ -110,9 +111,8 @@
 \examples{
   data(feems)
 
-  dataset <- feemcube(feems, FALSE)
-  str(dataset)
+  str(cube)
   str(absorp)
-  plot(feemife(dataset,absorp) / dataset)
+  plot(feemife(cube,absorp) / cube)
 }
 \keyword{method}

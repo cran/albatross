@@ -27,7 +27,8 @@
   \item{value}{
     An array-like object to assign values from. When assigning from
     FEEM objects, wavelengths are required to match and warnings are
-    issued if scale factors don't match.
+    issued if scale factors don't match. Use vector subsetting (zero or
+    one argument inside the brackets) to disable the check.
   }
 }
 \value{

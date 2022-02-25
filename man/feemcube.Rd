@@ -3,26 +3,40 @@
 \alias{feemcube.array}
 \alias{feemcube.list}
 \alias{feemcube.feemparafac}
-\title{Build a data cube of FEEMs}
+\alias{feemcube.feemsplithalf}
+\alias{feemcube.feemjackknife}
+\alias{feemcube.feemflame}
+\alias{as.list.feemcube}
+\title{Data cubes of fluorescence excitation-emission matrices}
 \description{
-  This function builds tagged 3-dimensional arrays of fluorescence
-  excitation-emission spectra. Given a list of FEEM objects, it can
-  determine the range of their wavelengths. Otherwise, the object is
-  created from the supplied numeric array and vectors of wavelengths
-  and sample names.
+  Given a list of \code{\link{feem}} objects or a 3-way array, build
+  tagged 3-dimensional arrays of fluorescence excitation-emission
+  spectra. Extract the data cube from the corresponding model objects.
+  Transform the data cube into a list of \code{\link{feem}} objects.
 }
 \usage{
   feemcube(x, \dots)
   \method{feemcube}{list}(x, all.wavelengths, \dots)
   \method{feemcube}{array}(x, emission, excitation, scales, names = NULL, \dots)
   \method{feemcube}{feemparafac}(x, \dots)
+  \method{feemcube}{feemsplithalf}(x, \dots)
+  \method{feemcube}{feemjackknife}(x, \dots)
+  \method{feemcube}{feemflame}(x, \dots)
+  \method{as.list}{feemcube}(x, \dots)
 }
 \arguments{
-  \item{x}{
-    A list of FEEM objects, possibly named, or a numeric array.
+  \item{x}{\describe{
+    \item{feemcube}{
+      A list of FEEM objects, possibly named, or a numeric array.
 
-    Alternatively, a \code{\link{feemparafac}} object.
-  }
+      Alternatively, a \code{\link{feemparafac}},
+      \code{\link{feemjackknife}}, \code{\link{feemsplithalf}}, or a
+      \code{\link{feemflame}} object.
+    }
+    \item{as.list.feemcube}{
+      A \code{feemcube} object.
+    }
+  }}
   \item{all.wavelengths}{
     Logical, a flag specifying whether to include wavelengths not present
     in \emph{all} of the samples. If \code{FALSE}, only those wavelength
@@ -58,8 +72,9 @@
   need to adjust the wavelength grid of a list of EEMs before making it
   into a FEEM cube.
 
-  \code{feemcube.feemparafac} returns the original data analysed by
-  \code{\link{feemparafac}}.
+  \code{feemcube.feemparafac}, \code{feemcube.jackknife}, and
+  \code{feemcube.feemsplithalf} return the data cube originally passed
+  to the corresponding functions.
 }
 \value{
   A FEEM data cube is a numeric three-dimensional array with the
@@ -80,16 +95,29 @@
     Scale factors of the samples, corresponding to the third dimension
     of the array. Assumed to be \eqn{1} if not specified by the user.
   }
+
+  \code{as.list.feemcube}: A named list of FEEM objects comprising
+  \code{x}.
 }
 \seealso{
-  FEEM cube methods: \code{\link{[.feemcube}}, \code{\link{plot.feemcube}},
-  \code{\link{as.data.frame.feemcube}}, \code{\link{as.list.feemcube}},
-  \code{\link{feemife}}, \code{\link{feemscale}}, \code{\link{feemscatter}}.
+  FEEM cube methods: \code{\link{[.feemcube}},
+  \code{\link{plot.feemcube}}, \code{\link{as.data.frame.feemcube}},
+  \code{\link{feemife}}, \code{\link{feemscale}},
+  \code{\link{feemscatter}}.
 }
 \examples{
   # array form
-  feemcube(array(1:24, 4:2), 1:4, 1:3)
+  feemcube(
+    array(1:24, c(4, 3, 2)), # 3-way array obtained elsewhere
+    seq(340, 400, len = 4), seq(250, 300, len = 3) # wavelengths
+  )
   # list form
-  feemcube(replicate(2, feem(matrix(1:6, 2), 1:2, 1:3), FALSE), TRUE)
+  feemcube(
+    replicate(2, feem( # list of feem objects
+      matrix(1:6, 2), c(340, 400), c(250, 275, 300)
+    ), FALSE),
+    TRUE
+  )
+  str(as.list(feemcube(array(1:60, 3:5), 1:3, 1:4)))
 }
 \keyword{method}

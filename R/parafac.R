@@ -1,15 +1,20 @@
 feemparafac <- function(
-	X, ..., rescale = 3, retries = 10, subset = TRUE, envir = NULL
+	X, ..., const = rep('nonneg', 3),
+	rescale = 3, retries = 10, subset = TRUE, envir = NULL
 ) {
+	# see feemsplithalf and friends for why this is needed
 	cube <- if (is.null(envir)) X else get(X, envir = envir)
+	# check parameters for errors
 	stopifnot(inherits(cube, 'feemcube'))
+	if (!is.na(rescale)) stopifnot(length(rescale) == 1, rescale %in% 1:3)
+	# run the actual PARAFAC
 	for (i in seq_len(retries)) {
-		ret <- parafac(cube[,,subset], output = 'best', ...)
+		ret <- parafac(cube[,,subset], output = 'best', ..., const = const)
 		if (ret$cflag != 2) break
 	}
 	if (ret$cflag == 2) stop(
-		"Algorithm terminated abnormally due to ",
-		"a problem with the constraints"
+		'Algorithm terminated abnormally after ', retries,
+		' tries due to a problem with the constraints'
 	)
 	# assign dimnames for convenience
 	rownames(ret$A) <- dimnames(cube)[[1]]
@@ -17,9 +22,8 @@ feemparafac <- function(
 	rownames(ret$C) <- dimnames(cube)[[3]][subset]
 	# undo per-sample scaling
 	ret$C <- ret$C * attr(cube, 'scales')[subset]
-	# move variance to a given mode
+	# move variance to the given mode
 	if (!is.na(rescale)) {
-		stopifnot(length(rescale) == 1, rescale %in% 1:3)
 		factors <- LETTERS[1:3]
 		for (f in factors[-rescale])
 			ret <- rescale(ret, f, absorb = factors[rescale])
@@ -72,7 +76,7 @@ coef.feemparafac <- function(
 	comps <- list(
 		emission = list(comp = 'A', name = 'wavelength', val = attr(cube, 'emission')),
 		excitation = list(comp = 'B', name = 'wavelength', val = attr(cube, 'excitation')),
-		samples = list(comp = 'C', name = 'sample', val = .feemcsamples(cube))
+		samples = list(comp = 'C', name = 'sample', val = .cubenames(cube))
 	)
 	switch(type <- match.arg(type),
 		emission =, excitation =, samples = {

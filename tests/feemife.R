@@ -31,6 +31,16 @@ assertError(
 	feemife(feems[c('a', 'b', 'c')], absorp[c('c', 'a', 'd')]),
 	verbose = TRUE
 )
+# should fail if names of feems are duplicated
+assertError(
+	feemife(feems[c('a', 'a', 'c')], absorp[c('c', 'a', 'd')]),
+	verbose = TRUE
+)
+# should fail if no names but lengths differ
+assertError(
+	feemife(unname(feems[c('a', 'a', 'c')]), unname(absorp[c('c', 'a')])),
+	verbose = TRUE
+)
 
 # list-matrix correction
 check.ife(feemife(feems, absmat), names(feems))
@@ -89,3 +99,27 @@ assertError(feemife(
 ), verbose = TRUE)
 
 feemife(feems, absorp, progress = TRUE)
+# arrange must work (and report errors) for paths the same way as for
+# absorption spectra themselves
+feemife(feems[c('b','a','c')], absorp, setNames(rep(1, 12), letters[1:12]))
+stopifnot(all.equal(
+	feemife(feems, absorp, 1:12),
+	feemife(feems, absorp, setNames(12:1, rev(letters[1:12])))
+))
+assertError(feemife(
+	feems[c('a','a','b','c')], absorp,
+	setNames(rep(1, 12), letters[1:12])
+), verbose = TRUE)
+assertError(feemife(
+	feems[c('a','b','c')], absorp,
+	setNames(rep(1, 3), letters[1:3 + 1])
+), verbose = TRUE)
+assertError(
+	feemife(feems[c('a','b','c')], absorp, rep(1, 4)),
+	verbose = TRUE
+)
+
+# also test cubeapply error wrapping
+ab <- absorp
+ab$e <- ab$e[ab$e[,1] > min(attr(feems$e, 'emission')) + 10,]
+(assertCondition(feemife(feems, ab), 'feem.wrapped.error', verbose = TRUE))

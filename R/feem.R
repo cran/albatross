@@ -5,17 +5,19 @@ feem <- function(x, ...) UseMethod('feem')
 feem.character <- feem.connection <- function(x, format, ...) {
 	stopifnot(length(x) == 1)
 	switch(
-		match.arg(format, c('table', 'panorama')),
+		match.arg(format, c('table', 'panorama', 'F900txt')),
 		table = read.matrix,
 		panorama = read.panorama,
+		F900txt = read.F900txt,
 	)(x, ...)
 }
 
 feem.matrix <- function(x, emission, excitation, scale = 1, ...) {
 	stopifnot(
 		length(list(...)) == 0, is.numeric(x),
-		length(emission) == nrow(x),
-		length(excitation) == ncol(x)
+		is.vector(scale, 'numeric'), length(scale) == 1,
+		length(emission) == nrow(x), is.vector(emission, 'numeric'),
+		length(excitation) == ncol(x), is.vector(excitation, 'numeric')
 	)
 	structure(
 		x,
@@ -74,19 +76,32 @@ plot.feem <- function(
 	if (!is.matrix(ret)) return(ret) # return a plain vector if asked to
 	feem( # reconstruct the FEEM object
 		ret,
-		emission = attr(x, 'emission')[i],
-		excitation = attr(x, 'excitation')[j],
+		emission = unname(setNames(
+			attr(x, 'emission'), dimnames(x)[[1]]
+		)[i]),
+		excitation = unname(setNames(
+			attr(x, 'excitation'), dimnames(x)[[2]]
+		)[j]),
 		scale = attr(x, 'scale')
 	)
 }
 
 # replace operator preserves our attributes by default
 `[<-.feem` <- function(x, i, j, value) {
-	if (inherits(value, 'feem')) {
-		# sanity check: wavelengths must match
+	if (nargs() > 3 && inherits(value, 'feem')) {
+		# x[] and x[subset] mean something like a vector subset and both
+		# result in nargs() of 3, even if i isn't even set, so don't do
+		# anything in that case
+		# otherwise, the user is doing a matrix subset, and we can
+		# perform a sanity check for the wavelengths and the scale value
+		xsub <- x[
+			if (missing(i)) TRUE else i,
+			if (missing(j)) TRUE else j,
+			drop = FALSE
+		]
 		stopifnot(
-			attr(x, 'emission')[i] == attr(value, 'emission'),
-			attr(x, 'excitation')[j] == attr(value, 'excitation')
+			attr(xsub, 'emission') == attr(value, 'emission'),
+			attr(xsub, 'excitation') == attr(value, 'excitation')
 		)
 		# scales must match, but user may intend to proceed
 		if (attr(x, 'scale') != attr(value, 'scale')) warning(

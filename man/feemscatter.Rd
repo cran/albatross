@@ -52,13 +52,13 @@
       }
       \item{kriging}{
         Interpolate it by means of ordinary or simple Kriging, as
-        implemented in \pkg{pracma} function \code{\link{kriging}}.
+        implemented in \CRANpkg{pracma} function \code{\link{kriging}}.
         Pass a \code{type} argument to choose between the two
         methods. This method is not recommended due to its high
         CPU time and memory demands: it has to invert a dense
         \eqn3{O(N^2)}{O(N^2)}{O(N<sup>2</sup>)} matrix (which easily
         reaches multiple gigabytes for some EEMs), then take its products
-        with vectors \eqn{O(N)} times.
+        with vectors \eqn{O(N)} times, with \eqn{N =} \code{length(x)}.
       }
       \item{whittaker}{
         Interpolate it by minimising a weighted sum of squared residuals
@@ -126,7 +126,7 @@
   of the matrix (\dQuote{emission}, default), by columns of the matrix
   (\dQuote{excitation}), or does both (\dQuote{both}) and averages the
   results to make the resulting artefacts less severe [2, see the
-  \pkg{staRdom} package itself].
+  \CRANpkg{staRdom} package itself].
 
   The \dQuote{loess} method feeds the whole FEEM except the area to
   be interpolated to \code{\link{loess}}, then asks it to predict the
@@ -140,10 +140,10 @@
   different areas of the spectrum (\code{loess}). Any negative values
   returned by \code{\link{kriging}} are replaced by \eqn{0}.
 
-  The \dQuote{whittaker} method [4] works by unfolding \code{x}
-  into a vector \eqn3{\mathbf z}{z}{<b>z</b>} and looking for a vector
-  \eqn3{\hat{\mathbf z}}{z.hat}{<b>z&#x0302;</b>} that is close enough to
-  \eqn3{\mathbf z}{z}{<b>z</b>}, but also smooth, by minimising a sum
+  The \dQuote{whittaker} method [4] works by unfolding each FEEM into a
+  vector \eqn3{\mathbf z}{z}{<b>z</b>} and looking for a vector
+  \eqn3{\hat{\mathbf z}}{z.hat}{<b>z&#x0302;</b>} that is close enough
+  to \eqn3{\mathbf z}{z}{<b>z</b>}, but also smooth, by minimising a sum
   of penalties:
 
   \deqn3{

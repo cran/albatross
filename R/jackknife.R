@@ -20,7 +20,7 @@ feemjackknife <- function(cube, ..., progress = TRUE) {
 				# we could have used ginv() from recommended MASS package,
 				# but since we already use pracma, let's use its pinv() and
 				# save one dependency
-				attr(fac, 'Chat') <- t(pinv(D[mask,]) %*% X[mask])
+				attr(fac, 'Chat') <- t(pinv(D[mask,, drop = FALSE]) %*% X[mask, drop = FALSE])
 			}
 			fac
 		}, progress = progress
@@ -52,7 +52,7 @@ plot.feemjackknife <- function(x, kind = c('estimations', 'RIP', 'IMP'), ...)
 
 jksumm <- function(jk) {
 	ovcube <- feemcube(jk$overall)
-	samples <- .feemcsamples(ovcube)
+	samples <- .cubenames(ovcube)
 	do.call(rbind, lapply(seq_along(jk$leaveone), function(i) rbind(
 		data.frame(
 			loading = as.vector(jk$leaveone[[i]]$A),
@@ -90,7 +90,7 @@ jksummrip <- function(jk) {
 		Emission = mean((fac$A - jk$overall$A)^2),
 		Excitation = mean((fac$B - jk$overall$B)^2)
 	)))
-	RIP$omitted <- .feemcsamples(feemcube(jk$overall))
+	RIP$omitted <- .cubenames(feemcube(jk$overall))
 	RIP
 }
 
@@ -119,7 +119,7 @@ jksummimp <- function(jk) {
 		score.overall = as.vector(jk$overall$C),
 		score.predicted = as.vector(Chat),
 		factor = as.factor(col(Chat)),
-		omitted = .feemcsamples(feemcube(jk$overall))
+		omitted = .cubenames(feemcube(jk$overall))
 	)
 }
 
@@ -141,4 +141,9 @@ jk.IMP <- function(
 		},
 		...
 	)
+}
+
+feemcube.feemjackknife <- function(x, ...) {
+	stopifnot(length(list(...)) == 0)
+	feemcube(x$overall)
 }

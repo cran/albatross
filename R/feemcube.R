@@ -41,10 +41,13 @@ feemcube.array <- function(x, emission, excitation, scales, names = NULL, ...) {
 	if (missing(scales)) scales <- rep(1, dim(x)[3])
 	stopifnot(
 		length(list(...)) == 0,
-		length(dim(x)) == 3,
-		dim(x)[1:2] == c(length(emission), length(excitation)),
-		is.null(names) || dim(x)[3] == length(names),
-		dim(x)[3] == length(scales)
+		length(dim(x)) == 3, is.numeric(x),
+		is.vector(emission, 'numeric'), is.vector(excitation, 'numeric'),
+		is.vector(scales, 'numeric'),
+		dim(x) == c(length(emission), length(excitation), length(scales)),
+		is.null(names) || (
+			dim(x)[3] == length(names) && is.vector(names) && is.atomic(names)
+		)
 	)
 	structure(
 		x,
@@ -62,44 +65,53 @@ feemcube.array <- function(x, emission, excitation, scales, names = NULL, ...) {
 
 `[.feemcube` <- function(x, i, j, k, drop = TRUE) {
 	ret <- NextMethod()
+	# attributes must index exactly as the array itself
+	# this includes being able to index by dimnames, unfortunately
+	em <- unname(setNames(attr(x, 'emission'), dimnames(x)[[1]])[i])
+	ex <- unname(setNames(attr(x, 'excitation'), dimnames(x)[[2]])[j])
+	sc <- unname(setNames(attr(x, 'scales'), dimnames(x)[[3]])[k])
 	# special case: returning a cube
 	if (length(dim(ret)) == 3) return(feemcube(
-		ret,
-		emission = attr(x, 'emission')[i],
-		excitation = attr(x, 'excitation')[j],
-		scales = attr(x, 'scales')[k],
+		ret, emission = em, excitation = ex, scales = sc,
 		names = dimnames(ret)[[3]]
 	))
 	# special case: returning a FEEM
 	# Only possible when drop = TRUE and choosing a single sample
 	# but maybe multiple wavelengths (or all of them)
-	if (length(dim(ret)) == 2 && length(seq_len(dim(x)[3])[k]) == 1)
-		return(feem(
-			ret,
-			attr(x, 'emission')[i],
-			attr(x, 'excitation')[j],
-			attr(x, 'scales')[k]
-		))
+	if (length(dim(ret)) == 2 && length(sc) == 1)
+		return(feem(ret, em, ex, sc))
 	ret
 }
 
 `[<-.feemcube` <- function(x, i, j, k, value) {
-	# special case: assigning a cube or a FEEM
-	if (inherits(value, 'feemcube') || inherits(value, 'feem')) {
-		stopifnot( # wavelengths must match
-			attr(x, 'emission')[i] == attr(value, 'emission'),
-			attr(x, 'excitation')[j] == attr(value, 'excitation')
+	# special case: assigning a cube or a FEEM when the subset is a cube
+	if (
+		nargs() > 3 &&
+		(inherits(value, 'feemcube') || inherits(value, 'feem'))
+	) {
+		if (missing(k)) k <- TRUE # we'll need this later
+		# sanity check: wavelengths must match
+		xsub <- x[
+			if (missing(i)) TRUE else i,
+			if (missing(j)) TRUE else j,
+			k,
+			drop = FALSE
+		]
+		stopifnot(
+			attr(xsub, 'emission') == attr(value, 'emission'),
+			attr(xsub, 'excitation') == attr(value, 'excitation')
 		)
 		# scales should match, but we will proceed anyway
+		scales <- attr(xsub, 'scales')
 		rhs.scales <- attr(value,
 			if (inherits(value, 'feem')) 'scale' else 'scales'
 		)
-		if (any(dif <- attr(x, 'scales')[k] != rhs.scales)) {
+		if (any(dif <- scales != rhs.scales)) {
 			# gather the sample names, if any
-			if (is.null(rn <- dimnames(x)[[3]])) rn <- seq_len(dim(x)[3])
+			rn <- .cubenames(x)
 			# combine the LHS and RHS (could have different lengths!);
 			# leave those that differ
-			warn <- rbind(attr(x, 'scales')[k], rhs.scales)[, dif, drop = FALSE]
+			warn <- rbind(scales, rhs.scales)[, dif, drop = FALSE]
 			# format the warning table
 			warn <- rbind(
 				format(c('',  rn[k][dif]), justify = 'right'), ' ',
@@ -128,7 +140,7 @@ as.data.frame.feemcube <- function(x, ...) {
 		emission = attr(x, 'emission')[slice.index(x, 1)][mask],
 		excitation = attr(x, 'excitation')[slice.index(x, 2)][mask],
 		intensity = x[mask],
-		sample = .feemcsamples(x)[slice.index(x, 3)][mask],
+		sample = .cubenames(x)[slice.index(x, 3)][mask],
 		...
 	)
 }
@@ -142,9 +154,3 @@ plot.feemcube <- function(
 		data = as.data.frame(x), xlab = xlab, ylab = ylab, cuts = cuts,
 		col.regions = col.regions, as.table = as.table, ...
 	)
-
-.feemcsamples <- function(cube) if (is.null(dimnames(cube)[[3]])) {
-	as.factor(seq_len(dim(cube)[3]))
-} else {
-	make.unique(dimnames(cube)[[3]])
-}

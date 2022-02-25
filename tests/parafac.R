@@ -2,13 +2,7 @@ library(albatross)
 data(feems)
 
 # absolute minimum required; skip IFE correction
-cube <- feemscale(
-	feemscatter(
-		feemcube(feems, FALSE)[(1:60)*3, (1:18)*3, ],
-		rep(24, 4), 'pchip'
-	),
-	na.rm = T
-)
+cube <- feemscale(feemscatter(cube, rep(24, 4), 'pchip'), na.rm = T)
 
 # check subsetting
 subs <- c(1, 2, 4, 8)

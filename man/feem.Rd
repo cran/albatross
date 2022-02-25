@@ -119,12 +119,34 @@
       Read a \file{.dat} file as created by \dQuote{Panorama} software
       that comes with FLUORAT\reg-02-PANORAMA fluorometer.
       Such files contain a header describing the wavelength range, e.g.:
-      \preformatted{   240.0   650.0     1.0	; Emission(columns)
-   230.0   320.0     5.0	; Excitation(rows)}
+      \preformatted{   240.0   650.0     1.0    ; Emission(columns)
+   230.0   320.0     5.0    ; Excitation(rows)}
       The header is followed by the intensity data as matrix,
       whitespace-separated. Missing points (anti-Stokes area) stored as
       \eqn{0} or \eqn{100} and are automatically filtered out on import.
       No additional parameters are accepted.
+    }
+    \item{F900txt}{
+      Read an emission map text file created by \dQuote{F900} software
+      that comes with Edinburgh Instruments fluorescence spectrometers.
+      Separated by empty lines, these files are assumed to contain:
+      \enumerate{
+        \item Sample name
+        \item Metadata of each emission scan, with names in the first
+        column, including the excitation wavelengths
+        \item Fluorescence values with emission wavelengths in the first
+        column
+      }
+
+      The \code{fileEncoding} argument specifies the encoding of the
+      text file and has a safe default of \dQuote{latin1}. It should
+      typically correspond to the ANSI code page on the computer running
+      F900 that was used to create the file. See \code{\link{iconvlist}()}
+      for a list of encodings understood by R.
+
+      The \code{sep} argument specifies the column separator used in the
+      file. A semicolon \code{;} is typically used, though other options
+      are possible.
     }
   }}
   \item{\dots}{
@@ -169,6 +191,9 @@
   feem(
     system.file('extdata/ho_aq.csv', package = 'albatross'),
     'table', sep = ','
+  )
+  feem(
+    system.file('extdata/F900.txt', package = 'albatross'), 'F900txt'
   )
 }
 \keyword{methods}

@@ -1,27 +1,27 @@
 Package: albatross
 Type: Package
 Title: PARAFAC Analysis of Fluorescence Excitation-Emission Matrices
-Version: 0.3-2
+Version: 0.3-4
 Authors@R: c(person('Ivan', 'Krylov', role = c('aut', 'cre'), email =
-	'ikrylov@laser.chem.msu.ru'), person('Timur', 'Labutin', role = 'ths'))
+	'ikrylov@laser.chem.msu.ru'), person('Timur', 'Labutin', role = 'ths'),
+	person('Anastasia', 'Drozdova', role = 'rev'))
 Depends: R (>= 3.3)
-Imports: multiway (>= 1.0-4), pracma, lattice, parallel, Matrix
+Imports: multiway (>= 1.0-4), CMLS, pracma, lattice, parallel, Matrix
 Enhances: eemR, EEM
 Description: Perform parallel factor analysis (PARAFAC: Hitchcock, 1927)
 	<doi:10.1002/sapm192761164> on fluorescence excitation-emission
-	matrices (FEEMs): handle scattering signal and inner filter
-	effect, scale the dataset, fit the model; perform split-half
-	validation or jack-knifing. A modified approach called
-	"randomised split-half" is also available. The package has a low
-	dependency footprint (only two direct dependencies not in core
-	or recommended; four total non-core/recommended dependencies)
-	and has been tested on a wide range of R versions (including R
-	as old as 3.3.3 from Debian Stretch).
+	matrices: handle scattering signal and inner filter effect, scale
+	the dataset, fit the model; perform split-half validation or
+	jack-knifing. Modified approaches such as Whittaker interpolation,
+	randomised split-half, and fluorescence and scattering model
+	estimation are also available. The package has a low dependency
+	footprint and has been tested on a wide range of R versions.
 License: GPL (>= 3)
 NeedsCompilation: no
-Packaged: 2021-07-14 19:38:02 UTC; nobody
+Packaged: 2022-02-25 18:23:48 UTC; nobody
 Author: Ivan Krylov [aut, cre],
-  Timur Labutin [ths]
+  Timur Labutin [ths],
+  Anastasia Drozdova [rev]
 Maintainer: Ivan Krylov <ikrylov@laser.chem.msu.ru>
 Repository: CRAN
-Date/Publication: 2021-07-14 20:10:02 UTC
+Date/Publication: 2022-02-25 23:30:15 UTC

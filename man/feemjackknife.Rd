@@ -65,7 +65,17 @@
 \details{
   The function takes each sample out of the dataset, fits a PARAFAC
   model without it, then fits the outstanding sample to the model with
-  emission and excitation factors fixed.
+  emission and excitation factors fixed:
+
+  \deqn3{
+    \hat{\mathbf{c}} =
+      (\mathbf{A} \ast \mathbf{B})^{+} \times \mathrm{vec}(\mathbf{X})
+  }{c.hat = pseudoinverse(krprod(A, B)) \\\%*\\\% vec(X)}{
+    <b>c&#x0302;</b> = (
+      <b>A</b> &ast; <b>B</b>
+    )<sup>+</sup> &times;
+    <span style="font-style: normal;">vec</span>(<b>X</b>)
+  }
 
   The individual leave-one-out models (fitted loadings
   \eqn3{\mathbf A}{A}{<b>A</b>}, \eqn3{\mathbf B}{B}{<b>B</b>} and scores
@@ -132,7 +142,7 @@
   }}
 
   \item{plot.feemjackknife}{
-    A \pkg{lattice} plot object. Its \code{print} or \code{plot} method
+    A \CRANpkg{lattice} plot object. Its \code{print} or \code{plot} method
     will draw the plot on an appropriate plotting device.
   }
 
@@ -179,14 +189,7 @@
         \item{score.overall}{Score values for the overall model.}
         \item{score.predicted}{
           Score values estimated from the loadings of the model missing
-          a given sample: \deqn3{
-            \hat{\mathbf{c}} =
-              (\mathbf{A} \ast \mathbf{B})^{+} \times \mathbf{x}
-          }{c.hat = pseudoinverse(krprod(A, B)) \\\%*\\\% x}{
-            <b>c&#x0302;</b> = (
-              <b>A</b> * <b>B</b>
-            )<sup>+</sup> &times; <b>x</b>
-          }
+          a given sample.
         }
         \item{factor}{The component number.}
         \item{omitted}{
@@ -217,16 +220,13 @@
 }
 
 \seealso{
-  \code{\link{feemparafac}}
+  \code{\link{feemparafac}}, \code{\link{feemcube}}
 }
 \examples{\donttest{
   data(feems)
-  cube <- feemscale(
-    feemscatter(feemcube(feems, FALSE), rep(24, 4))[1:30*6, 1:9*6,],
-    na.rm = TRUE
-  )
+  cube <- feemscale(feemscatter(cube, rep(14, 4)), na.rm = TRUE)
   # takes a long time
-  jk <- feemjackknife(cube, nfac = 3, const = rep('nonneg', 3))
+  jk <- feemjackknife(cube, nfac = 3)
   # feemparafac methods should be able to use the environment and subset
   plot(jk$leaveone[[1]])
   plot(jk)

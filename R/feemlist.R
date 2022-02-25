@@ -45,7 +45,11 @@ feemlist.character <- function(
 		) nc <- lapply(nc, `[`, -1)
 		names(x) <- vapply(nc, paste, character(1), collapse = .Platform$file.sep)
 	}
-	lapply(x, feem, format = format, ...)
+	if (is.character(format)) {
+		fname <- format
+		format <- function(f, ...) feem(f, fname, ...)
+	}
+	lapply(.wraplist(x), .wrapfun(format), ...)
 }
 
 # Enhances: eemR

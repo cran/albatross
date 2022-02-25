@@ -2,17 +2,21 @@
 \alias{feemparafac}
 \alias{plot.feemparafac}
 \alias{coef.feemparafac}
+\alias{fitted.feemparafac}
+\alias{residuals.feemparafac}
 \title{
-  Compute PARAFAC on a FEEM cube object
+  Compute PARAFAC on a FEEM cube object and access the results
 }
 \description{
-  This function forwards its arguments to \code{\link{parafac}} from the
-  \pkg{multiway} package, optionally rescales the result and attaches
-  a few attributes.
+  \code{feemparafac} forwards its arguments to \code{\link{parafac}}
+  from the \CRANpkg{multiway} package, optionally rescales the result
+  and attaches a few attributes. Resulting objects of class
+  \code{feemparafac} can be accessed using methods presented below.
 }
 \usage{
   feemparafac(
-    X, \dots, rescale = 3, retries = 10, subset = TRUE, envir = NULL
+    X, \dots, const = rep('nonneg', 3),
+    rescale = 3, retries = 10, subset = TRUE, envir = NULL
   )
   \method{plot}{feemparafac}(x, type = c("image", "lines"), \dots)
   \method{coef}{feemparafac}(
@@ -20,6 +24,8 @@
       "all", "scores", "loadings", "emission", "excitation", "samples"
     ), \dots
   )
+  \method{fitted}{feemparafac}(object, \dots)
+  \method{residuals}{feemparafac}(object, \dots)
 }
 \arguments{
   \item{X}{
@@ -33,13 +39,18 @@
   \item{\dots}{\describe{
     \item{feemparafac}{Passed as-is to \code{\link{parafac}}.}
     \item{plot.feemparafac}{
-      Passed as-is to \pkg{lattice} functions \code{\link{levelplot}} and
-      \code{\link{xyplot}}.
+      Passed as-is to \CRANpkg{lattice} functions
+      \code{\link{levelplot}} and \code{\link{xyplot}}.
     }
-    \item{coef.feemparafac}{
+    \item{coef.feemparafac, fitted.feemparafac, residuals.feemparafac}{
       No other parameters are allowed.
     }
   }}
+  \item{const}{
+    A character vector of length 3 specifying the constraints for all
+    modes of \code{X}, passed to \code{\link{parafac}}. Defaults to
+    non-negativity. See \code{\link[CMLS]{const}} for more information.
+  }
   \item{rescale}{
     Rescale the resulting factors to leave all the variance in the given
     mode: emission, excitation, or sample (default). Set to \code{NA}
@@ -130,6 +141,12 @@
   error is raised if repeated runs of \code{\link{parafac}} do not
   return a (semi-)successfully fitted model.
 
+  After the PARAFAC decomposition is calculated, the scores are
+  multiplied by the \code{scales} attribute of the \code{X} object,
+  making them represent the cube with scaling undone. Use
+  \code{\link{feemscale}(remember = FALSE)} if you don't want to undo
+  the scaling.
+
   The \code{output} option is fixed to \code{"best"} value. Obtaining
   a list of alternative solutions can therefore be achieved by running:
 
@@ -146,10 +163,10 @@
   environment and passing it to multiple invocations of \code{feemparafac}
   will save a lot of memory when the results are serialised together.
 
-  \code{plot.feemparafac} provides sane defaults for \pkg{lattice} options
-  such as \code{xlab}, \code{ylab}, \code{as.table}, \code{auto.key},
-  \code{type}, \code{cuts}, \code{col.regions}, but they can be
-  overridden.
+  \code{plot.feemparafac} provides sane defaults for \CRANpkg{lattice}
+  options such as \code{xlab}, \code{ylab}, \code{as.table},
+  \code{auto.key}, \code{type}, \code{cuts}, \code{col.regions}, but
+  they can be overridden.
 }
 \value{
   \item{feemparafac}{
@@ -167,13 +184,22 @@
     data cube.
   }
   \item{plot.feemparafac}{
-    A \pkg{lattice} plot object. Its \code{print} or \code{plot} method
-    will draw the plot on an appropriate plotting device.
+    A \CRANpkg{lattice} plot object. Its \code{print} or \code{plot}
+    method will draw the plot on an appropriate plotting device.
   }
   \item{coef.feemparafac}{
     A \code{\link{data.frame}} or a list of them (only if \code{type}
     is \dQuote{all}). See the description of the \code{type} argument
     for more information.
+  }
+  \item{fitted.feemparafac}{
+    A \code{\link{feemcube}} object comparable to \code{X} as it was
+    decomposed by \code{\link{parafac}}, ignoring the scaling.
+  }
+  \item{resid.feemparafac}{
+    A \code{\link{feemcube}} object equal to \eqn3{
+      \mathbf{X} - \hat{\mathbf{X}}
+    }{X - fitted(X)}{<b>X</b> - <b>X&#x0302;</b>}.
   }
 }
 \references{
@@ -190,24 +216,21 @@
 }
 
 \seealso{
-  \code{\link{parafac}} for the \code{parafac} class structure;
-  \code{\link{fitted.feemparafac}}, \code{\link{residuals.feemparafac}},
-  \code{\link{write.openfluor}}, \code{\link{feemcube.feemparafac}} for
-  methods specific to values returned from this function.
+  \code{\link{parafac}} class structure;
+  \code{\link{write.openfluor}}, \code{\link{feemcube}} for methods
+  specific to values returned from this function.
 }
 \examples{
   data(feems)
-  cube <- feemscale(
-    feemscatter(
-      feemcube(feems, FALSE)[(1:45)*4,(1:13)*4,],
-      rep(24, 4)), na.rm = TRUE
-  )
-  factors <- feemparafac(cube, nfac = 2, const = rep('nonneg', 3))
+  cube <- feemscale(feemscatter(cube, rep(14, 4)), na.rm = TRUE)
+  factors <- feemparafac(cube, nfac = 3)
   plot(factors, 'image')
   plot(factors, 'line')
   head(coef(factors, 'loadings'))
   str(coef(factors, 'all'))
   str(feemcube(factors)) # original cube is retained
+  plot(fitted(factors))
+  plot(resid(factors))
 }
 \keyword{hplot}
 \keyword{method}

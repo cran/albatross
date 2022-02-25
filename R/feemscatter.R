@@ -119,26 +119,32 @@ interpolate.whittaker <- function(
 	feem
 }
 
-.feeminterpolate <- function(x, method, ...) switch(method,
-	pchip     = interpolate.pchip,
-	loess     = interpolate.loess,
-	kriging   = interpolate.kriging,
-	whittaker = interpolate.whittaker
-)(x, ...)
+.feeminterpolate <- function(x, method, mask, ...) {
+	# some interpolation methods don't handle empty mask well
+	if (all(!mask)) return(x)
+	switch(method,
+		pchip     = interpolate.pchip,
+		loess     = interpolate.loess,
+		kriging   = interpolate.kriging,
+		whittaker = interpolate.whittaker
+	)(x, mask, ...)
+}
+
+.scatter.mask <- function(x, widths, Raman.shift) outer(
+	attr(x, 'emission'), attr(x, 'excitation'),
+	function(em, ex)
+		# Rayleigh, Raman, 2*Rayleigh, 2*Raman
+		abs(em - ex) < widths[1] |
+		abs(em - 1/(1/ex - Raman.shift/1e7)) < widths[2] |
+		abs(em/2 - ex) < widths[3] |
+		abs(em/2 - 1/(1/ex - Raman.shift/1e7)) < widths[4]
+)
 
 feemscatter.feem <- function(
 	x, widths, method = c('omit', 'pchip', 'loess', 'kriging', 'whittaker'),
 	add.zeroes = 30, Raman.shift = 3400, ...
 ) {
-	scatter <- outer(
-		attr(x, 'emission'), attr(x, 'excitation'),
-		function(em, ex)
-			# Rayleigh, Raman, 2*Rayleigh, 2*Raman
-			abs(em - ex) < widths[1] |
-			abs(em - 1/(1/ex - Raman.shift/1e7)) < widths[2] |
-			abs(em/2 - ex) < widths[3] |
-			abs(em/2 - 1/(1/ex - Raman.shift/1e7)) < widths[4]
-	)
+	scatter <- .scatter.mask(x, widths, Raman.shift)
 	if (!is.na(add.zeroes)) x[
 		is.na(x) & outer(
 			attr(x, 'emission'), attr(x, 'excitation') - add.zeroes,

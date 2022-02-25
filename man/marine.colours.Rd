@@ -54,6 +54,27 @@ marine.colours(
 \value{
   A character vector of length \code{n} containing colour specifications
   for use with R graphics functions.
+  \if{latex,html}{
+    \makefigure{
+      png('man/figures/marinecolours.png', 400, 32)
+      par(mar = rep(0, 4))
+      n <- 256
+      image(matrix(seq(n), n), col = albatross::marine.colours(n))
+      dev.off()
+    }
+    \center{
+      \if{latex}{\figure{marinecolours.png}{options: width=2.5in}}
+      \if{html}{ \figure{marinecolours.png}{options: width="400"}}
+    }
+
+    \center{
+      The palette at the default values of \eqn3{C_{uv}^* = 0.65
+      }{chroma = 0.65}{C<sub>uv</sub><sup>*</sup> = 0.65},
+      \eqn3{L^* \in [0.35; 1]}{luminance in [0.35, 1]}{L<sup>*</sup> &in;
+      [0.35; 1]}, \eqn3{\alpha = \gamma = 1}{\alpha = \gamma = 1}{
+      &alpha; = &gamma; = 1}.
+    }
+  }
 }
 \references{
   Insired by cmocean palette called \dQuote{haline}
@@ -63,7 +84,7 @@ marine.colours(
 
 \seealso{
  \code{\link{hcl}} for the colour space used, CUBEHELIX
- (\url{http://www.mrao.cam.ac.uk/~dag/CUBEHELIX/}) for a
+ (\url{https://www.mrao.cam.ac.uk/~dag/CUBEHELIX/}) for a
  similar technique using BT.601 luminance coefficients and RGB colour
  space.
 }

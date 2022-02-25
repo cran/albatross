@@ -1,5 +1,51 @@
 \name{NEWS}
 \title{News for package \pkg{albatross}}
+\section{Changes in version 0.3-4 (2022-02-25)}{\itemize{
+  \item The \code{const} argument of \code{feemparafac} (and other
+  functions that call it) now defaults to non-negativity. The previous
+  default of an unconstrained model can be achieved by setting the
+  argument to \code{NULL}.
+
+  \item Fixed the bugs in \code{feemjackknife} and \code{feemsplithalf}
+  which prevented them from working with 1-component models.
+
+  \item Fixed the bugs preventing \code{feem} and \code{feemcube}
+  objects from being properly indexed by their \code{dimnames}.
+
+  \item The \code{data(feems)} dataset has been replaced with a
+  synthetic one, with perfectly matching absorbance spectra.
+
+  \item New function \code{feemflame} to model fluorescence and
+  scattering signal at the same time.
+
+  \item New function \code{feemindex} to calculate fluorescence indices
+  and named peak values used in dissolved organic matter analysis.
+
+  \item When the samples and the absorbance information don't match,
+  \code{feemife} now provides an explanation of what went wrong.
+
+  \item When an error happens during the processing of a \code{feem}
+  inside a collection (a \code{feemcube} or a list of \code{feem}s) or
+  during \code{feemlist} file import, the offending sample (or file) is
+  now reported, and the error can be trapped without losing the
+  traceback.
+
+  \item The \code{feemcube} function can now return the original cube
+  used to fit \code{feemparafac}, \code{feemjackknife},
+  \code{feemsplithalf} objects.
+
+  \item \code{feem} now supports text files from Edinburgh Instruments
+  F900 software.
+
+  \item \code{feemlist} can now take an importer function as an argument.
+
+  \item \code{feemsplithalf} can limit the number of split-combine
+  comparisons (the \code{splits} argument) or take a fixed list of
+  halves to fit and compare (the \code{fixed} argument).
+
+  \item HTML version of the manual now passes Tidy validation without
+  warnings.
+}}
 \section{Changes in version 0.3-2 (2021-07-14)}{\itemize{
   \item Fixed a bug in numerical differentiation code for
   \code{feemscatter(method = 'whittaker')} that resulted in \eqn{d}-th

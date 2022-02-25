@@ -1,5 +1,5 @@
 # bootstrap.R
-importFrom(stats, optim, reorder)
+importFrom(stats, reorder)
 importFrom(utils, setTxtProgressBar, txtProgressBar)
 importFrom(multiway, congru)
 
@@ -80,7 +80,13 @@ S3method(feemgrid, feemcube)
 S3method(feemgrid, list)
 
 # import.R
-importFrom(utils, read.table)
+importFrom(utils, read.table, type.convert)
+
+# indices.R
+export(feemindex)
+S3method(feemindex, feem)
+S3method(feemindex, feemcube)
+S3method(feemindex, list)
 
 # jackknife.R
 importFrom(pracma, pinv)
@@ -91,6 +97,8 @@ importFrom(lattice, ltext, panel.abline, panel.xyplot, xyplot)
 importFrom(stats, quantile, resid)
 S3method(plot, feemjackknife)
 S3method(coef, feemjackknife)
+
+S3method(feemcube, feemjackknife)
 
 # parafac.R
 importFrom(multiway, parafac)
@@ -127,9 +135,20 @@ importFrom(graphics, plot)
 importFrom(lattice, bwplot, trellis.par.get, xyplot)
 S3method(plot, feemsplithalf)
 
+S3method(feemcube, feemsplithalf)
+
 # whittaker.R
 importFrom(Matrix, Diagonal, sparseMatrix, crossprod, solve)
 
 # openfluor.R
 importFrom(utils, packageVersion, write.table)
 export(write.openfluor)
+
+# flame.R
+importFrom(CMLS, cmls)
+importFrom(stats, runif)
+export(feemflame)
+S3method(fitted, feemflame)
+S3method(residuals, feemflame)
+S3method(coef, feemflame)
+S3method(plot, feemflame)
