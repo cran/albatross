@@ -1,3 +1,7 @@
+# Here, we locate the scattering region and wrap interpolation methods
+# to present them as a common interface. We implement Whittaker
+# smoothing ourselves in a separate file.
+
 feemscatter <- function(x, ...) UseMethod('feemscatter')
 
 feemscatter.list <- feemscatter.feemcube <- function(x, ..., cl, progress = TRUE)
@@ -130,15 +134,26 @@ interpolate.whittaker <- function(
 	)(x, mask, ...)
 }
 
-.scatter.mask <- function(x, widths, Raman.shift) outer(
-	attr(x, 'emission'), attr(x, 'excitation'),
-	function(em, ex)
-		# Rayleigh, Raman, 2*Rayleigh, 2*Raman
-		abs(em - ex) < widths[1] |
-		abs(em - 1/(1/ex - Raman.shift/1e7)) < widths[2] |
-		abs(em/2 - ex) < widths[3] |
-		abs(em/2 - 1/(1/ex - Raman.shift/1e7)) < widths[4]
-)
+.scatter.mask <- function(x, widths, Raman.shift) {
+	# interpret single wavelength widths as +/- width
+	widths <- lapply(widths, function(p) abs(if (length(p) == 1) rep(p, 2) else p))
+	# group by Rayleigh, Raman
+	widths <- split(widths, ceiling(seq_along(widths)/2))
+	outer(
+		attr(x, 'emission'), attr(x, 'excitation'),
+		function(em, ex) Reduce(`|`, Map(
+			function(w, k) {
+				Ray <- em/k - ex
+				Ram <- em/k - 1/(1/ex - Raman.shift/1e7)
+				(Ray > -w[[1]][1] & Ray < w[[1]][2]) | (
+					if (length(w) >= 2)
+						(Ram > -w[[2]][1] & Ram < w[[2]][2])
+					else FALSE
+				)
+			}, widths, as.numeric(names(widths))
+		))
+	)
+}
 
 feemscatter.feem <- function(
 	x, widths, method = c('omit', 'pchip', 'loess', 'kriging', 'whittaker'),

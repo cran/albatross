@@ -1,3 +1,8 @@
+# Split-half analysis is performed with the help of bootparafac(). There
+# are many useful ways to split a dataset; we don't have a separate
+# splitting step before performing the analysis. We also provide plots
+# and coef() methods.
+
 .splitcombine <- function(samples, splits) {
 	# splits must be a scalar or a 2-element vector of whole numbers
 	# splits[1] should be even because we want to combine into halves

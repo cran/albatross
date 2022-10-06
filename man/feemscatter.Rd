@@ -24,16 +24,187 @@
     handle the scattering signal in.
   }
   \item{widths}{
-    A numeric vector of length 4 containing the widths (in nm) of the
-    scattering signal, in the following order:
+    A numeric vector or a list containing the half-widths of the
+    scattering bands, in nm. Rayleigh scattering is followed by Raman
+    scattering, followed by second diffraction order for Rayleigh and
+    Raman, and so on. (Typically, there's no need for anything higher
+    than third order, and even that is rare.) For example:
+
     \enumerate{
       \item Rayleigh scattering
       \item Raman scattering
       \item Rayleigh scattering, \eqn3{2\lambda}{2 lambda}{2&lambda;}
       \item Raman scattering, \eqn3{2\lambda}{2 lambda}{2&lambda;}
+      \item \ldots
     }
-    Set a width to \eqn{0} if you don't want to handle this particular
-    kind of scattering signal.
+
+    For higher diffraction orders, the peak widths are proportionally
+    scaled, making it possible to provide the same number for all kinds
+    of scattering visible in the EEM. Set a width to \eqn{0} if you
+    don't want to handle this particular kind of scattering signal.
+
+    It's possible to specify the bands asymmetrically. If the area to be
+    corrected should range from \var{x} nm to the left of the scattering
+    peak to \var{y} nm to the right of it, pass a list instead of a
+    vector, and put a two-element vector \code{c(\var{x}, \var{y})} for
+    the appropriate kind of scattering. For example, passing
+    \code{widths = list(c(30, 20), 20)} means \dQuote{handle \eqn{-30}
+    nm to the left and \eqn{+20} nm to the right of Rayleigh peak and
+    \eqn3{\pm 20}{+/- 20}{&pm; 20} nm around Raman peak}.
+
+    To sum up, given two half-widths \eqn3{W_1}{W[1]}{W<sub>1</sub>} and
+    \eqn3{W_2}{W[2]}{W<sub>2</sub>}, the test for being inside a
+    \eqn{k}th diffraction order of a scattering band is as follows:
+
+    \deqn3{
+      -W_1 <
+      \frac{\lambda_\mathrm{center}}{k} - \lambda_\mathrm{em}
+      < +W_2
+    }{-W[1] < lambda.center/k - lambda.em < +W[2]}{
+      -W<sub>1</sub> &lt;
+      <sup>&lambda;<sub>center</sub></sup>/<sub>k</sub>
+        - &lambda;<sub>em</sub>
+      &lt; +W<sub>2</sub>
+    }
+    \makefigure{
+      pdf('man/figures/scatter-widths.pdf', 6, 3.2, pointsize = 10)
+      dev.control(displaylist = 'enable')
+
+      em.range <- c(300, 700)
+      ex.range <- c(210, 550)
+      widths <- list(
+        list(c(50, 20), 20),
+        list(c(20, 20), 20),
+        list(c(10, 10), 0)
+      )
+      Raman.shift <- 3400
+
+      # 1. The rectangle itself
+      image(
+        matrix(0, 1, 1), col = NA,
+        xlim = em.range, ylim = ex.range,
+        xlab = quote(lambda[em] * ', nm'),
+        ylab = quote(lambda[ex] * ', nm'),
+        main = 'widths = list(c(50, 20), 20, 20, 20, 10), Raman.shift = 3400'
+      )
+
+      # 2. The scattering areas and their centers
+      sc <- c(min(em.range, ex.range), max(em.range, ex.range))
+      Map(function(p, k) {
+        polygon(
+          c(sc * k - p[[1]][[1]] * k, rev(sc * k) + p[[1]][[2]] * k),
+          c(sc, rev(sc)),
+          border = NA, col = '#D0D0D0'
+        )
+        if (p[[2]] > 0) {
+          wl.ex <- seq(sc[1], sc[2], 1)
+          wl.em <- 1/(1/wl.ex - Raman.shift/1e7)
+          polygon(
+            c(wl.em * k - p[[2]] * k, rev(wl.em * k) + p[[2]] * k),
+            c(wl.ex, rev(wl.ex)),
+            border = NA, col = '#D0D0D0'
+          )
+          lines(wl.em * k, wl.ex, lty = 3)
+        }
+        lines(sc * k, sc, lty = 3)
+      }, widths, seq_along(widths))
+
+      # arrow length
+      dp <- 15
+
+      # Raman shift arrow
+      p <- 400
+      arrows(
+        p, p, x1 = 1/(1/p - Raman.shift/1e7), len = .1
+      )
+      text(
+        1/(1/p - Raman.shift/1e7) + dp / 2, p,
+        bquote(
+          (lambda[ex]^-1 - lambda[em]^-1) %.% 10^7
+          == .(Raman.shift) * ' cm'^-1
+        ),
+        adj = c(0, .6)
+      )
+
+      # scatter width arrows
+      p <- 530
+      segments(p, p, x1 = p - widths[[1]][[1]][1])
+      arrows(
+        c(p - widths[[1]][[1]][1] - dp, p + dp), p,
+        x1 = c(p - widths[[1]][[1]][1], p), len = .1
+      )
+      text(
+        p - widths[[1]][[1]][1] - dp, p,
+        paste('widths[[1]][1] = ', widths[[1]][[1]][1], 'nm'),
+        pos = 2
+      )
+
+      p <- 470
+      segments(p, p, x1 = p + widths[[1]][[1]][2])
+      arrows(
+        c(p + widths[[1]][[1]][2] + dp, p - dp), p,
+        x1 = c(p + widths[[1]][[1]][2], p), len = .1
+      )
+      text(
+        p - dp, p,
+        paste('widths[[1]][2] =', widths[[1]][[1]][2], 'nm'),
+        pos = 2
+      )
+
+      p <- 500
+      pR <- 1/(1/p - Raman.shift/1e7)
+      segments(pR, p, x1 = pR + widths[[1]][[2]])
+      arrows(
+        c(pR - dp, pR + widths[[1]][[2]] + dp), p,
+        x1 = c(pR, pR  + widths[[1]][[2]]), len = .1
+      )
+      text(
+        pR + widths[[1]][[2]], p,
+        paste('widths[[2]] =', widths[[2]][[1]][1], 'nm'),
+        pos = 1
+      )
+
+      p <- 310
+      segments(2 * p, p, x1 = 2 * (p - widths[[2]][[1]][1]))
+      arrows(
+        c(2 * (p - widths[[2]][[1]][1]) - dp, 2 * p + dp), p,
+        x1 = c(2 * (p - widths[[2]][[1]][1]), 2 * p), len = .1
+      )
+      text(
+        2 * (p - widths[[2]][[1]][1]) - dp, p,
+        bquote('widths[[3]]' / 2 == .(widths[[2]][[1]][1]) * ' nm'),
+        pos = 2
+      )
+
+      p <- 230
+      segments(3 * p, p, x1 = 3 * (p - widths[[2]][[1]][1]))
+      arrows(
+        c(3 * (p - widths[[3]][[1]][1]) - dp, 3 * p + dp), p,
+        x1 = c(3 * (p - widths[[3]][[1]][1]), 3 * p), len = .1
+      )
+      text(
+        3 * (p - widths[[2]][[1]][1]), p,
+        bquote('widths[[5]]' / 3 == .(widths[[3]][[1]][1]) * ' nm'),
+        pos = 2
+      )
+
+      dev.print(
+        svg, 'man/figures/scatter-widths.svg',
+        width = 6, height = 3.2, pointsize = 10
+      )
+      dev.off()
+    }
+    \if{latex}{\figure{scatter-widths.pdf}{options: width=4.5in}}
+    \if{html}{ \figure{scatter-widths.svg}{options: width="700"}}
+
+    \if{latex,html}{
+      In this example, a much larger portion of the anti-Stokes area is
+      removed near the first order Rayleigh scattering signal than in
+      the Stokes area. This can be useful to get rid of undesired signal
+      where no fluorescence is observed on some spectrometers. The
+      second and third order scattering signal areas are automatically
+      scaled \eqn{2} and \eqn{3} times, respectively.
+    }
   }
   \item{method}{
     A string choosing \emph{how} to handle the scattering signal:

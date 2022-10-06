@@ -1,3 +1,8 @@
+# Implementation of weighted Whittaker smoothing. Currently, only used
+# by .feeminterpolate in feemscatter.R. There's also an "asymmetric
+# least squares" baseline estimation method, but it's not called from
+# anywhere. See whittaker2.Rd for implementation details.
+
 # Return coefficients to mutiply f(x) by to estimate the
 # `length(x)-1`-th derivative. Estimate is calculated either at midpoint
 # or between the two middle points, depending on whether length(x) is

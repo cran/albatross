@@ -1,3 +1,8 @@
+# FLuorescence and scAttering Model Estimation, see ?feemflame for a
+# high-level overview and ?cmf for implementation details. We use our
+# own constrained matrix factorisation because it's easy enough given
+# our dependency on CMLS.
+
 wcmls <- function(X, A, W, ..., struc = NULL)
 	matrix( # NB: vapply with scalar FUN.VALUE returns a vector
 		vapply(seq_len(ncol(X)), function(j) {

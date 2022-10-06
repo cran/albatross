@@ -1,3 +1,6 @@
+# Inner-filter effect correction and matching absorbance spectra to
+# fluorescence spectra happens here.
+
 # abs2list: convert absorbance data into a list of 2-column matrices
 abs2list <- function(x) UseMethod('abs2list')
 abs2list.matrix <- abs2list.data.frame <- function(x) lapply(

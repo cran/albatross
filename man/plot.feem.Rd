@@ -1,6 +1,7 @@
 \name{plot.feem}
 \alias{plot.feem}
 \alias{plot.feemcube}
+\alias{plot.feem.resid}
 \title{Plot a FEEM object}
 \description{
   Plot a 2D fluorescence intensity surface as a pseudo-colour image.
@@ -15,6 +16,9 @@
   x,
   xlab = quote(lambda[em] * ", nm"), ylab = quote(lambda[ex] * ", nm"),
   cuts = 128, col.regions = marine.colours(256), as.table = TRUE, ...
+)
+\method{plot}{feem.resid}(
+  x, \dots, at, col.regions = diverging.colours(256)
 )
 }
 \arguments{
@@ -32,8 +36,13 @@
     areas between them assigned different colours.
   }
   \item{col.regions}{
-    The palette to take the colours from, a character vector of R colour
-    specifications.
+    The palette to take the colours from, a character vector of \R
+    colour specifications.
+  }
+  \item{at}{
+    The breakpoints in the intensity values. For residual plots,
+    automatically set in a symmetric manner, ignoring the \code{cuts}
+    argument.
   }
   \item{as.table}{
     Whether to draw the panels left to right, top to bottom. (Otherwise

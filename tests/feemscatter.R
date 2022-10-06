@@ -50,3 +50,57 @@ z <- feem(
 	c(310, 320, 330), c(300, 310, 320)
 )
 feemscatter(z, rep(20, 4), 'pchip')
+# this previously failed because t() silently produced botched feems
+feemscatter(feems$a, rep(25, 4), 'pchip', by = 'both')
+
+z <- feem(
+	matrix(0, 401, 69),
+	300:700, seq(210, 550, 5)
+)
+
+for (w in list(
+	list(
+		# Rayleigh +/- 10 nm
+		10,
+		quote(abs(emission - excitation) < 10)
+	),
+	list(
+		# Rayleigh & Raman +/- 10 nm
+		c(10, 10),
+		quote(
+			abs(emission - excitation) < 10 |
+			abs(emission - 1/(1/excitation - 3400/1e+07)) < 10
+		)
+	),
+	list(
+		# Rayleigh -20 +10, Raman +/- 10 nm
+		list(c(20, 10), 10),
+		quote(
+			((emission - excitation > -20) & (emission - excitation < 10)) |
+			abs(emission - 1/(1/excitation - 3400/1e+07)) < 10
+		)
+	),
+	list(
+		# orders 1&2 +/- 10 nm; auto-scale 2nd and 3rd order; 3rd order Rayleigh +/- 5 nm but no Raman
+		c(10, 10, 10, 10, 5),
+		quote(
+			abs(emission - excitation) < 10 |
+			abs(emission - 1/(1/excitation - 3400/1e+07)) < 10 |
+			abs(emission/2 - excitation) < 10 |
+			abs(emission/2 - 1/(1/excitation - 3400/1e+07)) < 10 |
+			abs(emission/3 - excitation) < 5
+		)
+	)
+)) {
+	d <- merge(
+		as.data.frame(z),
+		as.data.frame(feemscatter(z, w[[1]], Raman.shift = 3400)),
+		by = c('emission', 'excitation'),
+		all = TRUE
+	)
+	mask <- eval(w[[2]], d)
+	stopifnot(
+		all(is.na(d$intensity.y[mask])),
+		all(!is.na(d$intensity.y[!mask]))
+	)
+}

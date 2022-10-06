@@ -190,14 +190,19 @@
   \item{residuals.feemparafac}{
     A \code{\link{feemcube}} object equal to \eqn3{
       \mathbf{X} - \hat{\mathbf{X}}
-    }{X - fitted(X)}{<b>X</b> - <b>X&#x0302;</b>}.
+    }{X - fitted(X)}{<b>X</b> - <b>X&#x0302;</b>}, with an extra class
+    \code{feem.resid} set. Objects of this class are plotted with a
+    different default palette, see \code{\link{plot.feem.resid}}.
   }
   \item{coef.feemflame}{
     See the description of the \code{type} argument.
   }
 }
-\references{\itemize{
-  \item \bibentry{'Article',
+% NB: old versions of R don't work well with stage=install in the \doi
+% definition in newer R
+\RdOpts{stage=build}
+\references{
+  \bibentry{'Article',
     author = c(
       person('R.', 'Tauler'),
       person('I.', paste0(
@@ -217,7 +222,8 @@
     pages = '55-75',
     doi = '10.1002/(SICI)1099-128X(199801/02)12:1<55::AID-CEM501>3.0.CO;2-#'
   }
-  \item \bibentry{'Misc',
+
+  \bibentry{'Misc',
     author = c(
       person('I.', 'Krylov'), person('T.', 'Labutin'),
       person('Å.', 'Rinnan'), person('R.', 'Bro')
@@ -230,7 +236,7 @@
     howpublished = '17th Scandinavian Symposium on Chemometrics',
     url = 'https://ssc17.org/abstract/Krylov1.html'
   } \url{https://files.libs.chem.msu.ru/~ivan/SSC17/P13.pdf}.
-}}
+}
 \note{
   The structure of the \code{feemflame} object, the initialisation, and
   the constraints may be subject to change in a future version.

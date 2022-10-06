@@ -1,3 +1,8 @@
+# Everything related to performing the PARAFAC decomposition itself is
+# here. We wrap multiway::parafac and provide restarts on unsuccessful
+# fits, rescaling (e.g. make loadings of unit norm), plots and coef()
+# methods returning long-format data.frames.
+
 feemparafac <- function(
 	X, ..., const = rep('nonneg', 3),
 	rescale = 3, retries = 10, subset = TRUE, envir = NULL
@@ -63,7 +68,8 @@ fitted.feemparafac <- function(object, ...) {
 
 residuals.feemparafac <- function(object, ...) {
 	stopifnot(length(list(...)) == 0)
-	feemcube(object) - fitted(object)
+	ret <- feemcube(object) - fitted(object)
+	structure(ret, class = c('feem.resid', class(ret)))
 }
 
 coef.feemparafac <- function(

@@ -1,3 +1,7 @@
+# Fluorescence indices are functions of FEEMs. The code that extracts
+# the wavelengths in a mostly uniform way is somewhat complicated, but
+# it prevents boring repetitive code later.
+
 feemindex <- function(x, ...) UseMethod('feemindex')
 
 # must *always* return a data.frame

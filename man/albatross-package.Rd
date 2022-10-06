@@ -69,15 +69,17 @@
 
   Once the analysis is finished, the PARAFAC model can be exported for
   the OpenFluor database (\code{\link{write.openfluor}}) or stored as an
-  R object using standard R tools (\code{\link{save}} or
+  \R object using standard \R tools (\code{\link{save}} or
   \code{\link{saveRDS}}).
 
   \packageIndices{albatross}
 }
 \author{
-Timur Labutin
+Ivan Krylov
 
-Maintainer: Ivan Krylov
+Scientific advisor: Timur Labutin
+
+With contrubitions from: Anastasia Drozdova
 }
 \references{
   \bibentry{'Article',

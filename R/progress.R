@@ -1,3 +1,6 @@
+# Currently, this progress bar is only used in feemflame(), and the
+# interface is very rough.
+
 vtolProgressBar <- function(ctol) {
 	i <- 0
 	maxvtol <- NULL
@@ -16,6 +19,7 @@ vtolProgressBar <- function(ctol) {
 			)
 		}
 		cat('\r', msg, sep = '')
+		flush.console()
 	}
 	close <- function() cat('\n')
 	list(up = up, close = close)

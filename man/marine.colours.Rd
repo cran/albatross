@@ -1,15 +1,19 @@
 \name{marine.colours}
 \alias{marine.colours}
-\title{Marine colours}
+\alias{diverging.colours}
+\title{Perceptually uniform palettes}
 \description{
-  Create a perceptually contiguous palette of R colours, using hues
-  typically associated with natural waters.
+  Create perceptually continuous palettes of \R colours.
 }
 \usage{
-marine.colours(
-  n, chroma = 0.65, luminance = c(0.35, 1),
-  alpha = 1, gamma = 1, fixup = TRUE
-)
+  marine.colours(
+    n, chroma = 0.65, luminance = c(0.35, 1),
+    alpha = 1, gamma = 1, fixup = TRUE
+  )
+  diverging.colours(
+    n, chroma = c(.35, .85), luminance = c(.30, .95),
+    alpha = 1, gamma = 1, fixup = TRUE
+  )
 }
 \arguments{
   \item{n}{
@@ -17,15 +21,15 @@ marine.colours(
   }
   \item{chroma}{
     Specifies the chroma (how saturated should the colours be) for the
-    palette, a real number between 0 and 1. May also be a two-element
-    vector, in which case the chroma is changed smoothly from start to
-    finish of the resulting palette.
+    palette, a real number between \eqn{0} and \eqn{1}. May also be a
+    two-element vector, in which case the chroma is changed smoothly
+    from start to finish of the resulting palette.
   }
   \item{luminance}{
     Specifies the luminance (how bright should the colours be) of the
     colours constituting the palette. Typically, a two-element vector
-    of real numbers between 0 and 1 to indicate smooth change along the
-    palette, but can also be a fixed number.
+    of real numbers between \eqn{0} and \eqn{1} to indicate smooth
+    change along the palette, but can also be a fixed number.
   }
   \item{alpha}{
     Specifies the transparency of the colours of the palette. As above,
@@ -51,9 +55,23 @@ marine.colours(
     palette may make it less perceptually uniform.
   }
 }
+\details{
+  The \code{marine.colours} palette is used by default by all
+  \code{\link{plot}} methods for FEEM-like data to show absolute values.
+  It is designed to retain perceptual uniformity even after complete
+  desaturation.
+
+  The \code{diverging.colours} palette is used by
+  \code{\link{plot.feem.resid}} to display residual values. People with
+  severe colour vision deficiency (tritanopia or monochromacy) won't be
+  able to discern positive and negative branches of the palette, but
+  it's supposed to be legible for people with deuteranopia and
+  protanopia.
+}
 \value{
   A character vector of length \code{n} containing colour specifications
-  for use with R graphics functions.
+  for use with \R graphics functions.
+
   \if{latex,html}{
     \makefigure{
       png('man/figures/marinecolours.png', 400, 32)
@@ -62,33 +80,42 @@ marine.colours(
       image(matrix(seq(n), n), col = albatross::marine.colours(n))
       dev.off()
     }
-    \center{
-      \if{latex}{\figure{marinecolours.png}{options: width=2.5in}}
-      \if{html}{ \figure{marinecolours.png}{options: width="400"}}
-    }
+    \if{latex}{\figure{marinecolours.png}{options: width=2.5in}}
+    \if{html}{ \figure{marinecolours.png}{options: width="400"}}
 
-    \center{
-      The palette at the default values of \eqn3{C_{uv}^* = 0.65
-      }{chroma = 0.65}{C<sub>uv</sub><sup>*</sup> = 0.65},
-      \eqn3{L^* \in [0.35; 1]}{luminance in [0.35, 1]}{L<sup>*</sup> &in;
-      [0.35; 1]}, \eqn3{\alpha = \gamma = 1}{\alpha = \gamma = 1}{
-      &alpha; = &gamma; = 1}.
+    The \code{marine.colours} palette at the default values of
+    \eqn3{C_{uv}^* = 0.65}{chroma = 0.65}{C<sub>uv</sub><sup>*</sup> =
+    0.65}, \eqn3{L^* \in [0.35; 1]}{luminance in [0.35, 1]}{L<sup>*</sup>
+    &in; [0.35; 1]}, \eqn3{\alpha = \gamma = 1}{\alpha = \gamma = 1}{
+    &alpha; = &gamma; = 1}.
+
+    \makefigure{
+      png('man/figures/divergingcolours.png', 400, 32)
+      par(mar = rep(0, 4))
+      n <- 256
+      image(matrix(seq(n), n), col = albatross::diverging.colours(n))
+      dev.off()
     }
+    \if{latex}{\figure{divergingcolours.png}{options: width=2.5in}}
+    \if{html}{ \figure{divergingcolours.png}{options: width="400"}}
+
+    The \code{diverging.colours} palette at the default values of
+    \eqn3{C_{uv}^* \in [0.35; 0.85]}{chroma in [0.35, 0.85]}{
+    C<sub>uv</sub><sup>*</sup> &in; [0.35; 0.85]}, \eqn3{L^* \in [0.30;
+    0.95]}{luminance in [0.35, 0.95]}{L<sup>*</sup> &in; [0.30; 0.95]},
+    \eqn3{\alpha = \gamma = 1}{\alpha = \gamma = 1}{&alpha; = &gamma; = 1}.
   }
 }
 \references{
   Insired by cmocean palette called \dQuote{haline}
-  (\url{https://matplotlib.org/cmocean/#haline}), but using R's
+  (\url{https://matplotlib.org/cmocean/#haline}), but using \R's
   implementation of polar CIE-LUV colour space instead of CAM02-UCS.
-}
 
-\seealso{
- \code{\link{hcl}} for the colour space used, CUBEHELIX
- (\url{https://www.mrao.cam.ac.uk/~dag/CUBEHELIX/}) for a
- similar technique using BT.601 luminance coefficients and RGB colour
- space.
+  CUBEHELIX (\url{https://www.mrao.cam.ac.uk/~dag/CUBEHELIX/}) is a
+  similar technique using BT.601 luminance coefficients and RGB colour
+  space.
 }
-
+\seealso{\code{\link{plot.feem}}, \code{\link{hcl}}}
 \examples{
   image(volcano, col = marine.colours(256))
 }

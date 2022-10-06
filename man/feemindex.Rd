@@ -209,9 +209,7 @@
   }
 
   \if{latex,html}{
-    \Sexpr[stage=build,results=rd]{
-      if (!dir.exists('man/figures')) dir.create('man/figures')
-
+    \makefigure{
       indices <- list(
         HIX = list(254, list(c(435, 480), c(300, 345))),
         BIX = list(310, list(380, 430)),
@@ -319,20 +317,19 @@
         width = 6, height = 2.8, pointsize = 9
       )
       dev.off()
-      ' ' # results=hide and results=text are broken on old R in different ways
     }
 
-    \if{latex}{\center{\figure{feemindex.pdf}{options: width=6in}}}
-    \if{html}{ \center{\figure{feemindex.svg}{options: width="700"}}}
+    \if{latex}{\figure{feemindex.pdf}{options: width=6in}}
+    \if{html}{ \figure{feemindex.svg}{options: width="700"}}
 
-    \center{Positions of the peaks and the areas used to determine the
+    Positions of the peaks and the areas used to determine the
     fluorescence indices of an EEM. The Rayleigh and Raman scattering
     areas for both 1st and 2nd diffraction orders are shown in grey,
     assuming a width of \eqn3{\pm 20}{+/- 20}{&pm;20} nm and a Raman
     shift of \eqn3{3400 \: \mathrm{cm}^{-1}}{3400 cm^-1}{3400
       <span style="font-style:normal;">cm</span><sup>-1</sup>}. The
     tolerance interval of \eqn3{\pm 1}{+/- 1}{&pm;1} nm is invisible
-    at the scale of the figure.}
+    at the scale of the figure.
 
     Integration for HIX and YFI is done using the trapezoidal method:
 
@@ -382,7 +379,7 @@
   \item \bibentry{'Article',
     title = 'Spectrofluorometric characterization of dissolved organic matter for indication of precursor organic material and aromaticity',
     volume = 46,
-    doi = 'https://doi.org/10.4319/lo.2001.46.1.0038',
+    doi = '10.4319/lo.2001.46.1.0038',
     number = 1,
     journal = 'Limnology and Oceanography',
     author = c(person(c('Diane', 'M'), 'McKnight'), person(c('Elizabeth', 'W'), 'Boyer'), person(c('Paul', 'K'), 'Westerhoff'), person(c('Peter', 'T'), 'Doran'), person('Thomas', 'Kulbe'), person(c('Dale', 'T'), 'Andersen')),

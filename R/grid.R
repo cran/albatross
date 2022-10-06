@@ -1,3 +1,7 @@
+# Use interpolation to change the wavelength grid of a FEEM or a group
+# of them. Not very reliable, can be easily made to return nonsense if
+# there's large areas of NAs.
+
 feemgrid <- function(x, ...) UseMethod('feemgrid')
 
 .cliprange <- function(wl, ranges)

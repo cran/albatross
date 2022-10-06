@@ -1,3 +1,7 @@
+# See https://openfluor.org/ and their example file for the format.
+# There's no formal grammar and debugging parse failures can be hard,
+# but the format itself is simple enough.
+
 .maybe.rescale <- function(x, shift, scale) {
 	if (shift) x <- x - min(x)
 	if (scale) x <- x / max(x)

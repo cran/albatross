@@ -1,4 +1,4 @@
-# constructors
+# FEEM is a matrix with designated dimensions and ceratin attributes.
 
 feem <- function(x, ...) UseMethod('feem')
 
@@ -111,3 +111,5 @@ plot.feem <- function(
 	}
 	NextMethod()
 }
+
+t.feem <- function(x) unclass(NextMethod())

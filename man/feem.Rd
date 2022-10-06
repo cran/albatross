@@ -11,7 +11,7 @@
 }
 \description{
   Functions to create fluorescence excitation-emission matrix objects from
-  R matrices coupled with excitation and emission wavelengths, three-column
+  \R matrices coupled with excitation and emission wavelengths, three-column
   \code{data.frame}s containing \eqn3{
     (\lambda_\mathrm{em}, \lambda_\mathrm{ex}, I)
   }{(\lambda.em, \lambda.ex, intensity)}{
@@ -49,14 +49,14 @@
     argument must specify the kind of file to parse, see below.
   }
   \item{emission}{
-    If conversing a matrix, this should be a vector of emission wavelengths,
+    If converting a matrix, this should be a vector of emission wavelengths,
     each wavelength corresponding to a row of the matrix.
 
     If converting a \code{data.frame}, this optional argument specifies the
     name of the column containing the emission wavelengths.
   }
   \item{excitation}{
-    If conversing a matrix, this should be a vector of excitation wavelengths,
+    If converting a matrix, this should be a vector of excitation wavelengths,
     each wavelength corresponding to a column of the matrix.
 
     If converting a \code{data.frame}, this optional argument specifies the
@@ -107,10 +107,13 @@
 
       The \code{fileEncoding} argument is treated specially (but
       preserving the \code{\link{read.table}} semantics regarding
-      numbers). The file contents are decoded into ASCII, dropping the
-      unrepresentable bytes (since we only care about numbers), before
-      being passed to \code{\link{read.table}}. This only works when
-      \code{file} is a file path, not a connection.
+      numbers), preventing errors in case the session charset cannot
+      represent all characters from the file: the contents are first
+      converted to UTF-8, then forwarded to \code{\link{read.table}}.
+      This only works when \code{file} is a file path, not a connection.
+      (When passing a connection with an encoding attribute set, make
+      sure that the file contents after decoding can be represented in
+      the session charset.)
 
       All other arguments are passed to \code{\link{read.table}}, with
       \code{fill} defaulting to \code{TRUE} instead of \code{FALSE}.
@@ -142,7 +145,7 @@
       text file and has a safe default of \dQuote{latin1}. It should
       typically correspond to the ANSI code page on the computer running
       F900 that was used to create the file. See \code{\link{iconvlist}()}
-      for a list of encodings understood by R.
+      for a list of encodings understood by \R.
 
       The \code{sep} argument specifies the column separator used in the
       file. A semicolon \code{;} is typically used, though other options

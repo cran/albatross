@@ -1,3 +1,7 @@
+# "bootstrap" computes parafac decompositions with different subsets and
+# parameters, matches and rescales them to be comparable more easily,
+# optionally performs some post-processing (see feemjackknife).
+
 # argmin over c[] ||A - diag(c) %*% B||^2
 .matscale <- function(A, B) {
 	stopifnot(ncol(A) == ncol(B))

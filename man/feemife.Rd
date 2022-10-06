@@ -87,7 +87,6 @@
     title = 'Principles of Fluorescence Spectroscopy, 3rd ed.',
     year = '2006',
     publisher = 'Springer US',
-    url = 'https://link.springer.com/la/book/9780387312781',
     doi = '10.1007/978-0-387-46312-4'
   }
 

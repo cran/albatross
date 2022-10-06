@@ -1,5 +1,9 @@
-# lapply or Map function fun to each element of x and ...
-# optional progress bar and parallel processing
+# "cubeapply" works like lapply or Map on feemcubes or lists of feems.
+# If an error occurs, it's augmented with the information about the
+# sample that caused it, but the original traceback is preserved (at the
+# cost of making it noticeably longer).
+# Optionally, there's a progress bar and support for parallel
+# processing.
 cubeapply <- function(x, ...) UseMethod('cubeapply')
 cubeapply.feemcube <- function(x, fun, ...) feemcube(fun(as.list(x), ...), TRUE)
 

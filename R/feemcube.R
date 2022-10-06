@@ -1,3 +1,5 @@
+# feemcube is a 3-way array with designated dimensions (emission
+# wavelengths, excitation wavelengths, samples) and some attributes.
 feemcube <- function(x, ...) UseMethod('feemcube')
 
 feemcube.list <- function(x, all.wavelengths, ...) {

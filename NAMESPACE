@@ -25,6 +25,7 @@ S3method(plot, feem)
 
 S3method(`[`, feem)
 S3method(`[<-`, feem)
+S3method(t, feem)
 
 # feemcube.R
 export(feemcube)
@@ -119,9 +120,13 @@ S3method(plot, feemparafac)
 
 S3method(feemcube, feemparafac)
 
+# progress.R
+importFrom(utils, flush.console)
+
 # marine.R
 importFrom(grDevices, hcl)
 export(marine.colours)
+export(diverging.colours)
 
 # splithalf.R
 importFrom(utils, combn)
@@ -152,3 +157,7 @@ S3method(fitted, feemflame)
 S3method(residuals, feemflame)
 S3method(coef, feemflame)
 S3method(plot, feemflame)
+
+# resid.R
+S3method(plot, feem.resid)
+S3method(`[`, feem.resid)

@@ -225,10 +225,8 @@
         )
         dev.off()
       }
-      \center{
-        \if{latex}{\figure{whittaker2points.pdf}{options: width=2.5in}}
-        \if{html}{ \figure{whittaker2points.svg}{options: width="400"}}
-      }
+      \if{latex}{\figure{whittaker2points.pdf}{options: width=2.5in}}
+      \if{html}{ \figure{whittaker2points.svg}{options: width="400"}}
     }
     \if{text}{\figure{}{
            h1  <--------------->

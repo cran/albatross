@@ -1,3 +1,6 @@
+# Jack-knifing is performed using "bootparafac" from bootstrap.R. Most
+# methods on feemjackknife objects are also implemented here.
+
 feemjackknife <- function(cube, ..., progress = TRUE) {
 	slices <- c(list(1:dim(cube)[3]), lapply(1:dim(cube)[3], `-`))
 	models <- bootparafac(

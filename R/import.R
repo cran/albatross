@@ -1,3 +1,6 @@
+# The code behind feem.connection / feem.character / feemlist.character.
+# All file import routines are here.
+
 # like table as data.frame, but convert factors back to original values
 .table <- function(x) {
 	x <- as.data.frame(table(x))
@@ -121,11 +124,14 @@ read.matrix <- function(
 	# this is only possible if we are the ones to open the connection
 	if (nzchar(fileEncoding)) {
 		stopifnot(is.character(file))
-		decoded_content <- iconv(
-			readLines(file(file, encoding = fileEncoding)),
-			fileEncoding, 'ASCII', '_'
+		conn <- file(file, encoding = fileEncoding)
+		on.exit(close(conn))
+		# also, only readLines and scan return UTF-8;
+		# read.table uses a function which doesn't
+		file <- textConnection(
+			readLines(conn),
+			encoding = 'UTF-8' # also ask textConnection to return UTF-8
 		)
-		file <- textConnection(decoded_content)
 	}
 
 	# read the table itself

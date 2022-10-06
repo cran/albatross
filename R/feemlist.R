@@ -1,3 +1,6 @@
+# Currently, feemlist is only about importing FEEMs from collections of
+# files (or objects from other packages) and returning them in a list.
+
 feemlist <- function(x, ...) UseMethod('feemlist')
 
 # split single path into a vector of components

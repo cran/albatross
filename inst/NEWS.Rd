@@ -1,5 +1,26 @@
 \name{NEWS}
 \title{News for package \pkg{albatross}}
+\section{Changes in version 0.3-5 (2022-10-06)}{\itemize{
+  \item When importing files with a non-default encoding,
+  \code{feem.character} now avoids leaking a connection per file. (They
+  were cleaned up anyway by the garbage collector, but with a warning.)
+
+  \item The custom progress bar in \code{feemflame} is now re-drawn
+  correctly on R GUIs.
+
+  \item On \R \ifelse{html}{\out{&ge;}}{\eqn{\ge}{>=}} 4.2, equations in
+  HTML help are typeset from LaTeX source, not manually translated HTML.
+
+  \item \code{t()} on \code{feem} objects now results in an unclassed
+  matrix, not a broken \code{feem} object.
+
+  \item \code{feemscatter} now accepts scattering bands with asymmetric
+  widths. On some fluorometers, this is needed in order to remove
+  unwanted signal in anti-Stokes zone.
+
+  \item New palette, \code{diverging.colours}, is used to plot residual
+  objects.
+}}
 \section{Changes in version 0.3-4 (2022-02-25)}{\itemize{
   \item The \code{const} argument of \code{feemparafac} (and other
   functions that call it) now defaults to non-negativity. The previous

@@ -199,7 +199,9 @@
   \item{resid.feemparafac}{
     A \code{\link{feemcube}} object equal to \eqn3{
       \mathbf{X} - \hat{\mathbf{X}}
-    }{X - fitted(X)}{<b>X</b> - <b>X&#x0302;</b>}.
+    }{X - fitted(X)}{<b>X</b> - <b>X&#x0302;</b>}, with an additional
+    class \code{feem.resid} set. Objects of this class are plotted with
+    a different default palette, see \code{\link{plot.feem.resid}}.
   }
 }
 \references{
