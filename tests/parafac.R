@@ -32,7 +32,7 @@ attr(factors, 'subset') <- NULL
 # fitted / residuals must be of the same kind as original cube
 stopifnot(is.null(attr.all.equal(cube, fitted(factors))))
 # residuals() sets an additional class of feem.resid which only affects plots
-stopifnot(is.null(attr.all.equal(cube, `class<-`(residuals(factors), 'feemcube'))))
+stopifnot(is.null(attr.all.equal(`class<-`(cube, c('feem.resid', class(cube))), residuals(factors))))
 
 # check environment access
 env <- new.env(parent = emptyenv())

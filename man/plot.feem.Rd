@@ -49,7 +49,7 @@
     they are drawn left to right, bottom to top.)
   }
   \item{\dots}{
-    Passed as-is to \code{\link{levelplot}}.
+    Passed as-is to \code{\link[lattice]{levelplot}}.
   }
 }
 \value{
@@ -58,7 +58,7 @@
 }
 
 \seealso{
-  \code{\link{levelplot}}
+  \code{\link[lattice]{levelplot}}
 }
 \examples{
   plot(feem(matrix(1:42/42, nrow = 7), 320 + 1:7, 300 + 1:6))

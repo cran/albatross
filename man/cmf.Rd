@@ -115,12 +115,12 @@
     The weights matrix.
   }
   \item{\dots, struc}{\describe{
-    \item{wcmls}{Passed to \code{\link{cmls}}.}
+    \item{wcmls}{Passed to \code{\link[CMLS]{cmls}}.}
     \item{fitted.cmf}{Ignored.}
   }}
 }
 \details{
-  The \CRANpkg{CMLS} package function \code{\link{cmls}} can solve
+  The \CRANpkg{CMLS} package function \code{\link[CMLS]{cmls}} can solve
   constrained multivariate least squares problems of the form:
 
   \deqn3{
@@ -199,7 +199,7 @@
   rows of \eqn3{\mathbf A}{A}{<b>A</b>} and \eqn3{\mathbf B}{B}{<b>B</b>},
   respectively. Thus, in the weighted case, the
   \eqn3{\mathbf B}{B}{<b>B</b>} matrix is determined row by row by
-  calling the \code{\link{cmls}} function for pre-processed
+  calling the \code{\link[CMLS]{cmls}} function for pre-processed
   \eqn3{\mathbf A}{A}{<b>A</b>} matrix and columns of
   \eqn3{\mathbf X}{X}{<b>X</b>}.
 
@@ -242,25 +242,11 @@
   }
 }}
 \references{
-  \bibentry{'Article',
-    author = c(
-      person('A.', 'de Juan'),
-      person('J.', 'Jaumot'),
-      person('R.', 'Tauler')
-    ),
-    doi = '10.1039/c4ay00571f',
-    title = 'Multivariate Curve Resolution (MCR). Solving the mixture analysis problem',
-    journal = 'Anal. Methods',
-    year = 2014,
-    volume = 6,
-    issue = 14,
-    pages = '4964-4976',
-    publisher = 'The Royal Society of Chemistry'
-  }
+  \reference{deJuan2014}
 }
 
 \seealso{
-  \code{\link{cmls}}; the \CRANpkg{ALS} package.
+  \code{\link[CMLS]{cmls}}; the \CRANpkg{ALS} package.
 }
 \examples{
   data(feems)

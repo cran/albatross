@@ -37,6 +37,10 @@
   data(feems)
   plot(cube)
   plot(feems$a)
-  matplot(absorp[[1]][,1], sapply(absorp, `[`,, 2), type = 'l', lty = 1)
+  matplot(
+    absorp[[1]][,1],
+    sapply(absorp, function(x) x[,2]),
+    type = 'l', lty = 1
+  )
 }
 \keyword{datasets}

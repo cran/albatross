@@ -120,7 +120,7 @@
       text(
         1/(1/p - Raman.shift/1e7) + dp / 2, p,
         bquote(
-          (lambda[ex]^-1 - lambda[em]^-1) %.% 10^7
+          (lambda[ex]^-1 - lambda[em]^-1) \\\%.\\\% 10^7
           == .(Raman.shift) * ' cm'^-1
         ),
         adj = c(0, .6)
@@ -212,24 +212,25 @@
       \item{omit}{Replace it with \code{NA}.}
       \item{pchip}{
         Interpolate it line-by-line using piecewise cubic Hermitean
-        polynomials (\code{\link{pchip}}). Pass a \code{by} argument
-        to choose the direction of interpolation; see Details.
+        polynomials (\code{\link[pracma]{pchip}}). Pass a \code{by}
+        argument to choose the direction of interpolation; see Details.
      }
       \item{loess}{
         Interpolate it by fitting a locally weighted polynomial surface
-        (\code{\link{loess}}). In this case the remaining parameters are
-        passed verbatim to \code{\link{loess}}, which may be used to set
+        (\code{\link[stats]{loess}}). Extra arguments are passed
+        verbatim to \code{\link[stats]{loess}}, which may be used to set
         parameters such as \code{span}.
       }
       \item{kriging}{
         Interpolate it by means of ordinary or simple Kriging, as
-        implemented in \CRANpkg{pracma} function \code{\link{kriging}}.
-        Pass a \code{type} argument to choose between the two
-        methods. This method is not recommended due to its high
-        CPU time and memory demands: it has to invert a dense
-        \eqn3{O(N^2)}{O(N^2)}{O(N<sup>2</sup>)} matrix (which easily
-        reaches multiple gigabytes for some EEMs), then take its products
-        with vectors \eqn{O(N)} times, with \eqn{N =} \code{length(x)}.
+        implemented in \CRANpkg{pracma} function
+        \code{\link[pracma]{kriging}}.  Pass a \code{type} argument to
+        choose between the two methods. This method is not recommended
+        due to its high CPU time and memory demands: it has to invert a
+        dense \eqn3{O(N^2)}{O(N^2)}{O(N<sup>2</sup>)} matrix (which
+        easily reaches multiple gigabytes for some EEMs), and compute
+        its product with a vector then take scalar products \eqn{O(N)}
+        times, with \eqn{N =} \code{length(x)}.
       }
       \item{whittaker}{
         Interpolate it by minimising a weighted sum of squared residuals
@@ -265,57 +266,60 @@
     see Details.
 
     If \dQuote{loess} method is selected, remaining options are passed
-    to \code{\link{loess}} (the \code{span} parameter is of particular
-    interest there).
+    to \code{\link[stats]{loess}} (the \code{span} parameter is of
+    particular interest there).
 
-    If \dQuote{kriging} method is selected, remaining
-    options are passed to \code{\link{kriging}}.
+    If \dQuote{kriging} method is selected, remaining options are passed
+    to \code{\link[pracma]{kriging}}.
 
     If \dQuote{whittaker} method is selected, available parameters
     include \code{d}, \code{lambda}, \code{nonneg} and \code{logscale},
     see Details.
   }
   \item{cl}{
-    If not \code{\link{missing}}, a \pkg{parallel} cluster object to
-    run the scattering correction code on or \code{NULL} for the default
-    cluster object registered via \code{\link{setDefaultCluster}}.
+    If not \code{\link[base]{missing}}, a \pkg{parallel} cluster object
+    to run the scattering correction code on or \code{NULL} for the
+    default cluster object registered via
+    \code{\link[parallel]{setDefaultCluster}}.
   }
   \item{progress}{
     Set to \code{FALSE} to disable the progress bar.
   }
 }
 \details{
-  The \dQuote{pchip} method works by default as described in [1]: each
-  emission spectrum at different excitation wavelengths is considered one
-  by one. Zeroes are inserted in the corners of the spectrum if they are
-  undefined (\code{NA}) to prevent extrapolation from blowing up, then
-  the margins are interpolated using the corner points, then the rest of
-  the spectrum is interpolated line by line. Since \code{\link{pchip}}
-  requires at least 3 points to interpolate, the function falls back to
-  linear interpolation if it has only two defined points to work with.
-  The \code{by} argument controls whether the function proceeds by rows
-  of the matrix (\dQuote{emission}, default), by columns of the matrix
+  The \dQuote{pchip} method works by default as described in
+  \cite{Bahram2006}: each emission spectrum at different excitation
+  wavelengths is considered one by one. Zeroes are inserted in the
+  corners of the spectrum if they are undefined (\code{NA}) to prevent
+  extrapolation from blowing up, then the margins are interpolated using
+  the corner points, then the rest of the spectrum is interpolated line
+  by line. Since \code{\link[pracma]{pchip}} requires at least 3 points
+  to interpolate, the function falls back to linear interpolation if it
+  has only two defined points to work with. The \code{by} argument
+  controls whether the function proceeds by rows of the matrix
+  (\dQuote{emission}, default), by columns of the matrix
   (\dQuote{excitation}), or does both (\dQuote{both}) and averages the
-  results to make the resulting artefacts less severe [2, see the
-  \CRANpkg{staRdom} package itself].
+  results to make the resulting artefacts less severe \cite{Pucher2019}
+  (see the \CRANpkg{staRdom} package itself).
 
-  The \dQuote{loess} method feeds the whole FEEM except the area to
-  be interpolated to \code{\link{loess}}, then asks it to predict the
-  remaining part of the spectrum. Any negative values predicted by
-  \code{\link{loess}} are replaced by \eqn{0}.
+  The \dQuote{loess} method feeds the whole FEEM except the area to be
+  interpolated to \code{\link[stats]{loess}}, then asks it to predict
+  the remaining part of the spectrum. Any negative values predicted by
+  \code{\link[stats]{loess}} are replaced by \eqn{0}.
 
-  The \dQuote{kriging} method [3] is much more computationally expensive
-  than the previous two, but, on some spectra, provides best results,
-  not affected by artefacts resulting from line-by-line one-dimensional
-  interpolation (\code{pchip}) or varying degrees of smoothness in
-  different areas of the spectrum (\code{loess}). Any negative values
-  returned by \code{\link{kriging}} are replaced by \eqn{0}.
+  The \dQuote{kriging} method \cite{NR3-Kriging} is much more
+  computationally expensive than the previous two, but, on some spectra,
+  provides best results, not affected by artefacts resulting from
+  line-by-line one-dimensional interpolation (\code{pchip}) or varying
+  degrees of smoothness in different areas of the spectrum
+  (\code{loess}). Any negative values returned by
+  \code{\link[pracma]{kriging}} are replaced by \eqn{0}.
 
-  The \dQuote{whittaker} method [4] works by unfolding each FEEM into a
-  vector \eqn3{\mathbf z}{z}{<b>z</b>} and looking for a vector
-  \eqn3{\hat{\mathbf z}}{z.hat}{<b>z&#x0302;</b>} that is close enough
-  to \eqn3{\mathbf z}{z}{<b>z</b>}, but also smooth, by minimising a sum
-  of penalties:
+  The \dQuote{whittaker} method \cite{Eilers2003} works by unfolding
+  each FEEM into a vector \eqn3{\mathbf z}{z}{<b>z</b>} and looking for
+  a vector \eqn3{\hat{\mathbf z}}{z.hat}{<b>z&#x0302;</b>} that is close
+  enough to \eqn3{\mathbf z}{z}{<b>z</b>}, but also smooth, by
+  minimising a sum of penalties:
 
   \deqn3{
     (\mathbf z - \hat{\mathbf z})^\top
@@ -342,14 +346,15 @@
   directions and in all applicable points of
   \eqn3{\hat{\mathbf z}}{z.hat}{<b>z&#x0302;</b>} as a matrix. The
   wavelength grid is correctly taken into account by solving a
-  Vandermonde system for every \eqn{n+1} consecutive points.
+  Vandermonde system for every \eqn{n+1} consecutive points
+  \cite{Krylov2023}.
 
   The parameters \code{d} and \code{lambda} should be numeric vectors
   of the same length, choosing the difference orders
   (\eqn3{n_k}{n[k]}{n<sub>k</sub>}) and their weights
   (\eqn3{\lambda_k}{\lambda[k]}{&lambda;<sub>k</sub>}). It has been
-  shown in [5] that a combination of first- and second-order penalty
-  (\eqn3{
+  shown in \cite{Eilers2004-density} that a combination of first- and
+  second-order penalty (\eqn3{
     2 \lambda \mathbf{D}_1 + \lambda^2 \mathbf{D}_2
   }{2 \lambda D(1) + \lambda^2 D(2)}{2&lambda;<b>D</b><sub>1</sub> +
     &lambda;<sup>2</sup><b>D</b><sub>2</sub>}) results in non-negative
@@ -397,89 +402,7 @@
   An object of the same kind (FEEM object / FEEM cube / list of them)
   with scattering signal handled as requested.
 }
-\references{\enumerate{
-  \item \bibentry{'Article',
-    author = c(
-      person('Morteza', 'Bahram'),
-      person('Rasmus', 'Bro'),
-      person('Colin', 'Stedmon'),
-      person('Abbas', 'Afkhami')
-    ),
-    title = paste(
-      'Handling of Rayleigh and Raman scatter for PARAFAC modeling of',
-      'fluorescence data using interpolation'
-    ),
-    journal = 'Journal of Chemometrics',
-    volume = 20,
-    number = '3-4',
-    pages = '99-105',
-    year = 2006,
-    doi = '10.1002/cem.978',
-  }
-
-  \item \bibentry{'Article',
-    author = c(
-      person('Matthias', 'Pucher'),
-      person('Urban',  paste0(rawToChar(as.raw(0x5c)), 'enc{Wünsch}{Wuensch}')),
-      person('Gabriele', 'Weigelhofer'),
-      person('Kathleen', 'Murphy'),
-      person('Thomas', 'Hein'),
-      person('Daniel', 'Graeber')
-    ),
-    title = paste(
-      'staRdom: Versatile Software for Analyzing Spectroscopic Data',
-      'of Dissolved Organic Matter in R'
-    ),
-    journal = 'Water',
-    volume = 11,
-    number = 11,
-    year = 2019,
-    pages = 2366,
-    doi = '10.3390/w11112366'
-  }
-
-  \item \bibentry{'InBook',
-    author = c(
-      person(c('William', 'H.'), 'Press'),
-      person(c('Saul', 'A.'), 'Teukolsky'),
-      person(c('William', 'T.'), 'Vetterling'),
-      person(c('Brian', 'P.'), 'Flannery')
-    ),
-    booktitle =
-      'Numerical recipes: The Art of Scientific Computing (3rd Ed.)',
-    publisher = 'Cambridge University Press, New York',
-    chapter = '3.7.4',
-    title = 'Interpolation by Kriging',
-    pages = '144-147',
-    year = 2007
-  }
-
-  \item \bibentry{'Article',
-    author = person(c('Paul', 'H.', 'C.'), 'Eilers'),
-    title = 'A Perfect Smoother',
-    journal = 'Analytical Chemistry',
-    volume = 75,
-    number = 14,
-    pages = '3631-3636',
-    year = 2003,
-    doi = '10.1021/ac034173t'
-  }
-
-  \item \bibentry{'Article',
-    author = c(
-      person(c('Paul', 'H.', 'C.'), 'Eilers'),
-      person(c('Jelle', 'J.'), 'Goeman')
-    ),
-    title = 'Enhancing scatterplots with smoothed densities',
-    journal = 'Bioinformatics',
-    volume = 20,
-    number = 5,
-    pages = '623-628',
-    year = 2004,
-    doi = '10.1093/bioinformatics/btg454'
-  }
-}}
-
+\references{\bibliography}
 \seealso{
   \code{\link{feem}}, \code{\link{feemcube}}
 }

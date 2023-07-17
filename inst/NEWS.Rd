@@ -1,5 +1,29 @@
 \name{NEWS}
 \title{News for package \pkg{albatross}}
+\section{Changes in version 0.3-6 (2023-XX-XX)}{
+  \subsection{Potentially breaking changes}{\itemize{
+    \item Fixed an error in \code{feemscatter(method='whittaker')} where
+    the \code{nonneg} parameter could be ignored (turning the
+    non-negativity protection off) if the wavelength grid was not sorted.
+    This mistake has been present since version 0.3-0, where Whittaker
+    smoothing had been introduced.
+
+    \item Inverted the luminance of the \code{diverging.colours} palette,
+    setting it to brighter for lower-magnitude values. The signs of the
+    residuals are much easier to understand now.
+  }}
+  \subsection{Bug fixes}{\itemize{
+    \item The \code{feemcube.feemflame} method is now actually exported.
+
+    \item The \code{plot()} method for \code{feemflame} objects now
+    correctly forwards its arguments to \pkg{lattice} functions for
+    \code{type = 'both'}.
+  }}
+  \subsection{New features}{\itemize{
+    \item New function \code{absindex} computes absorption coefficients,
+    absorbance values, spectral slopes and their ratios.
+  }}
+}
 \section{Changes in version 0.3-5 (2022-10-06)}{\itemize{
   \item When importing files with a non-default encoding,
   \code{feem.character} now avoids leaking a connection per file. (They

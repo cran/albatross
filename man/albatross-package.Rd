@@ -54,82 +54,42 @@
   always returns an object of the same class but with the scattering
   signal handled, while \code{\link{feemindex}} returns named numeric
   vectors for individual \code{\link{feem}}s but
-  \code{\link{data.frame}}s for collections of them. There's a slight
-  memory benefit to using lists of \code{\link{feem}} objects, but the
-  difference shouldn't be noticeable, so there's nothing to worry about
-  if you started with a \code{\link{feemcube}}.
+  \code{\link[base]{data.frame}}s for collections of them. There's a
+  slight memory benefit to using lists of \code{\link{feem}} objects,
+  but the difference shouldn't be noticeable, so there's nothing to
+  worry about if you started with a \code{\link{feemcube}}.
 
   In order to compute PARAFAC, you need to convert your data into a
   \code{\link{feemcube}}. Whether you perform jack-knifing, split-half
   analysis, or PARAFAC itself, a copy of the data cube is kept together
   with the results and can be extracted back using the
-  \code{\link{feemcube}} function. The result objects support a
-  \code{\link{plot}} method, or can give you the data as a few-column
-  \code{\link{data.frame}} using the \code{\link{coef}} method.
+  \code{\link{feemcube}} function. The resulting objects support a
+  \code{plot} method (described in the same help page) and can give you
+  the data as a few-column \code{\link[base]{data.frame}} using the
+  \code{coef} method.
 
   Once the analysis is finished, the PARAFAC model can be exported for
   the OpenFluor database (\code{\link{write.openfluor}}) or stored as an
-  \R object using standard \R tools (\code{\link{save}} or
-  \code{\link{saveRDS}}).
+  \R object using standard \R tools (\code{\link[base]{save}} or
+  \code{\link[base]{saveRDS}}).
 
   \packageIndices{albatross}
 }
 \author{
-Ivan Krylov
+  Ivan Krylov
 
-Scientific advisor: Timur Labutin
+  Scientific advisor: Timur Labutin
 
-With contrubitions from: Anastasia Drozdova
+  With contrubitions from: Anastasia Drozdova
 }
 \references{
-  \bibentry{'Article',
-    author = c(
-      person(c('Kathleen', 'R.'), 'Murphy'),
-      person(c('Colin', 'A.'), 'Stedmon'),
-      person('Daniel', 'Graeber'),
-      person('Rasmus', 'Bro')
-    ),
-    title = 'Fluorescence spectroscopy and multi-way techniques. PARAFAC',
-    journal = 'Analytical Methods',
-    doi = '10.1039/c3ay41160e',
-    volume = 5,
-    year = 2013,
-    pages = '6557-6566'
-  }
+  \reference{Murphy2013}
 
-  \bibentry{'Article',
-    author = c(
-      person('Matthias', 'Pucher'),
-      # my kingdom for a backslash!
-      person('Urban',  paste0(rawToChar(as.raw(0x5c)), 'enc{Wünsch}{Wuensch}')),
-      person('Gabriele', 'Weigelhofer'),
-      person('Kathleen', 'Murphy'),
-      person('Thomas', 'Hein'),
-      person('Daniel', 'Graeber')
-    ),
-    title = paste(
-      'staRdom: Versatile Software for Analyzing Spectroscopic Data',
-      'of Dissolved Organic Matter in R'
-    ),
-    journal = 'Water',
-    volume = 11,
-    number = 11,
-    year = 2019,
-    pages = 2366,
-    doi = '10.3390/w11112366'
-  }
+  \reference{Pucher2019}
 
-  \bibentry{'Article',
-    author = c(
-      person('John', 'Cleese'),
-      person('Terry', 'Jones')
-    ),
-    title = 'Albatross: Flavours of different sea birds',
-    journal = 'Journal of Flying Circus',
-    year = 1970,
-    volume = '1.13',
-    pages = '7:05-7:45'
-  }
+  \reference{MPFC1970}
+
+  \reference{Krylov2020}
 }
 \keyword{package}
 \seealso{
@@ -137,7 +97,8 @@ With contrubitions from: Anastasia Drozdova
   \code{\link{feemife}}, \code{\link{feemscatter}},
   \code{\link{feemgrid}}, \code{\link{feemcube}},
   \code{\link{feemscale}}, \code{\link{feemsplithalf}},
-  \code{\link{feemparafac}}, \code{\link{feemjackknife}}.
+  \code{\link{feemparafac}}, \code{\link{feemjackknife}},
+  \code{\link{feemflame}}, \code{\link{absindex}}.
 }
 \examples{
   data(feems)

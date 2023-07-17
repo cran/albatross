@@ -32,7 +32,7 @@
   \item{x}{
     The source of the information to create a FEEM object from: a matrix,
     a three-column \code{data.frame}, a file path as a single string,
-    or a \link{connection}.
+    or a \link[base]{connection}.
 
     If converting a matrix, its rows should correspond to different
     fluorescence emission wavelengths specified in the \code{emission}
@@ -75,10 +75,10 @@
   \item{format}{\describe{
     \item{table}{
       The FEEM is assumed to be stored as a plain text matrix, readable
-      using \code{\link{read.table}}, with the first column and the
-      first row containing wavelengths. For example, it is possible to
-      import CSV files obtained from a HORIBA Aqualog\regsp fluorometer
-      by using \code{feem(\var{file}, 'table', sep = ',')}.
+      using \code{\link[utils]{read.table}}, with the first column and
+      the first row containing wavelengths. For example, it is possible
+      to import CSV files obtained from a HORIBA Aqualog\regsp
+      fluorometer by using \code{feem(\var{file}, 'table', sep = ',')}.
 
       Rows are assumed to correspond to emission wavelengths, columns
       are assumed to correspond to excitation wavelengths; if that's
@@ -103,20 +103,21 @@
         X(&lambda;<sub>em</sub>, &lambda;<sub>ex</sub>) &isin; <code>na</code>})
       and replace them with \code{NA}s. If the unmeasured values
       are not stored as numbers, use the \code{na.strings} argument of
-      \code{\link{read.table}} to specify them.
+      \code{\link[utils]{read.table}} to specify them.
 
       The \code{fileEncoding} argument is treated specially (but
-      preserving the \code{\link{read.table}} semantics regarding
+      preserving the \code{\link[utils]{read.table}} semantics regarding
       numbers), preventing errors in case the session charset cannot
       represent all characters from the file: the contents are first
-      converted to UTF-8, then forwarded to \code{\link{read.table}}.
-      This only works when \code{file} is a file path, not a connection.
-      (When passing a connection with an encoding attribute set, make
-      sure that the file contents after decoding can be represented in
-      the session charset.)
+      converted to UTF-8, then forwarded to
+      \code{\link[utils]{read.table}}. This only works when \code{file}
+      is a file path, not a connection. (When passing a connection with
+      an encoding attribute set, make sure that the file contents after
+      decoding can be represented in the session charset.)
 
-      All other arguments are passed to \code{\link{read.table}}, with
-      \code{fill} defaulting to \code{TRUE} instead of \code{FALSE}.
+      All other arguments are passed to \code{\link[utils]{read.table}},
+      with \code{fill} defaulting to \code{TRUE} instead of
+      \code{FALSE}.
     }
     \item{panorama}{
       Read a \file{.dat} file as created by \dQuote{Panorama} software
@@ -144,8 +145,9 @@
       The \code{fileEncoding} argument specifies the encoding of the
       text file and has a safe default of \dQuote{latin1}. It should
       typically correspond to the ANSI code page on the computer running
-      F900 that was used to create the file. See \code{\link{iconvlist}()}
-      for a list of encodings understood by \R.
+      F900 that was used to create the file. See
+      \code{\link[base]{iconvlist}()} for a list of encodings understood
+      by \R.
 
       The \code{sep} argument specifies the column separator used in the
       file. A semicolon \code{;} is typically used, though other options
@@ -153,7 +155,7 @@
     }
   }}
   \item{\dots}{
-    When converting matrices and \code{\link{data.frame}}s, extra
+    When converting matrices and \code{\link[base]{data.frame}}s, extra
     arguments besides those specified above are not allowed.
 
     When reading the FEEM from a file, additional arguments may be passed

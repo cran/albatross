@@ -6,10 +6,11 @@
   Implementation notes for Whittaker smoothing and interpolation of surfaces
 }
 \description{
-  Smooth [1] or estimate the baseline [2] of surface measured on an
-  arbitrary grid by minimising a sum of penalties. Combined difference
-  orders and two different methods of preventing negative values in the
-  output are supported.
+  Smooth \cite{Eilers2003} or estimate the baseline
+  \cite{Eilers2004-PTW} of a surface measured on an arbitrary grid by
+  minimising a sum of penalties. Combined difference orders and two
+  different methods of preventing negative values in the output are
+  supported.
 
   \emph{This is not a public interface.} Subject to change without
   further notice. Please do not call from outside \CRANpkg{albatross}.
@@ -40,8 +41,9 @@
     }
   }}
   \item{p}{
-    If not missing, use the asymmetric penalty method [2] to estimate
-    the baseline by penalising the differences with weight \eqn{p} if
+    If not missing, use the asymmetric penalty method
+    \cite{Eilers2004-PTW} to estimate the baseline by penalising the
+    differences with weight \eqn{p} if
     \eqn3{\hat{z} < z}{z.hat < z}{z&#x0302; &lt; z} and \eqn{1 - p}
     otherwise. Typically, values around
     \eqn3{10^{-3}}{1e-3}{10<sup>-3</sup>} are used.
@@ -64,8 +66,8 @@
 }
 \details{
   \subsection{Whittaker smoothing}{
-    Whittaker smoothing works by minimising a sum of penalties [1].
-    Taking weights into account, we get:
+    Whittaker smoothing works by minimising a sum of penalties
+    \cite{Eilers2003}. Taking weights into account, we get:
 
     \deqn3{
       \min_{\mathbf{\hat z}} \:
@@ -102,16 +104,16 @@
       <b>z</b>
     }
 
-    The equation is then solved using \code{\link{solve}}.
+    The equation is then solved using \code{\link[base]{solve}}.
 
     Equations above deal with vectors, not matrices. We can't just
     smooth the matrix row-by-row (or column-by-column): that wouldn't be
     any better than \code{\link{feemscatter}(method = 'pchip')}. One way
-    to generalise this to matrices would be [3], but it only works for
-    uniform grids. Instead, we unfold the \code{z} matrix into a vector,
-    then strategically position the coefficients in the difference
-    matrix to obtain both row-wise and column-wise differences in the
-    resulting vector.
+    to generalise this to matrices would be \cite{Garcia2010}, but it
+    only works for uniform grids. Instead, we unfold the \code{z} matrix
+    into a vector, then strategically position the coefficients in the
+    difference matrix to obtain both row-wise and column-wise
+    differences in the resulting vector.
 
     % TODO:
     % - explain how Dx and Dy could be calculated
@@ -228,7 +230,7 @@
       \if{latex}{\figure{whittaker2points.pdf}{options: width=2.5in}}
       \if{html}{ \figure{whittaker2points.svg}{options: width="400"}}
     }
-    \if{text}{\figure{}{
+    \if{text}{\preformatted{
            h1  <--------------->
        <------->       h2
              (x1+x2)/2
@@ -376,7 +378,8 @@
 
     We can solve this system for coefficients
     \eqn3{c_i}{c[i]}{c<sub>i</sub>} giving the desired \eqn{l}-th
-    derivative estimate with highest accuracy \eqn{p} possible [4]:
+    derivative estimate with highest accuracy \eqn{p} possible
+    \cite{LeVeque2007-ch1}:
 
     \deqn3{
       \sum_{i = 1}^n c_i f(x_i) = f^{(l)}(x) + o(h^p)
@@ -425,9 +428,9 @@
     Unfortunately, this system becomes ill-conditioned for \dQuote{large}
     numbers of points. (Experiment shows noticeably growing
     \eqn3{c_i}{c[i]}{c<sub>i</sub>} even for third derivative from \eqn{10}
-    points and no solution for \eqn{32} points on a uniform grid.) Fornberg [5]
-    suggests a more numerically stable procedure, but it still breaks down for
-    \eqn{1000} points.
+    points and no solution for \eqn{32} points on a uniform grid.)
+    Fornberg \cite{Fornberg1988} suggests a more numerically stable
+    procedure, but it still breaks down for \eqn{1000} points.
 
     It is important to note that the performance of the method depends
     on the matrix \eqn3{\mathbf D}{D}{<b>D</b>} being sparse. While the methods
@@ -498,62 +501,7 @@
     two points in the middle, depending on whether \eqn{n} is odd or even.
   }
 }
-\references{\enumerate{
-  \item \bibentry{'Article',
-    title = 'A Perfect Smoother',
-    volume = 75,
-    doi = '10.1021/ac034173t',
-    number = 14,
-    journal = 'Analytical Chemistry',
-    author = person(c('Paul', 'H.', 'C.'), 'Eilers'),
-    year = 2003,
-    pages = '3631-3636',
-  }
-
-  \item \bibentry{'Article',
-    title = 'Parametric Time Warping',
-    volume = 76,
-    doi = '10.1021/ac034800e',
-    number = 2,
-    journal = 'Analytical Chemistry',
-    author = person(c('Paul', 'H.', 'C.'), 'Eilers'),
-    year = 2004,
-    pages = '404-411',
-  }
-
-  \item \bibentry{'Article',
-    title = 'Robust smoothing of gridded data in one and higher dimensions with missing values',
-    volume = 54,
-    doi = '10.1016/j.csda.2009.09.020',
-    number = 4,
-    journal = 'Computational Statistics & Data Analysis',
-    author = person('Damien', 'Garcia'),
-    year = 2010,
-    pages = '1167-1178'
-  }
-
-  \item \bibentry{'InBook',
-    author = person(c('Randall', 'J.'), 'LeVeque'),
-    booktitle = 'Finite Difference Methods for Ordinary and Partial Differential Equations',
-    chapter = 1,
-    pages = '3-11',
-    publisher = 'Society for Industrial and Applied Mathematics (SIAM)',
-    title = 'Finite Difference Approximations',
-    url = 'https://faculty.washington.edu/rjl/fdmbook/',
-    year = 2007
-  }
-
-  \item \bibentry{'Article',
-    title = 'Generation of finite difference formulas on arbitrarily spaced grids',
-    volume = 51,
-    doi = '10.1090/S0025-5718-1988-0935077-0',
-    number = 184,
-    journal = 'Mathematics of Computation',
-    author = person('Bengt', 'Fornberg'),
-    year = 1988,
-    pages = '699-706'
-  }
-}}
+\references{\bibliography}
 \seealso{\code{\link{feemscatter}}}
 \examples{
   data(feems)

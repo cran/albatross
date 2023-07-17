@@ -8,10 +8,11 @@
   Compute PARAFAC on a FEEM cube object and access the results
 }
 \description{
-  \code{feemparafac} forwards its arguments to \code{\link{parafac}}
-  from the \CRANpkg{multiway} package, optionally rescales the result
-  and attaches a few attributes. Resulting objects of class
-  \code{feemparafac} can be accessed using methods presented below.
+  \code{feemparafac} forwards its arguments to
+  \code{\link[multiway]{parafac}} from the \CRANpkg{multiway} package,
+  optionally rescales the result and attaches a few attributes.
+  Resulting objects of class \code{feemparafac} can be accessed using
+  methods presented below.
 }
 \usage{
   feemparafac(
@@ -34,13 +35,14 @@
 
     If \code{envir} is \code{NULL} (by default), this should be just a
     value. If \code{envir} is given, this should be a name of the value
-    to \code{\link{get}} from the environment.
+    to \code{\link[base]{get}} from the environment.
   }
   \item{\dots}{\describe{
-    \item{feemparafac}{Passed as-is to \code{\link{parafac}}.}
+    \item{feemparafac}{Passed as-is to \code{\link[multiway]{parafac}}.}
     \item{plot.feemparafac}{
       Passed as-is to \CRANpkg{lattice} functions
-      \code{\link{levelplot}} and \code{\link{xyplot}}.
+      \code{\link[lattice]{levelplot}} and
+      \code{\link[lattice]{xyplot}}.
     }
     \item{coef.feemparafac, fitted.feemparafac, residuals.feemparafac}{
       No other parameters are allowed.
@@ -48,8 +50,9 @@
   }}
   \item{const}{
     A character vector of length 3 specifying the constraints for all
-    modes of \code{X}, passed to \code{\link{parafac}}. Defaults to
-    non-negativity. See \code{\link[CMLS]{const}} for more information.
+    modes of \code{X}, passed to \code{\link[multiway]{parafac}}.
+    Defaults to non-negativity. See \code{\link[CMLS]{const}} for more
+    information.
   }
   \item{rescale}{
     Rescale the resulting factors to leave all the variance in the given
@@ -57,9 +60,10 @@
     to disable.
   }
   \item{retries}{
-    Retry for given number of tries until \code{\link{parafac}} returns
-    a successfully fitted model or stops due to the iteration number
-    limit. Raise a fatal error if all tries were unsuccessful.
+    Retry for given number of tries until
+    \code{\link[multiway]{parafac}} returns a successfully fitted model
+    or stops due to the iteration number limit. Raise a fatal error if
+    all tries were unsuccessful.
   }
   \item{subset}{
     An integer or logical vector choosing the samples from \code{X}, as
@@ -110,9 +114,9 @@
       \item{emission, excitation, samples}{
         Return the contents of \eqn3{\mathbf{A}}{A}{<b>A</b>},
         \eqn3{\mathbf{B}}{B}{<b>B</b>} or \eqn3{\mathbf{C}}{C}{<b>C</b>},
-        respectively, as a \code{\link{data.frame}} with three
-        columns, the first one (named \code{wavelength} or \code{sample})
-        containing the independent variable
+        respectively, as a \code{\link[base]{data.frame}} with three
+        columns, the first one (named \code{wavelength} or
+        \code{sample}) containing the independent variable
         (\eqn3{\lambda_\mathrm{em}}{lambda.em}{&lambda;<sub>em</sub>} /
         \eqn3{\lambda_\mathrm{ex}}{lambda.ex}{&lambda;<sub>ex</sub>} /
         sample name or number),
@@ -122,8 +126,8 @@
       \item{scores}{Same as samples.}
       \item{loadings}{
         Same as \dQuote{emission} and \dQuote{excitation} combined using
-        \code{\link{rbind}}, with a fourth column (\code{mode}) added,
-        naming the kinds of loadings.
+        \code{\link[base]{rbind}}, with a fourth column (\code{mode})
+        added, naming the kinds of loadings.
       }
       \item{all}{
         A list with names \dQuote{emission}, \dQuote{excitation},
@@ -138,8 +142,8 @@
   \code{feemparafac} tries hard to guarantee the convergence flag to be
   \code{0} (normal convergence) or \code{1} (iteration number limit
   reached), but never \code{2} (a problem with the constraints). A fatal
-  error is raised if repeated runs of \code{\link{parafac}} do not
-  return a (semi-)successfully fitted model.
+  error is raised if repeated runs of \code{\link[multiway]{parafac}} do
+  not return a (semi-)successfully fitted model.
 
   After the PARAFAC decomposition is calculated, the scores are
   multiplied by the \code{scales} attribute of the \code{X} object,
@@ -159,9 +163,10 @@
   of \code{subset} should ensure that the same FEEM cube is referenced
   from multiple \code{feemparafac} objects instead of creating copies
   of its subsets. Additionally, environment objects are not duplicated
-  on \code{\link{save}} or \code{\link{load}}, so storing \code{X} in an
-  environment and passing it to multiple invocations of \code{feemparafac}
-  will save a lot of memory when the results are serialised together.
+  on \code{\link[base]{save}} or \code{\link[base]{load}}, so storing
+  \code{X} in an environment and passing it to multiple invocations of
+  \code{feemparafac} will save a lot of memory when the results are
+  serialised together.
 
   \code{plot.feemparafac} provides sane defaults for \CRANpkg{lattice}
   options such as \code{xlab}, \code{ylab}, \code{as.table},
@@ -176,9 +181,9 @@
       \item{subset}{A copy of the \code{subset} argument.}
       \item{envir}{A copy of the \code{envir} argument.}
     }
-    \code{\link{rownames}} are added from the original data cube to
-    the \code{A}, \code{B}, \code{C} components of the list returned
-    by \code{\link{parafac}}.
+    \code{\link[base]{rownames}} are added from the original data cube
+    to the \code{A}, \code{B}, \code{C} components of the list returned
+    by \code{\link[multiway]{parafac}}.
 
     Use \code{\link{feemcube}} on the return value to access the original
     data cube.
@@ -188,13 +193,13 @@
     method will draw the plot on an appropriate plotting device.
   }
   \item{coef.feemparafac}{
-    A \code{\link{data.frame}} or a list of them (only if \code{type}
-    is \dQuote{all}). See the description of the \code{type} argument
-    for more information.
+    A \code{\link[base]{data.frame}} or a list of them (only if
+    \code{type} is \dQuote{all}). See the description of the \code{type}
+    argument for more information.
   }
   \item{fitted.feemparafac}{
     A \code{\link{feemcube}} object comparable to \code{X} as it was
-    decomposed by \code{\link{parafac}}, ignoring the scaling.
+    decomposed by \code{\link[multiway]{parafac}}, ignoring the scaling.
   }
   \item{resid.feemparafac}{
     A \code{\link{feemcube}} object equal to \eqn3{
@@ -205,20 +210,11 @@
   }
 }
 \references{
-  \bibentry{'Article',
-    author = person('Rasmus', 'Bro'),
-    title = 'PARAFAC. Tutorial and applications',
-    journal = 'Chemometrics and Intelligent Laboratory Systems',
-    volume = 38,
-    number = 2,
-    pages = '149-171',
-    year = 1997,
-    doi = '10.1016/S0169-7439(97)00032-4'
-  }
+  \reference{Bro1997}
 }
 
 \seealso{
-  \code{\link{parafac}} class structure;
+  \code{\link[multiway]{parafac}} class structure;
   \code{\link{write.openfluor}}, \code{\link{feemcube}} for methods
   specific to values returned from this function.
 }

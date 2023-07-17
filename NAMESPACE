@@ -157,7 +157,12 @@ S3method(fitted, feemflame)
 S3method(residuals, feemflame)
 S3method(coef, feemflame)
 S3method(plot, feemflame)
+S3method(feemcube, feemflame)
 
 # resid.R
 S3method(plot, feem.resid)
 S3method(`[`, feem.resid)
+
+# absindex.R
+importFrom(stats, lm, nls, spline, NLSstRtAsymptote, sortedXyData)
+export(absindex)

@@ -22,7 +22,7 @@
   }
   \item{norm}{
     A function taking a numeric matrix and returning its norm. Typically,
-    \code{\link{sd}} or \code{\link{sumsq}}.
+    \code{\link[stats]{sd}} or \code{\link[multiway]{sumsq}}.
   }
   \item{remember}{
     Whether to remember the scale factor. If \code{FALSE}, the scale
@@ -31,11 +31,12 @@
   \item{\dots}{
     Passed as-is to \code{feemscale}, to \code{feemscale.feem}, then
     to the \code{norm} function. Use this to set \code{na.rm = TRUE}
-    for functions like \code{\link{sd}} or \code{\link{sumsq}}.
+    for functions like \code{\link[stats]{sd}} or
+    \code{\link[multiway]{sumsq}}.
   }
   \item{progress}{
     Set to \code{TRUE} to enable a progress bar (implemented via
-    \code{\link{txtProgressBar}}).
+    \code{\link[utils]{txtProgressBar}}).
   }
 }
 \value{
@@ -50,18 +51,7 @@
   \code{feemscale} generic applied to its elements.
 }
 \references{
-  \bibentry{'Article',
-    author = c(
-      person('Rasmus', 'Bro'), person(c('Age', 'K.'), 'Smilde')
-    ),
-    title = 'Centering and scaling in component analysis',
-    journal = 'Journal of Chemometrics',
-    volume = 17,
-    number = 1,
-    pages = '16-33',
-    doi = '10.1002/cem.773',
-    year = 2003
-  }
+  \reference{Bro2003}
 }
 
 \seealso{

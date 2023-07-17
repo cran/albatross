@@ -18,7 +18,7 @@ vandermonde <- function(x0) {
 	solve(V, 1 * (k == length(x0) - 1))
 }
 
-# x - rows of the grid, y - columns of the grid, d - integer scalar >= 1.
+# x: rows of the grid, y: columns of the grid, d: integer scalar >= 1.
 # returns the matrix that, when multiplied with as.vector(z), gives
 # a vector of d-th order derivatives of z by x followed by a vector
 # of d-th order derivatives of z by y.
@@ -92,7 +92,7 @@ whittaker2 <- function(x, y, z, lambda, d, p, logscale, nonneg) {
 		return(
 			Recall(
 				x[perm.x], y[perm.y], z[perm.x, perm.y],
-				lambda, d, p, logscale
+				lambda, d, p, logscale, nonneg
 			)[
 				# order(perm) gives an inverse permutation
 				order(perm.x), order(perm.y)

@@ -92,7 +92,7 @@
           argument.
         }
         \item{sc.scores}{
-          A \code{\link{data.frame}} containing the following columns:
+          A \code{\link[base]{data.frame}} containing the following columns:
           \describe{
             \item{sample}{Sample numbers or names.}
             \item{value}{Scattering intensity value for a given factor.}
@@ -100,7 +100,7 @@
           }
         }
         \item{sc.loadings}{
-          A \code{\link{data.frame}} containing the following columns:
+          A \code{\link[base]{data.frame}} containing the following columns:
           \describe{
             \item{emission, excitation}{
               The wavelengths corresponding to the value of the
@@ -202,40 +202,10 @@
 % definition in newer R
 \RdOpts{stage=build}
 \references{
-  \bibentry{'Article',
-    author = c(
-      person('R.', 'Tauler'),
-      person('I.', paste0(
-        rawToChar(as.raw(0x5c)), 'enc{Marqués}{Marques}')
-      ),
-      person('E.', 'Casassas')
-    ),
-    title = paste(
-      'Multivariate curve resolution applied to three-way trilinear',
-      'data: Study of a spectrofluorimetric acid-base titration of',
-      'salicylic acid at three excitation wavelengths'
-    ),
-    volume = 12,
-    number = 1,
-    journal = 'Journal of Chemometrics',
-    year = 1998,
-    pages = '55-75',
-    doi = '10.1002/(SICI)1099-128X(199801/02)12:1<55::AID-CEM501>3.0.CO;2-#'
-  }
+  \reference{Tauler1998}
 
-  \bibentry{'Misc',
-    author = c(
-      person('I.', 'Krylov'), person('T.', 'Labutin'),
-      person('Å.', 'Rinnan'), person('R.', 'Bro')
-    ), # unicode here seems unavoidable
-    title = paste(
-      'Modelling of scattering signal for direct PARAFAC',
-      'decompositions of excitation-emission matrices'
-    ),
-    year = 2021,
-    howpublished = '17th Scandinavian Symposium on Chemometrics',
-    url = 'https://ssc17.org/abstract/Krylov1.html'
-  } \url{https://files.libs.chem.msu.ru/~ivan/SSC17/P13.pdf}.
+  \reference{Krylov2021}
+  \url{https://files.libs.chem.msu.ru/~ivan/SSC17/P13.pdf}.
 }
 \note{
   The structure of the \code{feemflame} object, the initialisation, and

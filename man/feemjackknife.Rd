@@ -28,7 +28,8 @@
   }
   \item{kind}{
     Chooses what to plot (when called as \code{plot(\dots)}) or return
-    as a \code{\link{data.frame}} (when called as \code{coef(\dots)}):
+    as a \code{\link[base]{data.frame}} (when called as
+    \code{coef(\dots)}):
     \describe{
       \item{estimations}{
         Produce the loadings from every leave-one-out model.
@@ -47,7 +48,7 @@
   \item{\dots}{\describe{
     \item{feemjackknife}{
       Passed as-is to \code{\link{feemparafac}} and, eventually, to
-      \code{\link{parafac}}
+      \CRANpkg{multiway} function \code{\link[multiway]{parafac}}.
     }
     \item{plot.feemjackknife}{
       When \code{kind} is \dQuote{RIP} or \dQuote{IMP}, pass a \code{q}
@@ -55,7 +56,8 @@
       or absolute score differences (IMP) above which sample names (or
       numbers) should be plotted. Default value for \code{q} is \eqn{0.9}.
 
-      Remaining arguments are passed as-is to \code{\link{xyplot}}.
+      Remaining arguments are passed as-is to
+      \code{\link[lattice]{xyplot}}.
     }
     \item{coef.feemjackknife}{
       No further parameters are allowed.
@@ -120,9 +122,9 @@
   is recommended to fully name the parameters to be passed to
   \code{\link{feemparafac}} to avoid problems.
 
-  \code{plot.feemjackknife} provides sane defaults for \code{\link{xyplot}}
-  parameters \code{xlab}, \code{ylab}, \code{scales}, \code{as.table}, but
-  they can be overridden.
+  \code{plot.feemjackknife} provides sane defaults for
+  \code{\link[lattice]{xyplot}} parameters \code{xlab}, \code{ylab},
+  \code{scales}, \code{as.table}, but they can be overridden.
 }
 \value{\describe{
   \item{feemjackknife}{
@@ -147,8 +149,8 @@
   }
 
   \item{coef.feemjackknife}{
-    A \code{\link{data.frame}} containing various columns, depending on
-    the value of the \code{kind} argument:
+    A \code{\link[base]{data.frame}} containing various columns,
+    depending on the value of the \code{kind} argument:
 
     \describe{
       \item{estimations}{\describe{
@@ -201,22 +203,7 @@
   }
 }}
 \references{
-  \bibentry{'Article',
-    author = c(
-      person('Jordi', 'Riu'),
-      person('Rasmus', 'Bro')
-    ),
-    title = paste(
-      'Jack-knife technique for outlier detection and',
-      'estimation of standard errors in PARAFAC models'
-    ),
-    journal = 'Chemometrics and Intelligent Laboratory Systems',
-    volume = 65,
-    number = 1,
-    pages = '35-49',
-    year = 2003,
-    doi = '10.1016/S0169-7439(02)00090-4',
-  }
+  \reference{Riu2003}
 }
 
 \seealso{

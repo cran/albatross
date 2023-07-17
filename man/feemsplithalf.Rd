@@ -7,7 +7,7 @@
 \description{
   This function validates PARAFAC with different numbers of components
   by means of splitting the data cube in halves, fitting PARAFAC to them
-  and comparing the results [1].
+  and comparing the results \cite{DeSarbo1984}.
 }
 \usage{
   feemsplithalf(
@@ -29,8 +29,8 @@
 
     The first element is the number of parts to split the data cube
     into, which must be even. After splitting, the parts are recombined
-    into non-intersecting halves [2], which are subjected to PARAFAC
-    decomposition and compared against each other.
+    into non-intersecting halves \cite{Murphy2013}, which are subjected
+    to PARAFAC decomposition and compared against each other.
 
     The second element, if specified, limits the total number of
     comparisons between the pairs, since the number of potential ways to
@@ -50,7 +50,7 @@
   \item{random}{
     Number of times to shuffle the dataset, split into non-intersecting
     halves, fit a PARAFAC model to each of the halves and compare halves
-    against each other.
+    against each other \cite{Krylov2020}.
 
     The number of PARAFAC models fitted is
     \eqn3{2 \cdot \mathtt{random}}{2 * random}{
@@ -63,8 +63,8 @@
     in the original dataset when constructing the halves. If specified,
     must be a factor or an integer vector of length \code{dim(cube)[3]}
     (specifying the group each sample belongs to) or a list of them,
-    i.e., a valid \code{f} argument to \code{\link{split}}. By default,
-    samples are considered to form a single group.
+    i.e., a valid \code{f} argument to \code{\link[base]{split}}. By
+    default, samples are considered to form a single group.
 
     For the split-combine method (\code{splits}), each group must have
     at least \code{splits} elements; for best results, sizes of groups
@@ -115,11 +115,11 @@
   \item{\dots}{\describe{
     \item{feemsplithalf}{
       Remaining options are passed to \code{\link{feemparafac}} and,
-      eventually, to \code{\link{parafac}}. It is recommended to fully
-      name the parameters instead of relying on partial or positional
-      matching.
+      eventually, to \code{\link[multiway]{parafac}}. It is recommended
+      to fully name the parameters instead of relying on partial or
+      positional matching.
     }
-    \item{plot.feemsplithalf}{Passed as-is to \code{\link{xyplot}}.}
+    \item{plot.feemsplithalf}{Passed as-is to \code{\link[lattice]{xyplot}}.}
     \item{print.feemsplithalf, coef.feemsplithalf}{
       No additional options are allowed.
     }
@@ -130,10 +130,10 @@
   \eqn3{\mathbf B}{B}{<b>B</b>} and scores \eqn3{\mathbf C}{C}{<b>C</b>})
   are fitted, they are compared to the first model of the same number
   of factors (Tucker's congruence coefficient is calculated using
-  \code{\link{congru}} for emission and excitation mode factors, then the
-  smallest value of the two is chosen for the purposes of matching). The
-  models are first reordered according to the best match by TCC value,
-  then rescaled [3] by minimising \eqn3{
+  \code{\link[multiway]{congru}} for emission and excitation mode
+  factors, then the smallest value of the two is chosen for the purposes
+  of matching). The models are first reordered according to the best
+  match by TCC value, then rescaled \cite{Riu2003} by minimising \eqn3{
     || \mathbf A \, \mathrm{diag}(\mathbf s_\mathrm A) -
       \mathbf A^\mathrm{orig} ||^2
   }{sum((A * s.A - A.orig)^2)}{
@@ -162,9 +162,10 @@
   }, to make them comparable.
 
   To perform stratified sampling on a real-valued variable (e.g. salinity,
-  depth), consider binning samples into groups using \code{\link{cut}},
-  perhaps after histogram flattening using \code{\link{ecdf}(x)(x)}. To
-  determine the number of breaks, consider \code{\link{nclass.Sturges}}.
+  depth), consider binning samples into groups using
+  \code{\link[base]{cut}}, perhaps after histogram flattening using
+  \code{\link[stats]{ecdf}(x)(x)}. To determine the number of breaks, consider
+  \code{\link[grDevices]{nclass.Sturges}}.
 
   To conserve memory, \code{feemsplithalf} puts the user-provided
   \code{cube} in an environment and passes it via \code{envir} and
@@ -176,7 +177,7 @@
   \code{plot.feemsplithalf} plots results of the split-half procedure
   (TCC or loading values depending on the \code{kind} argument)
   using \CRANpkg{lattice} graphics. Sane defaults are provided for
-  \code{\link{xyplot}} parameters \code{xlab}, \code{ylab},
+  \code{\link[lattice]{xyplot}} parameters \code{xlab}, \code{ylab},
   \code{as.table}, but they can be overridden.
 
   \code{print.feemsplithalf} displays a very short summary of the
@@ -190,12 +191,12 @@
     An object of class \code{feemsplithalf}, containing named fields:
     \describe{
       \item{factors}{
-        A \code{\link{list}} of \code{\link{feemparafac}} objects containing
-        the factors of the halves. The list has dimensions, the first one
-        corresponding to the halves (always 2), the second to different
-        numbers of factors (as many as in \code{nfac}) and the third to
-        different groupings of the samples (depends on \code{splits} or
-        \code{random}).
+        A \code{\link[base]{list}} of \code{\link{feemparafac}} objects
+        containing the factors of the halves. The list has dimensions,
+        the first one corresponding to the halves (always 2), the second
+        to different numbers of factors (as many as in \code{nfac}) and
+        the third to different groupings of the samples (depends on
+        \code{splits} or \code{random}).
       }
       \item{tcc}{
         A named list containing arrays of Tucker's congruence coefficients
@@ -215,8 +216,8 @@
     will draw the plot on an appropriate plotting device.
   }
   \item{coef.feemsplithalf}{
-    A \code{\link{data.frame}} containing various columns, depending on
-    the value of the \code{kind} argument:
+    A \code{\link[base]{data.frame}} containing various columns,
+    depending on the value of the \code{kind} argument:
 
     \describe{
       \item{tcc}{\describe{
@@ -278,56 +279,10 @@
     }
   }
 }}
-\references{\enumerate{
-  \item \bibentry{'Article',
-    author = person(c('Wayne', 'S.'), 'DeSarbo'),
-    title = paste(
-      'An Application of PARAFAC to a Small Sample Problem,',
-      'Demonstrating Preprocessing, Orthogonality Constraints,',
-      'and Split-Half Diagnostic Techniques (Appendix)'
-    ),
-    journal = 'Research Methods for Multimode Data Analysis',
-    year = 1984,
-    pages = '602-642',
-    url = 'https://papers.ssrn.com/abstract=2783446'
-  }
-
-  \item \bibentry{'Article',
-    author = c(
-      person(c('Kathleen', 'R.'), 'Murphy'),
-      person(c('Colin', 'A.'), 'Stedmon'),
-      person('Daniel', 'Graeber'),
-      person('Rasmus', 'Bro')
-    ),
-    title = 'Fluorescence spectroscopy and multi-way techniques. PARAFAC',
-    journal = 'Analytical Methods',
-    doi = '10.1039/c3ay41160e',
-    volume = 5,
-    year = 2013,
-    pages = '6557-6566'
-  }
-
-  \item \bibentry{'Article',
-    author = c(
-      person('Jordi', 'Riu'),
-      person('Rasmus', 'Bro')
-    ),
-    title = paste(
-      'Jack-knife technique for outlier detection and',
-      'estimation of standard errors in PARAFAC models'
-    ),
-    journal = 'Chemometrics and Intelligent Laboratory Systems',
-    volume = 65,
-    number = 1,
-    pages = '35-49',
-    year = 2003,
-    doi = '10.1016/S0169-7439(02)00090-4',
-  }
-}}
-
+\references{\bibliography}
 \seealso{
-  \code{\link{feemparafac}}, \code{\link{parafac}}, \code{\link{congru}},
-  \code{\link{feemcube}}.
+  \code{\link{feemparafac}}, \code{\link[multiway]{parafac}},
+  \code{\link[multiway]{congru}}, \code{\link{feemcube}}.
 }
 \examples{\donttest{
   data(feems)

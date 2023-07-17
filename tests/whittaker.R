@@ -89,3 +89,13 @@ d3Zdx3.est <- matrix(d3Z[1:((length(x)-3) * length(y))], ncol = length(y))
 d3Zdy3.est <- matrix(d3Z[-(1:((length(x)-3) * length(y)))], nrow = length(x), byrow = TRUE)
 check.err(0, d3Zdx3.est)
 check.err(eval(eyyy), d3Zdy3.est)
+
+# all parameters must be correctly passed when recalling self
+Zneg <- Z - 2*min(Z)
+stopifnot(all.equal(
+	albatross:::whittaker2(x, y, Zneg, 1e3, 3, .5, 1e-3, 2),
+	albatross:::whittaker2(
+		rev(x), y, Zneg[nrow(Zneg):1,],
+		1e3, 3, .5, 1e-3, 2
+	)[nrow(Zneg):1,]
+))

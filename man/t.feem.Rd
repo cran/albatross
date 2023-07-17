@@ -13,12 +13,13 @@
   }
 }
 \value{
-  A \code{\link{matrix}} without a \code{\link{class}} attribute.
+  A \code{\link[base]{matrix}} without a \code{\link[base]{class}}
+  attribute.
 }
 \details{
-  Like in \code{\link{aperm}}, transposing makes sense for a matrix, but
-  violates the \code{\link{feem}} class invariants. Therefore, the class
-  attribute has to be removed.
+  Like in \code{\link[base]{aperm}}, transposing makes sense for a
+  matrix, but violates the \code{\link{feem}} class invariants.
+  Therefore, the class attribute has to be removed.
 }
 \examples{
   t(feem(matrix(1:40, ncol = 8), 1:5, 1:8))

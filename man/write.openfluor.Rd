@@ -151,24 +151,7 @@ write.openfluor(
   (to be comma-separated on output); others should be single strings.
 }
 \references{
-  \bibentry{'Article',
-    author = c(
-      person(c('Kathleen', 'R.'), 'Murphy'),
-      person(c('Colin', 'A.'), 'Stedmon'),
-      person('Philip', 'Wenig'),
-      person('Rasmus', 'Bro')
-    ),
-    title = paste(
-      'OpenFluor - an online spectral library of auto-fluorescence',
-      'by organic compounds in the environment'
-    ),
-    journal = 'Analytical Methods',
-    year = 2014,
-    volume = 6,
-    issue = 3,
-    pages = '658-661',
-    doi = '10.1039/C3AY41935E'
-  }
+  \reference{Murphy2014}
 
   \url{https://openfluor.lablicate.com/}
 }

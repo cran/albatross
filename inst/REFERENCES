@@ -1,0 +1,413 @@
+bibentry(
+	'Article', key = 'Twardowski2004',
+	title = paste(
+		'Modeling the spectral shape of absorption by chromophoric',
+		'dissolved organic matter'
+	),
+	volume = 89,
+	doi = '10.1016/j.marchem.2004.02.008',
+	number = 1,
+	journal = 'Marine Chemistry',
+	author = c(
+		person(c('Michael', 'S.'), 'Twardowski'),
+		person('Emmanuel', 'Boss'),
+		person(c('James', 'M.'), 'Sullivan'),
+		person(c('Percy', 'L.'), 'Donaghay')
+	),
+	year = '2004',
+	pages = '69-88'
+)
+bibentry('Article', key = 'Murphy2013',
+	author = c(
+		person(c('Kathleen', 'R.'), 'Murphy'),
+		person(c('Colin', 'A.'), 'Stedmon'),
+		person('Daniel', 'Graeber'),
+		person('Rasmus', 'Bro')
+	),
+	title = 'Fluorescence spectroscopy and multi-way techniques. PARAFAC',
+	journal = 'Analytical Methods',
+	doi = '10.1039/c3ay41160e',
+	volume = 5,
+	year = 2013,
+	pages = '6557-6566'
+)
+bibentry('Article', key = 'Pucher2019',
+	author = c(
+		person('Matthias', 'Pucher'),
+		person('Urban', '\\enc{Wünsch}{Wuensch}'),
+		person('Gabriele', 'Weigelhofer'),
+		person('Kathleen', 'Murphy'),
+		person('Thomas', 'Hein'),
+		person('Daniel', 'Graeber')
+	),
+	title = paste(
+		'staRdom: Versatile Software for Analyzing Spectroscopic Data',
+		'of Dissolved Organic Matter in R'
+	),
+	journal = 'Water',
+	volume = 11,
+	number = 11,
+	year = 2019,
+	pages = 2366,
+	doi = '10.3390/w11112366'
+)
+bibentry('Article', key = 'MPFC1970',
+	author = c(
+		person('John', 'Cleese'),
+		person('Terry', 'Jones')
+	),
+	title = 'Albatross: Flavours of different sea birds',
+	journal = 'Journal of Flying Circus',
+	year = 1970,
+	volume = '1.13',
+	pages = '7:05-7:45'
+)
+bibentry('Article', key = 'deJuan2014',
+	author = c(
+		person('A.', 'de Juan'),
+		person('J.', 'Jaumot'),
+		person('R.', 'Tauler')
+	),
+	doi = '10.1039/c4ay00571f',
+	title = 'Multivariate Curve Resolution (MCR). Solving the mixture analysis problem',
+	journal = 'Anal. Methods',
+	year = 2014,
+	volume = 6,
+	issue = 14,
+	pages = '4964-4976',
+	publisher = 'The Royal Society of Chemistry'
+)
+bibentry('Article', key = 'Tauler1998',
+	author = c(
+		person('R.', 'Tauler'),
+		person('I.', paste0(
+			rawToChar(as.raw(0x5c)), 'enc{Marqués}{Marques}')
+		),
+		person('E.', 'Casassas')
+	),
+	title = paste(
+		'Multivariate curve resolution applied to three-way trilinear',
+		'data: Study of a spectrofluorimetric acid-base titration of',
+		'salicylic acid at three excitation wavelengths'
+	),
+	volume = 12,
+	number = 1,
+	journal = 'Journal of Chemometrics',
+	year = 1998,
+	pages = '55-75',
+	doi = '10.1002/(SICI)1099-128X(199801/02)12:1<55::AID-CEM501>3.0.CO;2-#'
+)
+bibentry('Misc', key = 'Krylov2021',
+	author = c(
+		person('I.', 'Krylov'), person('T.', 'Labutin'),
+		person('Å.', 'Rinnan'), person('R.', 'Bro')
+	),
+	title = paste(
+		'Modelling of scattering signal for direct PARAFAC',
+		'decompositions of excitation-emission matrices'
+	),
+	year = 2021,
+	howpublished = '17th Scandinavian Symposium on Chemometrics',
+	url = 'https://web.archive.org/web/20220314144225/https://ssc17.org/abstract/Krylov1.html'
+)
+bibentry('Book', key = 'Lakowicz2006',
+	author = person(c('Joseph', 'R.'), 'Lakowicz'),
+	title = 'Principles of Fluorescence Spectroscopy, 3rd ed.',
+	year = '2006',
+	publisher = 'Springer US',
+	doi = '10.1007/978-0-387-46312-4'
+)
+bibentry('Article', key = 'Kothawala2013',
+	author = c(
+		person(c('Dolly', 'N.'), 'Kothawala'),
+		person(c('Kathleen', 'R.'), 'Murphy'),
+		person(c('Colin', 'A.'), 'Stedmon'),
+		person(c('Gesa', 'A.'), 'Weyhenmeyer'),
+		person(c('Lars', 'J.'), 'Tranvik')
+	),
+	title = 'Inner filter correction of dissolved organic matter fluorescence',
+	journal = 'Limnology and Oceanography: Methods',
+	volume = 11,
+	number = 12,
+	pages = '616-630',
+	doi = '10.4319/lom.2013.11.616',
+	year = 2013
+)
+bibentry('Article', key = 'Zsolnay1999',
+	title = 'Differentiating with fluorescence spectroscopy the sources of dissolved organic matter in soils subjected to drying',
+	volume = 38,
+	doi = '10.1016/S0045-6535(98)00166-0',
+	number = 1,
+	journal = 'Chemosphere',
+	author = c(person('Adam', 'Zsolnay'), person('Erik', 'Baigar'), person('Miguel', 'Jimenez'), person('Bernd', 'Steinweg'), person('Flavia', 'Saccomandi')),
+	year = 1999,
+	pages = '45-50',
+)
+bibentry('Article', key = 'Huguet2009',
+	title = 'Properties of fluorescent dissolved organic matter in the Gironde Estuary',
+	volume = 40,
+	doi = '10.1016/j.orggeochem.2009.03.002',
+	number = 6,
+	journal = 'Organic Geochemistry',
+	author = c(person('A', 'Huguet'), person('L', 'Vacher'), person('S', 'Relexans'), person('S', 'Saubusse'), person(c('J', 'M'), 'Froidefond'), person('E', 'Parlanti')),
+	year = 2009,
+	pages = '706-719',
+)
+bibentry('Article', key = 'McKnight2001',
+	title = 'Spectrofluorometric characterization of dissolved organic matter for indication of precursor organic material and aromaticity',
+	volume = 46,
+	doi = '10.4319/lo.2001.46.1.0038',
+	number = 1,
+	journal = 'Limnology and Oceanography',
+	author = c(person(c('Diane', 'M'), 'McKnight'), person(c('Elizabeth', 'W'), 'Boyer'), person(c('Paul', 'K'), 'Westerhoff'), person(c('Peter', 'T'), 'Doran'), person('Thomas', 'Kulbe'), person(c('Dale', 'T'), 'Andersen')),
+	year = 2001,
+	pages = '38-48',
+)
+bibentry('Article', key = 'Cory2005',
+	title = 'Fluorescence spectroscopy reveals ubiquitous presence of oxidized and reduced quinones in dissolved organic matter',
+	volume = 39,
+	doi = '10.1021/es0506962',
+	number = 21,
+	journal = 'Environmental science & technology',
+	author = c(person(c('Rose', 'M'), 'Cory'), person(c('Diane', 'M'), 'McKnight')),
+	year = 2005,
+	pages = '8142-8149',
+)
+bibentry('Article', key = 'Heo2016',
+	title = 'A new fluorescence index with a fluorescence excitation-emission matrix for dissolved organic matter (DOM) characterization',
+	volume = 57,
+	doi = '10.1080/19443994.2015.1110719',
+	number = 43,
+	journal = 'Desalination and Water Treatment',
+	author = c(person('Jiyong', 'Heo'), person('Yeomin', 'Yoon'), person('Do-Hyung', 'Kim'), person('Heebum', 'Lee'), person('Deokjae', 'Lee'), person('Namguk', 'Her')),
+	year = 2016,
+	pages = '20270-20282',
+)
+bibentry('Article', key = 'Wilson2009',
+	title = 'Effects of agricultural land use on the composition of fluvial dissolved organic matter',
+	volume = 2,
+	doi = '10.1038/ngeo391',
+	number = 1,
+	journal = 'Nature Geoscience',
+	author = c(person(c('Henry', 'F'), 'Wilson'), person(c('Marguerite', 'A'), 'Xenopoulos')),
+	year = 2009,
+	pages = '37-41',
+)
+bibentry('Article', key = 'Coble2007',
+	title = 'Marine Optical Biogeochemistry: The Chemistry of Ocean Color',
+	volume = 107,
+	doi = '10.1021/cr050350+',
+	number = 2,
+	journal = 'Chemical Reviews',
+	author = person(c('Paula', 'G'), 'Coble'),
+	year = 2007,
+	pages = '402-418',
+)
+bibentry('Article', key = 'Riu2003',
+	author = c(
+		person('Jordi', 'Riu'),
+		person('Rasmus', 'Bro')
+	),
+	title = paste(
+		'Jack-knife technique for outlier detection and',
+		'estimation of standard errors in PARAFAC models'
+	),
+	journal = 'Chemometrics and Intelligent Laboratory Systems',
+	volume = 65,
+	number = 1,
+	pages = '35-49',
+	year = 2003,
+	doi = '10.1016/S0169-7439(02)00090-4',
+)
+bibentry('Article', key = 'Bro1997',
+	author = person('Rasmus', 'Bro'),
+	title = 'PARAFAC. Tutorial and applications',
+	journal = 'Chemometrics and Intelligent Laboratory Systems',
+	volume = 38,
+	number = 2,
+	pages = '149-171',
+	year = 1997,
+	doi = '10.1016/S0169-7439(97)00032-4'
+)
+bibentry('Article', key = 'Bro2003',
+	author = c(
+		person('Rasmus', 'Bro'), person(c('Age', 'K.'), 'Smilde')
+	),
+	title = 'Centering and scaling in component analysis',
+	journal = 'Journal of Chemometrics',
+	volume = 17,
+	number = 1,
+	pages = '16-33',
+	doi = '10.1002/cem.773',
+	year = 2003
+)
+bibentry('Article', key = 'Bahram2006',
+	author = c(
+		person('Morteza', 'Bahram'),
+		person('Rasmus', 'Bro'),
+		person('Colin', 'Stedmon'),
+		person('Abbas', 'Afkhami')
+	),
+	title = paste(
+		'Handling of Rayleigh and Raman scatter for PARAFAC modeling of',
+		'fluorescence data using interpolation'
+	),
+	journal = 'Journal of Chemometrics',
+	volume = 20,
+	number = '3-4',
+	pages = '99-105',
+	year = 2006,
+	doi = '10.1002/cem.978'
+)
+bibentry('Article', key = 'Pucher2019',
+	author = c(
+		person('Matthias', 'Pucher'),
+		person('Urban',	paste0(rawToChar(as.raw(0x5c)), 'enc{Wünsch}{Wuensch}')),
+		person('Gabriele', 'Weigelhofer'),
+		person('Kathleen', 'Murphy'),
+		person('Thomas', 'Hein'),
+		person('Daniel', 'Graeber')
+	),
+	title = paste(
+		'staRdom: Versatile Software for Analyzing Spectroscopic Data',
+		'of Dissolved Organic Matter in R'
+	),
+	journal = 'Water',
+	volume = 11,
+	number = 11,
+	year = 2019,
+	pages = 2366,
+	doi = '10.3390/w11112366'
+)
+bibentry('InBook', key = 'NR3-Kriging',
+	author = c(
+		person(c('William', 'H.'), 'Press'),
+		person(c('Saul', 'A.'), 'Teukolsky'),
+		person(c('William', 'T.'), 'Vetterling'),
+		person(c('Brian', 'P.'), 'Flannery')
+	),
+	booktitle =
+		'Numerical recipes: The Art of Scientific Computing (3rd Ed.)',
+	publisher = 'Cambridge University Press, New York',
+	chapter = '3.7.4',
+	title = 'Interpolation by Kriging',
+	pages = '144-147',
+	year = 2007
+)
+bibentry('Article', key = 'Eilers2003',
+	author = person(c('Paul', 'H.', 'C.'), 'Eilers'),
+	title = 'A Perfect Smoother',
+	journal = 'Analytical Chemistry',
+	volume = 75,
+	number = 14,
+	pages = '3631-3636',
+	year = 2003,
+	doi = '10.1021/ac034173t'
+)
+bibentry('Article', key = 'Eilers2004-density',
+	author = c(
+		person(c('Paul', 'H.', 'C.'), 'Eilers'),
+		person(c('Jelle', 'J.'), 'Goeman')
+	),
+	title = 'Enhancing scatterplots with smoothed densities',
+	journal = 'Bioinformatics',
+	volume = 20,
+	number = 5,
+	pages = '623-628',
+	year = 2004,
+	doi = '10.1093/bioinformatics/btg454'
+)
+bibentry('Article', key = 'DeSarbo1984',
+	author = person(c('Wayne', 'S.'), 'DeSarbo'),
+	title = paste(
+		'An Application of PARAFAC to a Small Sample Problem,',
+		'Demonstrating Preprocessing, Orthogonality Constraints,',
+		'and Split-Half Diagnostic Techniques (Appendix)'
+	),
+	journal = 'Research Methods for Multimode Data Analysis',
+	year = 1984,
+	pages = '602-642',
+	url = 'https://papers.ssrn.com/abstract=2783446'
+)
+bibentry('Article', key = 'Eilers2004-PTW',
+	title = 'Parametric Time Warping',
+	volume = 76,
+	doi = '10.1021/ac034800e',
+	number = 2,
+	journal = 'Analytical Chemistry',
+	author = person(c('Paul', 'H.', 'C.'), 'Eilers'),
+	year = 2004,
+	pages = '404-411',
+)
+bibentry('Article', key = 'Garcia2010',
+	title = 'Robust smoothing of gridded data in one and higher dimensions with missing values',
+	volume = 54,
+	doi = '10.1016/j.csda.2009.09.020',
+	number = 4,
+	journal = 'Computational Statistics & Data Analysis',
+	author = person('Damien', 'Garcia'),
+	year = 2010,
+	pages = '1167-1178'
+)
+bibentry('InBook', key = 'LeVeque2007-ch1',
+	author = person(c('Randall', 'J.'), 'LeVeque'),
+	booktitle = 'Finite Difference Methods for Ordinary and Partial Differential Equations',
+	chapter = 1,
+	pages = '3-11',
+	publisher = 'Society for Industrial and Applied Mathematics (SIAM)',
+	title = 'Finite Difference Approximations',
+	url = 'https://faculty.washington.edu/rjl/fdmbook/',
+	year = 2007
+)
+bibentry('Article', key = 'Fornberg1988',
+	title = 'Generation of finite difference formulas on arbitrarily spaced grids',
+	volume = 51,
+	doi = '10.1090/S0025-5718-1988-0935077-0',
+	number = 184,
+	journal = 'Mathematics of Computation',
+	author = person('Bengt', 'Fornberg'),
+	year = 1988,
+	pages = '699-706'
+)
+bibentry('Article', key = 'Murphy2014',
+	author = c(
+		person(c('Kathleen', 'R.'), 'Murphy'),
+		person(c('Colin', 'A.'), 'Stedmon'),
+		person('Philip', 'Wenig'),
+		person('Rasmus', 'Bro')
+	),
+	title = paste(
+		'OpenFluor - an online spectral library of auto-fluorescence',
+		'by organic compounds in the environment'
+	),
+	journal = 'Analytical Methods',
+	year = 2014,
+	volume = 6,
+	issue = 3,
+	pages = '658-661',
+	doi = '10.1039/C3AY41935E'
+)
+bibentry('Article', key = 'Krylov2020',
+	title = 'Albatross R package to study PARAFAC components of DOM fluorescence from mixing zones of arctic shelf seas',
+	author = c(
+		person('Ivan N.', 'Krylov'),
+		person('Anastasia N.', 'Drozdova'),
+		person('Timur A.', 'Labutin')
+	),
+	doi = '10.1016/j.chemolab.2020.104176',
+	journal = 'Chemometrics and Intelligent Laboratory Systems',
+	number = 104176,
+	volume = 207,
+	year = 2020
+)
+bibentry('Article', key = 'Krylov2023',
+	title = 'Recovering fluorescence spectra hidden by scattering signal: in search of the best smoother',
+	journal = 'Spectrochimica Acta Part A: Molecular and Biomolecular Spectroscopy',
+	pages = 122441,
+	year = 2023,
+	doi = '10.1016/j.saa.2023.122441',
+	author = c(
+		person(c('Ivan', 'N.'), 'Krylov'),
+		person(c('Timur', 'A.'), 'Labutin')
+	)
+)

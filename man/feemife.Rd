@@ -48,7 +48,7 @@
   }
   \item{progress}{
     Set to \code{TRUE} to enable a progress bar (implemented via
-    \code{\link{txtProgressBar}}).
+    \code{\link[utils]{txtProgressBar}}).
   }
   \item{\dots}{
     No parameters besides those described above are allowed.
@@ -58,7 +58,7 @@
   If you receive errors alleging that some names don't match, but
   are absolutely sure that the absorbance spectra and path lengths are
   present in the same order as in \code{x}, remove the names from either
-  of the objects, e.g. by passing \code{\link{unname}(absorbance)}.
+  of the objects, e.g. by passing \code{\link[base]{unname}(absorbance)}.
 
   The formula used to correct for inner filter effect is:
 
@@ -82,30 +82,9 @@
   corrected.
 }
 \references{
-  \bibentry{'Book',
-    author = person(c('Joseph', 'R.'), 'Lakowicz'),
-    title = 'Principles of Fluorescence Spectroscopy, 3rd ed.',
-    year = '2006',
-    publisher = 'Springer US',
-    doi = '10.1007/978-0-387-46312-4'
-  }
+  \reference{Lakowicz2006}
 
-  \bibentry{'Article',
-    author = c(
-      person(c('Dolly', 'N.'), 'Kothawala'),
-      person(c('Kathleen', 'R.'), 'Murphy'),
-      person(c('Colin', 'A.'), 'Stedmon'),
-      person(c('Gesa', 'A.'), 'Weyhenmeyer'),
-      person(c('Lars', 'J.'), 'Tranvik')
-    ),
-    title = 'Inner filter correction of dissolved organic matter fluorescence',
-    journal = 'Limnology and Oceanography: Methods',
-    volume = 11,
-    number = 12,
-    pages = '616-630',
-    doi = '10.4319/lom.2013.11.616',
-    year = 2013
-  }
+  \reference{Kothawala2013}
 }
 \examples{
   data(feems)

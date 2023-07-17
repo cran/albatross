@@ -229,6 +229,6 @@ plot.feemflame <- function(
 	switch(type <- match.arg(type),
 		fl.image = plot(x$fl, 'image', ...),
 		fl.lines = plot(x$fl, 'lines', ...),
-		both = .flame.image.plot(x)
+		both = .flame.image.plot(x, ...)
 	)
 }

@@ -76,5 +76,5 @@ cubeapply.list <- function(x, fun, ..., cl, progress = TRUE, .recycle = FALSE) {
 
 .fixnames <- function(x, n) as.factor(if (is.null(x)) seq_len(n) else make.unique(x))
 
-.cubenames.feemcube <- function(cube) .fixnames(dimnames(cube)[[3]], dim(cube)[3])
-.cubenames.list <- function(l) .fixnames(names(l), length(l))
+.cubenames.feemcube <- function(x) .fixnames(dimnames(x)[[3]], dim(x)[3])
+.cubenames.list     <- function(x) .fixnames(names(x),         length(x))

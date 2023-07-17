@@ -11,7 +11,7 @@
     alpha = 1, gamma = 1, fixup = TRUE
   )
   diverging.colours(
-    n, chroma = c(.35, .85), luminance = c(.30, .95),
+    n, chroma = c(.1, .75), luminance = c(1, .35),
     alpha = 1, gamma = 1, fixup = TRUE
   )
 }
@@ -57,9 +57,9 @@
 }
 \details{
   The \code{marine.colours} palette is used by default by all
-  \code{\link{plot}} methods for FEEM-like data to show absolute values.
-  It is designed to retain perceptual uniformity even after complete
-  desaturation.
+  \code{plot} methods (e.g. \code{\link{plot.feem}}) for FEEM-like data
+  to show absolute values.  It is designed to retain perceptual
+  uniformity even after complete desaturation.
 
   The \code{diverging.colours} palette is used by
   \code{\link{plot.feem.resid}} to display residual values. People with
@@ -100,9 +100,9 @@
     \if{html}{ \figure{divergingcolours.png}{options: width="400"}}
 
     The \code{diverging.colours} palette at the default values of
-    \eqn3{C_{uv}^* \in [0.35; 0.85]}{chroma in [0.35, 0.85]}{
-    C<sub>uv</sub><sup>*</sup> &in; [0.35; 0.85]}, \eqn3{L^* \in [0.30;
-    0.95]}{luminance in [0.35, 0.95]}{L<sup>*</sup> &in; [0.30; 0.95]},
+    \eqn3{C_{uv}^* \in [0.1; 0.75]}{chroma in [0.1, 0.75]}{
+    C<sub>uv</sub><sup>*</sup> &in; [0.1; 0.75]}, \eqn3{L^* \in [0.35;
+    1]}{luminance in [0.35, 1]}{L<sup>*</sup> &in; [0.35; 1]},
     \eqn3{\alpha = \gamma = 1}{\alpha = \gamma = 1}{&alpha; = &gamma; = 1}.
   }
 }
@@ -115,7 +115,7 @@
   similar technique using BT.601 luminance coefficients and RGB colour
   space.
 }
-\seealso{\code{\link{plot.feem}}, \code{\link{hcl}}}
+\seealso{\code{\link{plot.feem}}, \code{\link[grDevices]{hcl}}}
 \examples{
   image(volcano, col = marine.colours(256))
 }

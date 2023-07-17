@@ -1,7 +1,9 @@
 # The cmocean('haline') palette is somewhat too dark for my tastes, so
 # here are some perceptually-uniform (HCL) palette that I like better.
 
-# x from [0,1] to [range]
+# Scale x from [0,1] to [range]. In particular, the return value will be
+# range[1] at x == 0 and range[2] at x == 1. range[1] is allowed to be
+# larger than range[0].
 .scl <- function(range, x) if (length(range) == 1) {
 	rep_len(range, length(x))
 } else {
@@ -21,7 +23,7 @@ marine.colours <- function(
 }
 
 diverging.colours <- function(
-	n, chroma = c(.35, .85), luminance = c(.30, .95),
+	n, chroma = c(.1, .75), luminance = c(1, .35),
 	alpha = 1, gamma = 1, fixup = TRUE
 ) {
 	base <- seq(-1, 1, length.out = n)

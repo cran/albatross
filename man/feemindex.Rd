@@ -59,7 +59,7 @@
   }
   \item{progress}{
     Set to \code{TRUE} to enable a progress bar (implemented via
-    \code{\link{txtProgressBar}}).
+    \code{\link[utils]{txtProgressBar}}).
   }
 }
 \details{
@@ -84,7 +84,7 @@
 
       Higher values of the humification index correspond to more
       condensed fluorescing molecules (higher C/H), more humified
-      matter. [1]
+      matter. \cite{Zsolnay1999}
     }
     \item{BIX}{
       \deqn3{
@@ -104,7 +104,7 @@
 
       Index of recent autochthonous contribution determines the presence
       of the \eqn{\beta} fluorophore, characteristic of autochthonous
-      biological activity in water samples. [2]
+      biological activity in water samples. \cite{Huguet2009}
     }
     \item{MFI}{
       \deqn3{
@@ -122,9 +122,9 @@
         </sub> at &lambda;<sub>ex</sub> = 370 nm
       }
 
-      The fluorescence index by McKnight et al., 2001 [3] helps
-      distinguish sources of isolated aquatic fulvic acids and may
-      indicate their aromaticity.
+      The fluorescence index by \cite{McKnight2001} helps distinguish
+      sources of isolated aquatic fulvic acids and may indicate their
+      aromaticity.
     }
     \item{CFI}{
       \deqn3{
@@ -142,7 +142,7 @@
         </sub> at &lambda;<sub>ex</sub> = 370 nm
       }
 
-      The fluorescence index by Cory et al., 2005 [4] is correlated to
+      The fluorescence index by \cite{Cory2005} is correlated to
       relative contribution of microbial versus higher plant-derived
       organic matter to the DOM pool.
     }
@@ -163,8 +163,8 @@
         </sub> at &lambda;<sub>ex</sub> = 280 nm
       }
 
-      Yeomin fluorescence index [5] is lowest for humic-like and
-      fulvic-like samples, higher for aminosugar-like samples and
+      Yeomin fluorescence index \cite{Heo2016} is lowest for humic-like
+      and fulvic-like samples, higher for aminosugar-like samples and
       highest for protein-like samples.
     }
     \item{FrI}{
@@ -186,11 +186,11 @@
       The freshness index, also known as
       \eqn3{\frac{\beta}{\alpha}}{\beta/\alpha}{
         <sup>&beta;</sup>/<sub>&alpha;</sub>}, is an indicator of
-      autochthonous inputs [6] and may provide indication of relative
-      contribution of microbially produced DOM.
+      autochthonous inputs \cite{Wilson2009} and may provide indication
+      of relative contribution of microbially produced DOM.
     }
     \item{A, B, C, M, P, T}{
-      Fluorophore peaks taken from [7]: \tabular{cccl}{
+      Fluorophore peaks taken from \cite{Coble2007}: \tabular{cccl}{
         Peak
         \tab \eqn3{\lambda_\mathrm{ex}}{lambda.ex}{&lambda;<sub>ex</sub>}
         \tab \eqn3{\lambda_\mathrm{em}}{lambda.em}{&lambda;<sub>em</sub>}
@@ -346,91 +346,14 @@
   For individual \code{\link{feem}} objects, a named numeric vector
   containing the values requested via the \code{indices} argument.
 
-  Otherwise, a \code{\link{data.frame}} containing the values from the
-  vectors above and a column named \code{sample} containing the names of
-  the samples (or numbers, if names were absent).
+  Otherwise, a \code{\link[base]{data.frame}} containing the values from
+  the vectors above and a column named \code{sample} containing the
+  names of the samples (or numbers, if names were absent).
 }
 \author{
   With edits and suggestions by Anastasia Drozdova.
 }
-\references{\enumerate{
-  \item \bibentry{'Article',
-    title = 'Differentiating with fluorescence spectroscopy the sources of dissolved organic matter in soils subjected to drying',
-    volume = 38,
-    doi = '10.1016/S0045-6535(98)00166-0',
-    number = 1,
-    journal = 'Chemosphere',
-    author = c(person('Adam', 'Zsolnay'), person('Erik', 'Baigar'), person('Miguel', 'Jimenez'), person('Bernd', 'Steinweg'), person('Flavia', 'Saccomandi')),
-    year = 1999,
-    pages = '45-50',
-  }
-
-  \item \bibentry{'Article',
-    title = 'Properties of fluorescent dissolved organic matter in the Gironde Estuary',
-    volume = 40,
-    doi = '10.1016/j.orggeochem.2009.03.002',
-    number = 6,
-    journal = 'Organic Geochemistry',
-    author = c(person('A', 'Huguet'), person('L', 'Vacher'), person('S', 'Relexans'), person('S', 'Saubusse'), person(c('J', 'M'), 'Froidefond'), person('E', 'Parlanti')),
-    year = 2009,
-    pages = '706-719',
-  }
-
-  \item \bibentry{'Article',
-    title = 'Spectrofluorometric characterization of dissolved organic matter for indication of precursor organic material and aromaticity',
-    volume = 46,
-    doi = '10.4319/lo.2001.46.1.0038',
-    number = 1,
-    journal = 'Limnology and Oceanography',
-    author = c(person(c('Diane', 'M'), 'McKnight'), person(c('Elizabeth', 'W'), 'Boyer'), person(c('Paul', 'K'), 'Westerhoff'), person(c('Peter', 'T'), 'Doran'), person('Thomas', 'Kulbe'), person(c('Dale', 'T'), 'Andersen')),
-    year = 2001,
-    pages = '38-48',
-  }
-
-  \item \bibentry{'Article',
-    title = 'Fluorescence spectroscopy reveals ubiquitous presence of oxidized and reduced quinones in dissolved organic matter',
-    volume = 39,
-    doi = '10.1021/es0506962',
-    number = 21,
-    journal = 'Environmental science & technology',
-    author = c(person(c('Rose', 'M'), 'Cory'), person(c('Diane', 'M'), 'McKnight')),
-    year = 2005,
-    pages = '8142-8149',
-  }
-
-  \item \bibentry{'Article',
-    title = 'A new fluorescence index with a fluorescence excitation-emission matrix for dissolved organic matter (DOM) characterization',
-    volume = 57,
-    doi = '10.1080/19443994.2015.1110719',
-    number = 43,
-    journal = 'Desalination and Water Treatment',
-    author = c(person('Jiyong', 'Heo'), person('Yeomin', 'Yoon'), person('Do-Hyung', 'Kim'), person('Heebum', 'Lee'), person('Deokjae', 'Lee'), person('Namguk', 'Her')),
-    year = 2016,
-    pages = '20270-20282',
-  }
-
-  \item \bibentry{'Article',
-    title = 'Effects of agricultural land use on the composition of fluvial dissolved organic matter',
-    volume = 2,
-    doi = '10.1038/ngeo391',
-    number = 1,
-    journal = 'Nature Geoscience',
-    author = c(person(c('Henry', 'F'), 'Wilson'), person(c('Marguerite', 'A'), 'Xenopoulos')),
-    year = 2009,
-    pages = '37-41',
-  }
-
-  \item \bibentry{'Article',
-    title = 'Marine Optical Biogeochemistry: The Chemistry of Ocean Color',
-    volume = 107,
-    doi = '10.1021/cr050350+',
-    number = 2,
-    journal = 'Chemical Reviews',
-    author = person(c('Paula', 'G'), 'Coble'),
-    year = 2007,
-    pages = '402-418',
-  }
-}}
+\references{\bibliography}
 
 \seealso{\code{\link{feem}}}
 \examples{

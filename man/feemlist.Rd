@@ -6,8 +6,8 @@
 \title{Create lists of FEEM objects}
 \description{
   Convert vectors of file names or objects from other packages (such as
-  \CRANpkg{eemR} or \CRANpkg{EEM}) into flat named lists of \code{\link{feem}}
-  objects.
+  \CRANpkg{eemR} or \CRANpkg{EEM}) into flat named lists of
+  \code{\link{feem}} objects.
 }
 \usage{
   feemlist(x, \dots)
@@ -23,8 +23,8 @@
     A character vector containing names of files and directories to
     import using \code{\link{feem}}.
 
-    Alternatively, an \code{eemlist} object from \CRANpkg{eemR} package or
-    an \code{EEM} object from \CRANpkg{EEM} package.
+    Alternatively, an \code{eemlist} object from the \CRANpkg{eemR}
+    package or an \code{EEM} object from the \CRANpkg{EEM} package.
   }
   \item{format}{
     Corresponds to the \code{format} argument of \code{\link{feem}}.
@@ -37,10 +37,10 @@
     \code{\link{feem}} itself.
   }
   \item{pattern, recursive, ignore.case}{
-    These options are passed to \code{\link{list.files}} for directories
-    encountered in \code{x} and can be used to e.g. only choose files
-    with a given suffix in the name. Note the non-default value for the
-    \code{recursive} option.
+    These options are passed to \code{\link[base]{list.files}} for
+    directories encountered in \code{x} and can be used to e.g. only
+    choose files with a given suffix in the name. Note the non-default
+    value for the \code{recursive} option.
   }
   \item{simplify.names}{
     If \code{TRUE} (default), split resulting names by the path separator
@@ -58,12 +58,12 @@
   Names of \code{x} are preserved; if \code{x} is not named, names are
   assigned from the values of \code{x} itself, and so are empty names
   in partially-named \code{x}. Every directory in \code{x} is replaced
-  with its contents (as returned by \code{\link{list.files}}), their
-  names obtained by concatenating the name of the directory element with
-  their paths inside the directory (with \code{\link{.Platform}$file.sep}
-  as a separator). For example, when importing
-  \code{x = c('foo' = 'bar')} with directory \file{bar} containing
-  \file{baz.txt}, resulting name would be \file{foo/baz.txt}.
+  with its contents (as returned by \code{\link[base]{list.files}}),
+  their names obtained by concatenating the name of the directory
+  element with their paths inside the directory (with
+  \code{\link[base]{.Platform}$file.sep} as a separator). For example,
+  when importing \code{x = c('foo' = 'bar')} with directory \file{bar}
+  containing \file{baz.txt}, resulting name would be \file{foo/baz.txt}.
 
   When importing many files from the same directory, the
   \code{simplify.names} option is useful to avoid duplication in resulting

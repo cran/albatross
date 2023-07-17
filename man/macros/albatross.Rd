@@ -9,13 +9,10 @@
 % to understand our use of \eqn3. \ifelse can take a \Sexpr as a
 % condition, but not a macro that expands to a \Sexpr, hence the
 % duplication of the condition.
-\newcommand{\eqn3}{\forcebuild\ifelse{\Sexpr[results=rd,stage=install]{albatross:::.eqn3legacy()}}{\out{<i>#3</i>}}{\eqn{#1}{#2}}}
-\newcommand{\deqn3}{\forcebuild\ifelse{\Sexpr[results=rd,stage=install]{albatross:::.eqn3legacy()}}{\out{<p style="text-align: center;"><i>#3</i></p>}}{\deqn{#1}{#2}}}
-% This should probably be replaced by a centralised bibliography
-% database to avoid the trouble we're going through to output an
-% \enc{}{} construct. That would also let us \cite{} articles inside the
-% text and \outputCitations{} in the \references{} section.
-\newcommand{\bibentry}{\Sexpr[results=rd,stage=build]{tools::toRd(bibentry(#1))}}
+\newcommand{\eqn3}{\forcebuild\ifelse{\Sexpr[results=rd,stage=render]{albatross:::.eqn3legacy()}}{\out{<i>#3</i>}}{\eqn{#1}{#2}}}
+\newcommand{\deqn3}{\forcebuild\ifelse{\Sexpr[results=rd,stage=render]{albatross:::.eqn3legacy()}}{\out{<p style="text-align: center;"><i>#3</i></p>}}{\deqn{#1}{#2}}}
 % This could be enhanced to both create and insert a PNG/SVG/PDF figure.
 \newcommand{\makefigure}{\Sexpr[results=rd,stage=build]{if (!dir.exists('man/figures')) dir.create('man/figures'); {#1}; ' '}}
-% See the Rdpack package for more ideas.
+\newcommand{\cite}{\Sexpr[results=rd,stage=build]{albatross:::.Rdcite('#1')}}
+\newcommand{\bibliography}{\Sexpr[results=rd,stage=build]{albatross:::.Rdbibliography()}}
+\newcommand{\reference}{\Sexpr[results=rd,stage=build]{albatross:::.Rdreference('#1')}}

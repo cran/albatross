@@ -17,7 +17,7 @@
   }
   \item{i, j}{
     Row and column indices, respectively. As in usual \R subsetting
-    (see \link{Extract}), may be integer, logical or character vectors,
+    (see \link[base]{Extract}), may be integer, logical or character vectors,
     or missing.
   }
   \item{drop}{

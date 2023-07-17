@@ -1,4 +1,4 @@
-bibentry('Article',
+bibentry('Article', key = 'Krylov2020',
 	title = 'Albatross R package to study PARAFAC components of DOM fluorescence from mixing zones of arctic shelf seas',
 	author = c(
 		person('Ivan N.', 'Krylov'),
@@ -10,4 +10,15 @@ bibentry('Article',
 	number = 104176,
 	volume = 207,
 	year = 2020
+)
+bibentry('Article', key = 'Krylov2023',
+	title = 'Recovering fluorescence spectra hidden by scattering signal: in search of the best smoother',
+	journal = 'Spectrochimica Acta Part A: Molecular and Biomolecular Spectroscopy',
+	pages = 122441,
+	year = 2023,
+	doi = '10.1016/j.saa.2023.122441',
+	author = c(
+		person(c('Ivan', 'N.'), 'Krylov'),
+		person(c('Timur', 'A.'), 'Labutin', email = 'timurla@laser.chem.msu.ru')
+	)
 )
