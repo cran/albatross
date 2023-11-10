@@ -30,7 +30,9 @@ cubeapply.list <- function(x, fun, ..., cl, progress = TRUE, .recycle = FALSE) {
 	wfun <- .wrapfun(fun)
 	# run the loop
 	if (progress) {
-		pb <- txtProgressBar(max = length(x), style = 3)
+		pb <- txtProgressBar(
+			max = length(x), style = if (interactive()) 3 else 1
+		)
 		on.exit(close(pb))
 	}
 	if (missing(cl)) { # sequential processing: use library functions

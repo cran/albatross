@@ -107,17 +107,17 @@
     Names or numbers of the samples.
   }
   \item{A.<wavelength>}{
-    Absorbance values, for every \var{<wavelength>} in \code{out.A}.
+    Absorbance values, for every \v{wavelength} in \code{out.A}.
   }
   \item{a.<wavelength>}{
-    Absorption coefficients, for every \var{<wavelength>} in \code{out.a}.
+    Absorption coefficients, for every \v{wavelength} in \code{out.a}.
   }
   \item{aR.<wl[1]>.<wl[2]>}{
-    Ratios of absorption coefficients, for every \var{<wl>} in
+    Ratios of absorption coefficients, for every \v{wl} in
     \code{out.a.ratio}.
   }
   \item{S.<wl[1]>.<wl[2]>}{
-    Spectral slopes, for every \var{<wl>} in \code{out.slope}.
+    Spectral slopes, for every \v{wl} in \code{out.slope}.
   }
   \item{NRMSE.S.<wl[1]>.<wl[2]>}{
     If \code{out.slope.nrmse} is \code{TRUE}, root-mean-square errors
@@ -125,7 +125,7 @@
     models providing spectral slopes.
   }
   \item{SR.<wl[1]>.<wl[2]>.<wl[3]>.<wl[4]>}{
-    Ratios of spectral slopes, for every \var{<wl>} in
+    Ratios of spectral slopes, for every \v{wl} in
     \code{out.slope.ratio}.
   }
 }

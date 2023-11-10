@@ -40,10 +40,10 @@ write.openfluor(
   }
   \item{toolbox}{
     Defaults to
-    \dQuote{albatross \var{<version>}, multiway \var{<version>}}.
+    \dQuote{albatross \v{version}, multiway \v{version}}.
   }
   \item{date}{
-    Defaults to today, in \dQuote{\var{yyyy}-\var{mm}-\var{dd}} format.
+    Defaults to today, in \dQuote{\v{yyyy}-\v{mm}-\v{dd}} format.
   }
   \item{fluorometer}{
     The model of the instrument that produced the data.
@@ -60,7 +60,7 @@ write.openfluor(
     The sequence of steps taken to handle the samples and to ensure
     proper fluorescence intensity measurement. Examples include: \itemize{
       \item Sampling: Filtration GF/F
-      \item Sampling: Filtration \var{x} um
+      \item Sampling: Filtration \v{x} um
       \item Sampling: samples frozen
       \item Instrument spectral bias correction: Ex
       \item Instrument spectral bias correction: Em
@@ -68,14 +68,14 @@ write.openfluor(
       \item Inner filter effect correction: absorbance method
       \item Inner filter effect correction: dilution
       \item Inner filter effect correction: CDA
-      \item Inner filter effect correction: \var{other (please describe)}
+      \item Inner filter effect correction: \v{other (please describe)}
       \item Internal calibration: Raman Peak area
       \item Internal calibration: Raman Peak height
       \item Internal calibration: Blank Subtraction
       \item External calibration: Quinine Sulphate dilution series
       \item External calibration: STARNA reference standards
       \item External calibration: NIST reference standards
-      \item External calibration: \var{other (please describe)}
+      \item External calibration: \v{other (please describe)}
     }
   }
   \item{preprocess}{

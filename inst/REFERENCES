@@ -411,3 +411,19 @@ bibentry('Article', key = 'Krylov2023',
 		person(c('Timur', 'A.'), 'Labutin')
 	)
 )
+bibentry('Article', key = 'Thygesen2004',
+	title = 'Stabilizing the PARAFAC decomposition of fluorescence spectra by insertion of zeros outside the data area',
+	journal = 'Chemometrics and Intelligent Laboratory Systems',
+	volume = 71,
+	number = 2,
+	pages = '97-106',
+	year = 2004,
+	issn = '0169-7439',
+	doi = '10.1016/j.chemolab.2003.12.012',
+	author = c(
+		person(c('Lisbeth', 'Garbrecht'), 'Thygesen'),
+		person('Åsmund', 'Rinnan'),
+		person('Søren', 'Barsberg'),
+		person(c('Jens', 'K.', 'S.'), 'Møller')
+	)
+)

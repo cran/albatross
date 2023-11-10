@@ -1,10 +1,4 @@
 library(tools)
-for (p in c('.', '../00_pkg_src/albatross'))
-	if (file.exists(file.path(p, 'DESCRIPTION'))) {
-		srcdir <- p
-		break
-	}
-if (!exists('srcdir')) stop('Cannot figure out where my source code is')
 
 bad <- FALSE
 walk <- function(x) {
@@ -30,12 +24,20 @@ walk <- function(x) {
 	if (is.list(x)) for(tag in x) Recall(tag)
 }
 
-walk(lapply(
-	list.files(
-		file.path(srcdir, 'man'),
-		full.names = TRUE, pattern = '\\.Rd$', recursive = FALSE
-	),
-	parse_Rd, macros = loadPkgRdMacros(srcdir)
-))
+walk(Rd_db('albatross'))
+
+if (is.na(packageVersion('albatross')[[1,4]])) {
+	# must be release testing
+	n <- news(package = 'albatross')
+	for (column in c('Date', 'Version', 'Text'))
+	if (any(i <- is.na(n[,column]))) {
+		i <- which(i)
+		message(
+			'NEWS: column ', sQuote(column), ' is NA in row[s] ',
+			paste(i, collapse = ', ')
+		)
+		bad <<- TRUE
+	}
+}
 
 if (bad) stop('Problems found, see above')

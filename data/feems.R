@@ -53,10 +53,9 @@
 	## primitive model, assuming that all absorption stems from fluorescence only
 	feems <- make.cube(make.loads(l.em, l.ex))
 	l.abs <- seq(min(l.em, l.ex), max(l.em, l.ex), 1)
-	absorp <- setNames(apply(
-		with(make.loads(l.em, l.abs), tcrossprod(B, C)/10),
-		2, function(x) cbind(l.abs, x), simplify = FALSE
-	), dimnames(feems)[[3]])
+	absorp <- with(make.loads(l.em, l.abs), tcrossprod(B, C)/10)
+	absorp <- lapply(seq_len(ncol(absorp)), function(i) cbind(l.abs, absorp[,i]))
+	absorp <- setNames(absorp, dimnames(feems)[[3]])
 	feems <- feems * (feems / albatross::feemife(feems, absorp))
 	feems <- as.list(feems)
 

@@ -143,3 +143,115 @@ plot.feemparafac <- function(x, type = c('image', 'lines'), ...)
 		image = compplot.surf(x, ...),
 		lines = compplot.xy(x, ...)
 	)
+
+reorder.feemparafac <- function(x, neworder, like, ...) {
+	nfac <- ncol(x$A)
+	if (missing(like)) {
+		if (nfac == 1) {
+			# workaround multiway <= 1.0-6 problem;
+			# no point reordering 1-component models anyway
+			stopifnot(length(neworder) == 1, neworder == 1)
+			return(x)
+		}
+		return(NextMethod())
+	}
+	stopifnot(
+		# disallow extra arguments for our special case
+		missing(neworder), length(list(...)) == 0,
+		# for now, only reorder like models with the same nfac
+		ncol(like$A) == ncol(x$A)
+	)
+
+	# no way to reorder 1-component models
+	if (nfac == 1) return(x)
+
+	# Tucker's congruence coefficient for emission & excitation components
+	tcc <- as.matrix(pmin(congru(like$A, x$A), congru(like$B, x$B)))
+
+	perm <- integer(nfac)
+	for (i in seq_along(perm)) {
+		# more than one component could fit perfectly
+		# (despite it usually shouldn't), so choose the first match
+		next.match <- which(tcc == max(tcc), arr.ind=T)[1,]
+		# record the match and the distance
+		perm[next.match[1]] <- next.match[2]
+		# make sure that this pair won't match with anything else
+		tcc[next.match[1],] <- -Inf
+		tcc[,next.match[2]] <- -Inf
+	}
+
+	reorder(x, neworder = perm)
+}
+
+# argmin over c[] ||A - diag(c) %*% B||^2
+.matscale <- function(A, B) {
+	stopifnot(ncol(A) == ncol(B))
+	vapply(
+	# for every column:
+	#  min over c[j] ||A[,j] - c[j] * B[,j]||
+	#  c[j] = B[,j]^T A[,j] / B[,j]^T B[,j]
+		1:ncol(A), function(j)
+			crossprod(B[,j,drop=FALSE], A[,j,drop=FALSE]) /
+				crossprod(B[,j,drop=FALSE]),
+		numeric(1)
+	)
+}
+
+rescale.feemparafac <- function(x, mode, newscale, absorb, like, ...) {
+	if (missing(like)) return(NextMethod())
+	stopifnot(
+		# disallow setting newscale when given a reference model
+		missing(newscale),
+		# no extra arguments
+		length(list(...)) == 0,
+		# make sure that the number of factors matches
+		ncol(x$A) == ncol(like$A)
+	)
+	# our defaults are slightly different from rescale.parafac
+	if (missing(mode)) mode <- c('A', 'B')
+	if (missing(absorb)) absorb <- 'C'
+	stopifnot(
+		# must not absorb the rescaling into modes that are rescaled
+		length(intersect(mode, absorb)) == 0,
+		# only three-way arrays supported
+		union(mode, absorb) %in% c('A', 'B', 'C'),
+		!anyDuplicated(mode), length(absorb) == 1
+	)
+
+	scaling <- matrix(1, ncol(x$A), 3, dimnames = list(NULL, LETTERS[1:3]))
+	unscaling <- rep(1, nrow(scaling))
+	for (cn in mode) {
+		scaling[,cn] <- .matscale(like[[cn]], x[[cn]])
+		unscaling <- unscaling / scaling[,cn]
+	}
+	scaling[,absorb] <- unscaling
+
+	x$A <- x$A %*% diag(scaling[,'A'], nrow(scaling))
+	x$B <- x$B %*% diag(scaling[,'B'], nrow(scaling))
+	x$C <- x$C %*% diag(scaling[,'C'], nrow(scaling))
+
+	x
+}
+
+print.feemparafac <- function(x, ...) {
+	nfac <- ncol(x$A)
+	cat(
+		'\nPARAFAC with ', nfac, ' factors\n\n',
+		'Constraints:\n',
+		sep = ''
+	)
+	const <- setNames(x$const, LETTERS[seq_along(x$const)])
+	const[x$fixed] <- 'fixed'
+	const[x$struc] <- paste(const[x$struc], 'struct', sep = '+')
+	print(noquote(const))
+	cat(
+		'\nFit Information:\n',
+		'  SSE = ', x$SSE, '\n',
+		'  R^2 = ', x$Rsq, '\n',
+		'  GCV = ', x$GCV, '\n',
+		'  EDF = ', sum(x$edf), '\n\n',
+		'Converged: ', x$cflag == 0, ' (', x$iter, ' iterations)\n',
+		sep = ""
+	)
+	invisible(x)
+}

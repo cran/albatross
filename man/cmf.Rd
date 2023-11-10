@@ -1,5 +1,6 @@
 \name{cmf}
 \alias{cmf}
+\alias{fitted.cmf}
 \alias{wcmls}
 \title{Implementation notes for constrained matrix factorisation}
 \description{

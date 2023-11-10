@@ -50,14 +50,42 @@
   }
   \item{logscale}{
     If not \code{NA}, rescale \code{z} between \code{logscale} and
-    \eqn{1} and take its logarithm before smoothing, then undo it. This
-    is supposed to prevent negative numbers from appearing in the
-    interpolation, but may damage the surface shape in the process.
+    \eqn{1} and take its logarithm before smoothing, then undo it.
+
+    Such transformation prevents the resulting values from getting lower
+    than \eqn3{
+      \mathrm{min}(x) - (\mathrm{max}(x) - \mathrm{min}(x))
+      \frac{\mathtt{logscale}}{1 - \mathtt{logscale}}
+    }{min(x) - diff(range(x)) * logscale / (1 - logscale)}{
+      <span style="font-style: normal;">min</span>(x) -
+      (<span style="font-style: normal;">max</span>(x) -
+        <span style="font-style: normal;">min</span>(x))
+      <sup><code>logscale</code></sup>/<sub>1 -
+      <code>logscale</code></sub>},
+    which is approximately \eqn3{
+      -\mathtt{logscale} \cdot \mathrm{max}(x)
+    }{-logscale * max(x)}{
+      -<code>logscale</code> &middot;
+      <span style="font-style: normal;">max</span>(x)
+    } if \code{logscale} and \eqn3{\mathrm{min}(x)}{min(x)}{
+      <span style="font-style: normal;">min</span>(x)
+    } are both close to \eqn{0}.
+
+    A typical value would be \eqn3{10^{-4}}{10^-4}{10<sup>-4</sup>}.
+    Disabled by default because it may damage the surface shape in the
+    process.
   }
   \item{nonneg}{
-    If not 0, for every resulting negative value in the interpolated
-    surface, add a penalty of \code{nonneg} pulling it to \eqn{0} and
-    repeat the process until no new penalties are introduced.
+    If not \eqn{0}, for every resulting negative value in the
+    interpolated surface, add a penalty of \eqn3{
+      \mathtt{nonneg} \cdot \sum_i \mathbf{1}_{\hat{z}_i < 0}
+      \, \hat{z}_i^2
+    }{nonneg * sum(z.hat[z.hat < 0]^2)}{
+      <code>nonneg</code> &middot; &#x2211;<sub>i</sub>
+      <b>1</b><sub>z&#x0302;<sub>i</sub> &lt; 0</sub>
+      z&#x0302;<sub>i</sub><sup>2</sup>
+    } to pull it towards \eqn{0} and repeat the process until no new
+    penalties are introduced.
   }
   \item{x0}{
     A vector specifying the grid where the function to be differentiated
@@ -65,61 +93,6 @@
   }
 }
 \details{
-  \subsection{Whittaker smoothing}{
-    Whittaker smoothing works by minimising a sum of penalties
-    \cite{Eilers2003}. Taking weights into account, we get:
-
-    \deqn3{
-      \min_{\mathbf{\hat z}} \:
-      (\mathbf{\hat z} - \mathbf{z})^\top
-        \mathrm{diag}(\mathbf w)
-        (\mathbf{\hat z} - \mathbf{z})
-      + \lambda | \mathbf D \mathbf{\hat z} |^2
-    }{min over z.hat { sum((z.hat - z)^2 * w) + \lambda |D z.hat|^2 }}{
-      <span style="font-style:normal;">min</span>
-        <sub><b>z&#x0302;</b></sub>
-      (<b>z&#x0302;</b> - <b>z</b>)<sup>
-        <span style="font-style:normal;">T</span>
-      </sup>
-      <span style="font-style:normal;">diag</span>(<b>w</b>)
-      (<b>z&#x0302;</b> - <b>z</b>)
-      + &lambda; |<b>D</b> <b>z&#x0302;</b>|<sup>2</sup>
-    }
-
-    By writing down the derivatives over
-    \eqn3{\mathbf{\hat z}}{z.hat}{<b>z&#x0302;</b>} and equating them to
-    \eqn{0}, we get the normal equation:
-
-    \deqn3{
-      (
-        \mathrm{diag}(\mathbf w) +
-        \lambda \mathbf{D}^\top \mathbf{D}
-      ) \mathbf{\hat z} = \mathrm{diag}(\mathbf w) \mathbf z
-    }{(diag(w) + \lambda crossprod(D)) z.hat = diag(w) z}{
-      (<span style="font-style:normal;">diag</span>(<b>w</b>)
-        + &lambda; <b>D</b><sup>
-          <span style="font-style:normal;">T</span>
-        </sup><b>D</b>) <b>z&#x0302;</b> =
-      <span style="font-style:normal;">diag</span>(<b>w</b>)
-      <b>z</b>
-    }
-
-    The equation is then solved using \code{\link[base]{solve}}.
-
-    Equations above deal with vectors, not matrices. We can't just
-    smooth the matrix row-by-row (or column-by-column): that wouldn't be
-    any better than \code{\link{feemscatter}(method = 'pchip')}. One way
-    to generalise this to matrices would be \cite{Garcia2010}, but it
-    only works for uniform grids. Instead, we unfold the \code{z} matrix
-    into a vector, then strategically position the coefficients in the
-    difference matrix to obtain both row-wise and column-wise
-    differences in the resulting vector.
-
-    % TODO:
-    % - explain how Dx and Dy could be calculated
-    % - explain how unfolding is related to positioning of vandermonde() inside D matrix
-    % - move this section below finite differente approximation?
-  }
   \subsection{Finite difference approximation}{
     How to differentiate a function tabulated on a fixed, potentially
     nonuniform grid before you even know its values? Use its Taylor
@@ -474,6 +447,87 @@
     sum above for odd \eqn{n} and get second order accurate results for
     \eqn{n = 2}, but other than that, the method is \eqn{n}-th order
     accurate.
+  }
+  \subsection{Whittaker smoothing}{
+    Whittaker smoothing works by minimising a sum of penalties
+    \cite{Eilers2003}. Interpolation can be achieved by setting weights
+    \eqn3{\mathbf w}{w}{<b>w</b>} to \eqn{0} for the missing points.
+
+    \deqn3{
+      \min_{\mathbf{\hat z}} \:
+      (\mathbf{\hat z} - \mathbf{z})^\top
+        \mathrm{diag}(\mathbf w)
+        (\mathbf{\hat z} - \mathbf{z})
+      + \lambda | \mathbf D \mathbf{\hat z} |^2
+    }{min over z.hat { sum((z.hat - z)^2 * w) + \lambda |D z.hat|^2 }}{
+      <span style="font-style:normal;">min</span>
+        <sub><b>z&#x0302;</b></sub>
+      (<b>z&#x0302;</b> - <b>z</b>)<sup>
+        <span style="font-style:normal;">T</span>
+      </sup>
+      <span style="font-style:normal;">diag</span>(<b>w</b>)
+      (<b>z&#x0302;</b> - <b>z</b>)
+      + &lambda; |<b>D</b> <b>z&#x0302;</b>|<sup>2</sup>
+    }
+
+    By writing down the derivatives over
+    \eqn3{\mathbf{\hat z}}{z.hat}{<b>z&#x0302;</b>} and equating them to
+    \eqn{0}, we get the normal equation:
+
+    \deqn3{
+      (
+        \mathrm{diag}(\mathbf w) +
+        \lambda \mathbf{D}^\top \mathbf{D}
+      ) \mathbf{\hat z} = \mathrm{diag}(\mathbf w) \mathbf z
+    }{(diag(w) + \lambda crossprod(D)) z.hat = diag(w) z}{
+      (<span style="font-style:normal;">diag</span>(<b>w</b>)
+        + &lambda; <b>D</b><sup>
+          <span style="font-style:normal;">T</span>
+        </sup><b>D</b>) <b>z&#x0302;</b> =
+      <span style="font-style:normal;">diag</span>(<b>w</b>)
+      <b>z</b>
+    }
+
+    The equation is then solved using \code{\link[Matrix]{solve}}.
+
+    Given a one-dimensional penalty matrix
+    \eqn3{\mathbf{D}_d}{D(d)}{<b>D</b><sub>d</sub>} of order \eqn{d}
+    obtained by solving a Vandermonde system for every successive group
+    of \eqn{d+1} points, we can adapt it for every applicable group of
+    points from a fluorescence excitation-emission matrix unfolded into
+    a vector \eqn3{\mathbf z = \mathrm{vec}\, \mathbf F}{z = vec(F)}{
+      <b>z</b> = <span style="font-style:normal">vec</span> <b>F</b>} by
+    taking Kronecker products with unit matrices: \deqn3{
+      \mathbf D = \begin{pmatrix}
+        \mathbf I \otimes \mathbf{D}_\mathrm{em} \\\\
+        \mathbf{D}_\mathrm{ex} \otimes \mathbf I
+      \end{pmatrix}
+    }{D = rbind(I \\\%x\\\% D.em, D.ex \\\%x\\\% I)}{
+      <!-- didn't Chrome reintroduce MathML support recently? -->
+      <div style="text-align:center;">
+      <b>D</b> = <table style="line-height:1;display:inline-table;"><tr>
+      <td>&#9115;<br>&#9116;<br>&#9117;</td>
+      <td><table>
+        <tr><td><b>I</b> &otimes; <b>D</b><sub>em</sub></td></tr>
+        <tr><td><b>D</b><sub>ex</sub> &otimes; <b>I</b></td></tr>
+      </table></td>
+      <td>&#9118;<br>&#9119;<br>&#9120;</td>
+      </tr></table></div>
+    }
+
+    Penalties of different orders are concatenated by rows in a similar
+    manner (which is equivalent to adding the corresponding
+    \eqn3{\mathbf{D}^\top\mathbf D}{crossprod(D)}{
+      <b>D</b><sup><span style="font-style:normal;">T</span></sup><b>D</b>
+    } matrices together in the normal equation).
+
+    It has been shown in \cite{Eilers2004-density} that a combination of
+    first- and second-order penalty (\eqn3{
+      2 \lambda \mathbf{D}_1 + \lambda^2 \mathbf{D}_2
+    }{2 \lambda D(1) + \lambda^2 D(2)}{2&lambda;<b>D</b><sub>1</sub> +
+      &lambda;<sup>2</sup><b>D</b><sub>2</sub>})
+    results in a non-negative impulse response, but the resulting peak
+    shape may be sub-optimal.
   }
 }
 \value{

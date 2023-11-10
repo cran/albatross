@@ -1,6 +1,20 @@
 \name{NEWS}
 \title{News for package \pkg{albatross}}
-\section{Changes in version 0.3-6 (2023-XX-XX)}{
+\section{Changes in version 0.3-7 (2023-11-11)}{
+  \subsection{Bug fixes}{\itemize{
+    \item The previous version of the package was accidentally broken on
+    versions of \R where \code{apply()} did not yet have a
+    \code{simplify} argument. More strict release testing procedures
+    will be applied in the future.
+  }}
+  \subsection{New features}{\itemize{
+    \item New argument \code{like} to \code{reorder.feemparafac} and
+    \code{rescale.feemparafac} makes it possible to order and scale the
+    components to match another model. The package now re-exports the
+    \code{rescale} generic from the \CRANpkg{multiway} package.
+  }}
+}
+\section{Changes in version 0.3-6 (2023-07-17)}{
   \subsection{Potentially breaking changes}{\itemize{
     \item Fixed an error in \code{feemscatter(method='whittaker')} where
     the \code{nonneg} parameter could be ignored (turning the

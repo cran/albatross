@@ -120,6 +120,15 @@ S3method(plot, feemparafac)
 
 S3method(feemcube, feemparafac)
 
+S3method(print, feemparafac)
+
+importFrom(stats, reorder)
+S3method(reorder, feemparafac)
+
+importFrom(multiway, rescale)
+export(rescale) # oof
+S3method(rescale, feemparafac)
+
 # progress.R
 importFrom(utils, flush.console)
 
@@ -141,9 +150,6 @@ importFrom(lattice, bwplot, trellis.par.get, xyplot)
 S3method(plot, feemsplithalf)
 
 S3method(feemcube, feemsplithalf)
-
-# whittaker.R
-importFrom(Matrix, Diagonal, sparseMatrix, crossprod, solve)
 
 # openfluor.R
 importFrom(utils, packageVersion, write.table)

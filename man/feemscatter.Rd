@@ -44,8 +44,8 @@
     don't want to handle this particular kind of scattering signal.
 
     It's possible to specify the bands asymmetrically. If the area to be
-    corrected should range from \var{x} nm to the left of the scattering
-    peak to \var{y} nm to the right of it, pass a list instead of a
+    corrected should range from \v{x} nm to the left of the scattering
+    peak to \v{y} nm to the right of it, pass a list instead of a
     vector, and put a two-element vector \code{c(\var{x}, \var{y})} for
     the appropriate kind of scattering. For example, passing
     \code{widths = list(c(30, 20), 20)} means \dQuote{handle \eqn{-30}
@@ -250,7 +250,8 @@
       &lambda;<sub>em</sub> &lt;
       &lambda;<sub>ex</sub> - <code>add.zeroes</code>
       <span style="font-style: normal;">nm</span>
-    } to \eqn{0} unless they have been measured. Set to \code{NA} to
+    } to \eqn{0} unless they have been measured in order to stabilise
+    the resulting decomposition \cite{Thygesen2004}. Set to \code{NA} to
     disable this behaviour.
   }
   \item{Raman.shift}{
@@ -315,88 +316,38 @@
   (\code{loess}). Any negative values returned by
   \code{\link[pracma]{kriging}} are replaced by \eqn{0}.
 
-  The \dQuote{whittaker} method \cite{Eilers2003} works by unfolding
-  each FEEM into a vector \eqn3{\mathbf z}{z}{<b>z</b>} and looking for
-  a vector \eqn3{\hat{\mathbf z}}{z.hat}{<b>z&#x0302;</b>} that is close
-  enough to \eqn3{\mathbf z}{z}{<b>z</b>}, but also smooth, by
-  minimising a sum of penalties:
+  \subsection{Whittaker smoothing}{
+    The \dQuote{whittaker} method \cite{Krylov2023} works by minimising a
+    sum of penalties, requiring the interpolated surface to be close to
+    the original points around it and to be smooth in terms of derivatives
+    by
+    \eqn3{\lambda_\mathrm{em}}{emission wavelength}{&lambda;<sub>em</sub>}
+    and
+    \eqn3{\lambda_\mathrm{ex}}{excitation wavelength}{&lambda;<sub>ex</sub>}.
 
-  \deqn3{
-    (\mathbf z - \hat{\mathbf z})^\top
-    \mathrm{diag}(\mathbf w)
-    (\mathbf z - \hat{\mathbf z})
-    + \sum_k \lambda_k |\mathbf{D}_{n_k} \hat{\mathbf z}|^2
-  }{sum(w * (z.hat - z)^2) + sum over k (\lambda[k] * D(n[k]) \\\%*\\\% z.hat)}{
-    (<b>z</b> - <b>z&#x0302;</b>)<sup>
-      <span style="font-style: normal;">T</span>
-    </sup>
-    <span style="font-style: normal;">diag</span>(<b>w</b>)
-    (<b>z</b> - <b>z&#x0302;</b>)
-    + &#x2211;<sub>k</sub> &lambda;<sub>k</sub>
-    |<b>D</b><sub>n<sub>k</sub></sub> <b>z&#x0302;</b>|<sup>2</sup>
+    The parameters \code{d} and \code{lambda} should be numeric vectors
+    of the same length, corresponding to the derivative orders (whole
+    numbers \eqn{\ge 1}) and their respective penalty weights (small
+    real numbers; larger is smoother). For interpolation purposes, the
+    default penalty is \eqn3{
+      10^{-2} \mathbf{D}_1 + 10 \mathbf{D}_2
+    }{10^-2 D(1) + 10 D(2)}{10<sup>-2</sup> <b>D</b><sub>1</sub> +
+      10 <b>D</b><sub>2</sub>},
+    which corresponds to \code{d = 1:2} and \code{lambda = c(1e-2, 10)}.
+
+    Any resulting negative values are pulled towards \eqn{0} by adding
+    zero-valued points with weight \code{nonneg} (default \eqn{1}) and
+    retrying. Set \code{nonneg} to \eqn{0} to disable this behaviour. It
+    is also possible to deal with resulting negative values by scaling and
+    shifting the signal between \code{logscale} (typically) and \eqn{1},
+    interpolating the logarithm of the signal, then undoing the
+    transformation. By default \code{logscale} is \code{NA}, disabling
+    this behaviour, since it may negatively affect the shape of
+    interpolated signal.
+
+    See the internal help page \link{whittaker2} for implementation
+    details.
   }
-
-  The weights \eqn3{\mathbf w}{w}{<b>w</b>} are set to \eqn{0} for
-  missing (\code{NA}) points and for those to be interpolated and to
-  \eqn{1} otherwise. The matrix
-  \eqn3{\mathbf D_n}{D(n)}{<b>D</b><sub>n</sub>} is constructed in
-  such a way that multiplying it by
-  \eqn3{\hat{\mathbf z}}{z.hat}{<b>z&#x0302;</b>}
-  results in a vector of \eqn{n}-th order derivative estimates in both
-  directions and in all applicable points of
-  \eqn3{\hat{\mathbf z}}{z.hat}{<b>z&#x0302;</b>} as a matrix. The
-  wavelength grid is correctly taken into account by solving a
-  Vandermonde system for every \eqn{n+1} consecutive points
-  \cite{Krylov2023}.
-
-  The parameters \code{d} and \code{lambda} should be numeric vectors
-  of the same length, choosing the difference orders
-  (\eqn3{n_k}{n[k]}{n<sub>k</sub>}) and their weights
-  (\eqn3{\lambda_k}{\lambda[k]}{&lambda;<sub>k</sub>}). It has been
-  shown in \cite{Eilers2004-density} that a combination of first- and
-  second-order penalty (\eqn3{
-    2 \lambda \mathbf{D}_1 + \lambda^2 \mathbf{D}_2
-  }{2 \lambda D(1) + \lambda^2 D(2)}{2&lambda;<b>D</b><sub>1</sub> +
-    &lambda;<sup>2</sup><b>D</b><sub>2</sub>}) results in non-negative
-  impulse response, but the resulting peak shape may be
-  sub-optimal. Instead, the default penalty is
-  \eqn3{
-    10^{-2} \mathbf{D}_1 + 10 \mathbf{D}_2
-  }{10^-2 D(1) + 10 D(2)}{10<sup>-2</sup> <b>D</b><sub>1</sub> +
-    10 <b>D</b><sub>2</sub>
-  }, and resulting negative values are pulled to \eqn{0} with weight
-  \code{nonneg} (default \eqn{1}, same as fidelity weight) by adding a
-  penalty of \eqn3{
-    \mathtt{nonneg} \cdot \sum_i \mathbf{1}_{\hat{z}_i < 0} \, \hat{z}_i^2
-  }{nonneg * sum(z.hat[z.hat < 0]^2)}{
-    <code>nonneg</code> &middot; &#x2211;<sub>i</sub>
-    <b>1</b><sub>z&#x0302;<sub>i</sub> &lt; 0</sub>
-    z&#x0302;<sub>i</sub><sup>2</sup>
-  } and retrying until no new penalty weights are added. Set \code{nonneg}
-  to \eqn{0} to disable this behaviour.
-
-  It is also possible to deal with resulting negative values by
-  scaling and shifting the signal between \code{logscale} (typically
-  \eqn3{10^{-4}}{10^-4}{10<sup>-4</sup>}) and \eqn{1}, interpolating
-  the logarithm of the signal, then undoing the transformation. This
-  prevents the resulting values from getting lower than \eqn3{
-    \mathrm{min}(x) - (\mathrm{max}(x) - \mathrm{min}(x))
-    \frac{\mathtt{logscale}}{1 - \mathtt{logscale}}
-  }{min(x) - diff(range(x)) * logscale / (1 - logscale)}{
-    <span style="font-style: normal;">min</span>(x) -
-    (<span style="font-style: normal;">max</span>(x) -
-      <span style="font-style: normal;">min</span>(x))
-    <sup><code>logscale</code></sup>/<sub>1 - <code>logscale</code></sub>
-  }, which is approximately \eqn3{
-    -\mathtt{logscale} \cdot \mathrm{max}(x)
-  }{-logscale * max(x)}{
-    -<code>logscale</code> &middot;
-    <span style="font-style: normal;">max</span>(x)
-  } if \code{logscale} and \eqn3{\mathrm{min}(x)}{min(x)}{
-    <span style="font-style: normal;">min</span>(x)
-  } are both close to \eqn{0}. By default \code{logscale} is \code{NA},
-  disabling this behaviour, since it may negatively affect the shape
-  of interpolated signal.
 }
 \value{
   An object of the same kind (FEEM object / FEEM cube / list of them)

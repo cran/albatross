@@ -320,7 +320,11 @@
     }
 
     \if{latex}{\figure{feemindex.pdf}{options: width=6in}}
-    \if{html}{ \figure{feemindex.svg}{options: width="700"}}
+    \if{html}{ \figure{feemindex.svg}{options: width="700"
+      alt="The two plots summarise the information above by plotting the
+      source areas for the peaks and indices on a FEEM with scattering
+      areas marked separately."
+    }}
 
     Positions of the peaks and the areas used to determine the
     fluorescence indices of an EEM. The Rayleigh and Raman scattering

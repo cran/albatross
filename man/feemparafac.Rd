@@ -4,6 +4,10 @@
 \alias{coef.feemparafac}
 \alias{fitted.feemparafac}
 \alias{residuals.feemparafac}
+\alias{reorder.feemparafac}
+\alias{rescale} % re-exporting is tricky business
+\alias{rescale.feemparafac}
+\alias{print.feemparafac}
 \title{
   Compute PARAFAC on a FEEM cube object and access the results
 }
@@ -27,6 +31,8 @@
   )
   \method{fitted}{feemparafac}(object, \dots)
   \method{residuals}{feemparafac}(object, \dots)
+  \method{reorder}{feemparafac}(x, neworder, like, \dots)
+  \method{rescale}{feemparafac}(x, mode, newscale, absorb, like, \dots)
 }
 \arguments{
   \item{X}{
@@ -43,6 +49,9 @@
       Passed as-is to \CRANpkg{lattice} functions
       \code{\link[lattice]{levelplot}} and
       \code{\link[lattice]{xyplot}}.
+    }
+    \item{reorder.feemparafac, rescale.feemparafac}{
+      Forwarded to the respective \CRANpkg{multiway} functions.
     }
     \item{coef.feemparafac, fitted.feemparafac, residuals.feemparafac}{
       No other parameters are allowed.
@@ -137,6 +146,48 @@
       }
     }
   }
+  \item{neworder}{
+    A permutation of integers between \eqn{1} and \code{ncol(x$A)} (the
+    number of components) specifying the new order of factors.
+    Forwarded to \code{\link[multiway]{reorder.parafac}}. Incompatible
+    with the \code{like} argument.
+  }
+  \item{like}{
+    A \code{feemparafac} object.
+
+    In \code{reorder}, the factors in \code{x} will be reordered to
+    match the factors in \code{like} according to the smallest of the
+    cosine similarities (\code{\link[multiway]{congru}}) for the
+    emission and excitation wavelengths.
+
+    In \code{rescale}, every factor matrix
+    \eqn3{\mathbf{A}}{A}{<b>A</b>} from \code{x} that was specified in
+    \code{mode} will be multiplied by scaling factors
+    \eqn3{\mathbf{c}}{c}{<b>c</b>} so in order to minimise
+    \eqn3{
+      \| \mathbf{A}_\mathtt{like}
+         - \mathrm{diag}(\mathbf c) \mathbf{A}_\mathtt{x} \|^2
+    }{||like[[A]] - diag(c) \\\%*\\\% x[[A]]||^2}{
+      ||<b>A</b><sub><code>like</code></sub>
+        - <b>c</b><b>A</b><sub><code>x</code></sub>||<sup>2</sup>}.
+  }
+  \item{mode}{
+    The modes to rescale, with \code{"A"}, \code{"B"}, \code{"C"}
+    corresponding to emission, excitation, and samples, respectively.
+    When \code{like} is specified, defaults to \code{c("A", "B")}.
+    Forwarded to \code{\link[multiway]{rescale.parafac}}.
+  }
+  \item{newscale}{
+    The desired root-mean-square for each column of the modes being
+    rescaled.
+    Forwarded to \code{\link[multiway]{rescale.parafac}}. Incompatible
+    with the \code{like} argument.
+  }
+  \item{absorb}{
+    The mode that should absorb the inverse rescaling coefficients.
+    When \code{like} is specified, defaults to \code{"C"}.
+    Forwarded to \code{\link[multiway]{rescale.parafac}}.
+  }
 }
 \details{
   \code{feemparafac} tries hard to guarantee the convergence flag to be
@@ -221,7 +272,7 @@
 \examples{
   data(feems)
   cube <- feemscale(feemscatter(cube, rep(14, 4)), na.rm = TRUE)
-  factors <- feemparafac(cube, nfac = 3)
+  (factors <- feemparafac(cube, nfac = 3))
   plot(factors, 'image')
   plot(factors, 'line')
   head(coef(factors, 'loadings'))

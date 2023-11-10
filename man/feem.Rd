@@ -4,6 +4,7 @@
 \alias{feem.data.frame}
 \alias{feem.character}
 \alias{feem.connection}
+\alias{t.feem}
 \newcommand{\reg}{\ifelse{latex}{\out{\textregistered}}{\ifelse{html}{\out{&reg;}}{(R)}}}
 \newcommand{\regsp}{\reg\if{latex}{\out{\space}}}
 \title{
@@ -181,7 +182,10 @@
     later to undo the scaling. Initially \eqn{1}.
   }
 }
-
+\details{
+  Transposing a \code{feem} object using \code{\link[base]{t}} will
+  remove the class attribute, returning an ordinary matrix.
+}
 \seealso{
   FEEM methods: \code{\link{plot.feem}}, \code{\link{as.data.frame.feem}},
   \code{\link{[.feem}}, \code{\link{feemgrid}}, \code{\link{feemife}},

@@ -75,13 +75,7 @@
 
   \packageIndices{albatross}
 }
-\author{
-  Ivan Krylov
-
-  Scientific advisor: Timur Labutin
-
-  With contrubitions from: Anastasia Drozdova
-}
+\author{\packageAuthor{albatross}}
 \references{
   \reference{Murphy2013}
 

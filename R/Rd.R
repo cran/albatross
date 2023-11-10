@@ -31,10 +31,12 @@
 	stopifnot(!is.null(db), length(cited) > 0)
 	.Rdcite.env$cited <- character()
 
+	ret <- tools::toRd(db[cited])
 	# work around an Rd2HTML bug (PR18470) where newline-separated
-	# paragraphs originating from a \Sexpr aren't recognised
+	# paragraphs originating from a \Sexpr aren't recognised -- except
+	# there's already a <p> on the first line
 	paste(
-		'\\if{html}{\\out{<p>}}', tools::toRd(db[cited]),
+		c('', rep('\\if{html}{\\out{<p>}}', length(ret)-1)), ret,
 		collapse = '\n\n'
 	)
 }

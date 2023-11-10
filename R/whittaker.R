@@ -25,7 +25,7 @@ vandermonde <- function(x0) {
 diffmat <- function(x, y, d) {
 	# obtain a mapping from [i,j] to index in as.vector(z)
 	idx <- matrix(seq_len(length(x) * length(y)), nrow = length(x))
-	Dx <- sparseMatrix(
+	Dx <- Matrix::sparseMatrix(
 		# Differentiating each column gives us less points than its
 		# length. The difference is exactly d.
 		i = rep(seq_len((length(x) - d) * length(y)), each = d + 1),
@@ -47,7 +47,7 @@ diffmat <- function(x, y, d) {
 			times = length(y)
 		)
 	)
-	Dy <- sparseMatrix(
+	Dy <- Matrix::sparseMatrix(
 		# Similarly, we differentiate each row, taking d points off each
 		i = rep(seq_len((length(y) - d) * length(x)), each = d + 1),
 		j = as.vector(vapply(
@@ -120,7 +120,7 @@ whittaker2 <- function(x, y, z, lambda, d, p, logscale, nonneg) {
 	#  assume partial derivatives to be 0
 	#  => (diag(w) + lambda D" D) z = diag(w) y
 	#  solve for z
-	lambdaDsq <- crossprod(Reduce(rbind,
+	lambdaDsq <- Matrix::crossprod(Reduce(rbind,
 		Map(
 			function(lambda, d) sqrt(lambda) * diffmat(x, y, d),
 			lambda, d
@@ -132,7 +132,7 @@ whittaker2 <- function(x, y, z, lambda, d, p, logscale, nonneg) {
 
 	repeat {
 		z.hat <- as.vector(
-			solve(Diagonal(x = w) + lambdaDsq + Diagonal(x = v), w * as.vector(z))
+			Matrix::solve(Matrix::Diagonal(x = w) + lambdaDsq + Matrix::Diagonal(x = v), w * as.vector(z))
 		)
 		if (!missing(nonneg)) {
 			# pull negative results to 0 on next iteration

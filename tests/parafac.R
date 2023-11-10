@@ -69,3 +69,49 @@ for (n in allnames)
 		colnames(coef(factors, 'all')[[n]]),
 		coefnames[[n]]
 	))
+
+# reorder, rescale without like= should still work
+stopifnot(
+	inherits(reorder(pf, 3:1), 'feemparafac'),
+	inherits(rescale(pf, mode = 'C', newscale = 2, absorb = 'A'), 'feemparafac')
+)
+
+stopifnot(
+	inherits(
+		# rescale with not all arguments specified should still work
+		rescale(pf, 'A', absorb = 'C'),
+		'feemparafac'
+	)
+)
+
+# reorder(like=...) must order the components to match
+stopifnot(
+	identical(
+		reorder(
+			reorder(pf, 3:1),
+			like = pf
+		),
+		pf
+	)
+)
+
+# round-trip reorder() and rescale() in both forms
+all.equal(
+	factors,
+	rescale(
+		reorder(
+			reorder(
+				rescale(factors, mode = 'C', newscale = 2, absorb = 'A'),
+				3:1
+			),
+			like = factors
+		),
+		like = factors
+	),
+	tolerance = .Machine$double.eps^(1/3)
+)
+
+pf.1 <- feemparafac(cube, nfac = 1, subset = subs)
+tools::assertError(reorder(pf.1, neworder = 2))
+pf.1 <- reorder(pf.1, neworder = 1)
+stopifnot(is.matrix(pf.1$A))
