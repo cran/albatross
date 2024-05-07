@@ -111,7 +111,7 @@
   (\url{https://matplotlib.org/cmocean/#haline}), but using \R's
   implementation of polar CIE-LUV colour space instead of CAM02-UCS.
 
-  CUBEHELIX (\url{https://www.mrao.cam.ac.uk/~dag/CUBEHELIX/}) is a
+  CUBEHELIX (\url{https://people.phy.cam.ac.uk/dag9/CUBEHELIX/}) is a
   similar technique using BT.601 luminance coefficients and RGB colour
   space.
 }

@@ -1,7 +1,7 @@
 Package: albatross
 Type: Package
 Title: PARAFAC Analysis of Fluorescence Excitation-Emission Matrices
-Version: 0.3-7
+Version: 0.3-8
 Authors@R: c(person('Ivan', 'Krylov', role = c('aut', 'cre'), email =
 	'ikrylov@laser.chem.msu.ru'), person('Timur', 'Labutin', role = 'ths'),
 	person('Anastasia', 'Drozdova', role = 'rev'))
@@ -20,10 +20,10 @@ License: GPL (>= 3)
 BuildResaveData: no
 BuildManual: yes
 NeedsCompilation: no
-Packaged: 2023-11-10 18:43:10 UTC; nobody
+Packaged: 2024-05-07 11:48:43 UTC; ivan
 Author: Ivan Krylov [aut, cre],
   Timur Labutin [ths],
   Anastasia Drozdova [rev]
 Maintainer: Ivan Krylov <ikrylov@laser.chem.msu.ru>
 Repository: CRAN
-Date/Publication: 2023-11-10 21:03:18 UTC
+Date/Publication: 2024-05-07 15:50:02 UTC

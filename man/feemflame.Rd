@@ -16,7 +16,7 @@
 \usage{
   feemflame(
     X, ffac, sfac, maxiter = 32, widths = rep(25, 4), Raman.shift = 3400,
-    ctol = 1e-04, progress = TRUE
+    ctol = 1e-04, progress = TRUE, control.parafac, control.cmf
   )
   \method{fitted}{feemflame}(object, \dots)
   \method{residuals}{feemflame}(object, \dots)
@@ -75,6 +75,14 @@
     Print progress information on the console, including the iteration
     number, relative sum of squared residuals, and relative change in
     sum of squared residuals.
+  }
+  \item{control.parafac, control.cmf}{
+    Named lists of additional arguments to be passed to the underlying
+    functions. Both default to \code{list(ctol = 1e-4, maxit = 10)},
+    which makes both steps to run for 10 iterations or stop
+    when the absolute change in \eqn3{R^2}{R^2}{R<sup>2</sup>} is less
+    than \eqn3{10^{-4}}{1e-4}{10<sup>-4</sup>}, whichever happens
+    sooner.
   }
   \item{object, x}{
     A \code{feemflame} object.

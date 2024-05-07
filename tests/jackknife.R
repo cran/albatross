@@ -1,8 +1,13 @@
 library(albatross)
 data(feems)
 cube <- feemscale(feemscatter(cube, rep(24, 4)), na.rm = TRUE)
-# check that the progress argument works
-jk <- feemjackknife(cube, nfac = 2, const = rep('nonneg', 3), progress = FALSE)
+# progress argument must work, 1-component model must work
+system.time(
+	jk <- feemjackknife(
+		cube, nfac = 1, ctol = 1e-4, progress = FALSE
+	)
+)
+stopifnot(is.matrix(jk$leaveone[[1]]$A))
 
 cols <- list(
 	estimations = c('loading', 'mode', 'wavelength', 'factor', 'omitted'),
@@ -11,8 +16,15 @@ cols <- list(
 )
 for (n in names(cols)) stopifnot(cols[[n]] == colnames(coef(jk, n)))
 
-# 1-component jack-knife should also work
-jk1 <- feemjackknife(cube, nfac = 1, const = rep('nonneg', 3))
-stopifnot(is.matrix(jk1$leaveone[[1]]$A))
-
 stopifnot(all.equal(cube, feemcube(jk)))
+
+# Also test parallel `bootparafac` with postprocessing
+library(parallel)
+cl <- makeCluster(2)
+system.time(jk <- feemjackknife(
+	cube, nfac = 1, ctol = 1e-4,
+	parallel = TRUE, cl = cl, .scheduling = 'static'
+))
+stopCluster(cl)
+plot(jk)
+stopifnot(is.environment(attr(jk$leaveone[[1]], 'envir')))

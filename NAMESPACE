@@ -1,11 +1,11 @@
 # bootstrap.R
 importFrom(stats, reorder)
 importFrom(utils, setTxtProgressBar, txtProgressBar)
-importFrom(multiway, congru)
+importFrom(multiway, congru, resign)
 
 # cubeapply.R
 importFrom(utils, txtProgressBar, getTxtProgressBar, setTxtProgressBar)
-importFrom(parallel, clusterEvalQ, clusterMap, parLapply)
+importFrom(parallel, clusterMap, parLapply, parLapplyLB)
 
 # feem.R
 export(feem)
@@ -146,7 +146,12 @@ S3method(print, feemsplithalf)
 S3method(coef, feemsplithalf)
 
 importFrom(graphics, plot)
-importFrom(lattice, bwplot, trellis.par.get, xyplot)
+importFrom(lattice,
+	bwplot, trellis.par.get, xyplot,
+	panel.bwplot, panel.violin, panel.superpose, panel.polygon
+)
+importFrom(stats, aggregate)
+importFrom(grDevices, adjustcolor)
 S3method(plot, feemsplithalf)
 
 S3method(feemcube, feemsplithalf)
@@ -172,3 +177,8 @@ S3method(`[`, feem.resid)
 # absindex.R
 importFrom(stats, lm, nls, spline, NLSstRtAsymptote, sortedXyData)
 export(absindex)
+
+# corcondia.R
+importFrom(stats, optim)
+export(feemcorcondia)
+S3method(print, feemcorcondia)

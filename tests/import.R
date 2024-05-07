@@ -69,3 +69,20 @@ pano5 <- as.data.frame(feem(
 	'panorama'
 ))
 with(pano5, stopifnot(excitation >= emission + 10))
+
+# must handle dec=','
+dcs <- feem(
+	system.file('extdata/decimal_comma.tsv', package = 'albatross'),
+	'table', dec = ',', sep = '\t'
+)
+tools::assertError(feem( # must fail with wrong separator
+	system.file('extdata/decimal_comma.tsv', package = 'albatross'),
+	'table', dec = '.', sep = '\t'
+), verbose = TRUE)
+stopifnot(
+	setequal(attr(dcs, 'excitation'), c(640, 645, 650)),
+	dim(dcs) == c(5,3),
+	!is.na(dcs),
+	min(attr(dcs, 'emission')) < 245,
+	max(attr(dcs, 'excitation')) > 247
+)

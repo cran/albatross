@@ -13,7 +13,7 @@
   feemlist(x, \dots)
   \method{feemlist}{character}(
     x, format, pattern = NULL, recursive = TRUE, ignore.case = FALSE,
-    simplify.names = TRUE, \dots
+    simplify.names = TRUE, progress = TRUE, \dots
   )
   \method{feemlist}{eemlist}(x, \dots)
   \method{feemlist}{EEM}(x, \dots)
@@ -47,6 +47,10 @@
     (\code{/}, also \code{\\} on Windows) and remove leading components
     that have the same value for all samples, but leave at least one
     component. See Details on how this is related to name generation.
+  }
+  \item{progress}{
+    If true, show a text progress bar using
+    \code{\link[utils]{txtProgressBar}}.
   }
   \item{\dots}{
     When importing files, remaining options are passed to

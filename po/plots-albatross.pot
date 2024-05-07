@@ -1,0 +1,45 @@
+msgid "Emission"
+msgstr ""
+
+msgid "Excitation"
+msgstr ""
+
+msgid "Factor value"
+msgstr ""
+
+msgid "Fluorescence"
+msgstr ""
+
+msgid "Individual model scores"
+msgstr ""
+
+msgid "lambda[em]*', nm'"
+msgstr ""
+
+msgid "lambda[ex]*', nm'"
+msgstr ""
+
+msgid "lambda*', nm'"
+msgstr ""
+
+msgid "Loading values"
+msgstr ""
+
+msgid "Mean squared difference in loadings"
+msgstr ""
+
+msgid "Mean squared residuals"
+msgstr ""
+
+msgid "Minimum TCC between halves"
+msgstr ""
+
+msgid "Number of components"
+msgstr ""
+
+msgid "Overall model scores"
+msgstr ""
+
+msgid "Scattering"
+msgstr ""
+

@@ -1,5 +1,77 @@
 \name{NEWS}
 \title{News for package \pkg{albatross}}
+\section{Changes in version 0.3-8 (2024-05-07)}{
+  \subsection{Potentially breaking changes}{\itemize{
+    \item The operations that involve fitting many PARAFAC models
+    (\code{feemsplithalf} and \code{feemjackknife}) now handle the
+    arguments \code{parallel} and \code{cl} on their own. If parallel
+    processing is enabled, they schedule the calls to
+    \code{feemparafac(...)} on the cluster. This makes it possible to
+    run more than \code{nstart} (10 by default) models at the same time
+    and avoid the wait for one remaining random start before moving on
+    to the next model. Due to implementation differences, this also
+    avoids the need to call \code{clusterEvalQ(., library(multiway))}
+    before performing parallel processing.
+
+    \item The default stopping criterion in \code{feemparafac} has been
+    changed from \eqn{10^{-4}}{1e-4} to \eqn{10^{-6}}{1e-6}. The
+    previous value caused misleadingly pessimistic split-half results
+    for real world datasets, failing the comparisons due to the models
+    being underfitted.
+
+    \item The \code{feemscale} function now raises an error when the
+    returned scale factor turns out to be \code{NA}.
+  }}
+  \subsection{Bug fixes}{\itemize{
+    \item The \code{plot.feemparafac} method used to sort the components
+    lexicographically, making it inconvenient to read plots for models
+    with more than 9 factors. The problem is now fixed, with
+    \code{coef(type = 'surfaces')} returning the \code{data.frame} used
+    to construct the plot.
+
+    \item The \code{feem(..., format = 'table')} method now treats the
+    \code{dec} argument specially, making it possible to read FEEM
+    tables with commas as decimal separators.
+
+    \item The \code{coef.feemsplithalf(kind = 'factors')} method now
+    avoids repeatedly calling \code{feemcube.feemparafac()}, which is
+    expensive for large \code{feemcube}s due to having to subset them.
+    This speeds up all related plots.
+  }}
+  \subsection{New features}{\itemize{
+    \item New split-half plot and coefficient output,
+    \code{kind = 'aggtcc'}, taking the minimal TCC values over
+    individual components and plotting their distributions as a boxplot
+    combined with a violin plot.
+
+    \item New split-half plot and coefficient output,
+    \code{kind = 'bandfactors'}, summarising the distributions of the factor
+    value over the different subsets as estimates and bands.
+
+    \item The operations that involve fitting many PARAFAC models
+    (\code{feemsplithalf} and \code{feemjackknife}) now adjust the signs
+    of the loadings to be as positive as possible (using
+    \code{resign(absorb = 'C')}) before matching the components. This
+    makes it possible to validate models with loadings not constrained
+    to nonnegativity.
+
+    \item The \code{feemparafac} function now returns the time it took
+    to compute the decomposition in the \code{time} attribute of the
+    object. Depending on whether a \pkg{parallel} cluster or a parallel
+    BLAS has been used, most of the time may be spent in \code{elapsed}
+    (waiting for the cluster), \code{user.self} (computing in more than
+    one thread), or even \code{sys.self} (BLAS threads spinning in
+    \code{sched_yield()}).
+
+    \item New function \code{feemcorcondia} to perform the core
+    consistency diagnostic (Bro & Kiers, 2003) on PARAFAC models, with
+    added support for missing data.
+
+    \item The \code{feemflame} function gains arguments
+    \code{control.parafac} and \code{control.cmf}, making it possible to
+    adjust the termination criteria of the underlying methods.
+  }}
+}
 \section{Changes in version 0.3-7 (2023-11-11)}{
   \subsection{Bug fixes}{\itemize{
     \item The previous version of the package was accidentally broken on

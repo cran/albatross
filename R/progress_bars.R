@@ -1,6 +1,5 @@
 # Currently, this progress bar is only used in feemflame(), and the
 # interface is very rough.
-
 vtolProgressBar <- function(ctol) {
 	i <- 0
 	maxvtol <- NULL
@@ -23,4 +22,21 @@ vtolProgressBar <- function(ctol) {
 	}
 	close <- function() cat('\n')
 	list(up = up, close = close)
+}
+
+makepb <- function(len)
+	txtProgressBar(max = len, style = if (interactive()) 3 else 1)
+
+make_pb_callback <- function(pb) {
+	force(pb)
+	function() setTxtProgressBar(pb, getTxtProgressBar(pb) + 1)
+}
+
+wrap_pb_callback <- function(fun, pb) {
+	force(fun)
+	force(pb)
+	function(...) {
+		on.exit(setTxtProgressBar(pb, getTxtProgressBar(pb) + 1))
+		fun(...)
+	}
 }

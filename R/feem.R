@@ -61,14 +61,22 @@ as.data.frame.feem <- function(x, row.names = NULL, optional = FALSE, ...)
 		...
 	)
 
-plot.feem <- function(
-	x, xlab = quote(lambda[em]*', nm'), ylab = quote(lambda[ex]*', nm'),
-	cuts = 128, col.regions = marine.colours(256), ...
-)
+.plot.feem <- function(
+	x, xlab, ylab, cuts, col.regions,
+	..., translate = FALSE
+) {
+	# can't use default if caller passes a missing argument
+	if (missing(xlab)) xlab <- pgtq("lambda[em]*', nm'", translate)
+	if (missing(ylab)) ylab <- pgtq("lambda[ex]*', nm'", translate)
 	levelplot(
 		x = intensity ~ emission + excitation, data = as.data.frame(x),
 		xlab = xlab, ylab = ylab, cuts = cuts, col.regions = col.regions, ...
 	)
+}
+
+plot.feem <- function(
+	x, xlab, ylab, cuts = 128, col.regions = marine.colours(256), ...
+) .plot.feem(x, xlab, ylab, cuts, col.regions, ...)
 
 # need custom extract operator to preserve attributes
 `[.feem` <- function(x, i, j, drop = TRUE) {

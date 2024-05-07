@@ -1,0 +1,59 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Ivan Krylov <ikrylov@laser.chem.msu.ru>\n"
+"Language-Team: Ivan Krylov <ikrylov@laser.chem.msu.ru>\n"
+"Language: ru_RU\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+"X-Generator: Poedit 3.2.2\n"
+
+msgid "Emission"
+msgstr "Испускание"
+
+msgid "Excitation"
+msgstr "Возбуждение"
+
+msgid "Factor value"
+msgstr "Значение фактора"
+
+msgid "Fluorescence"
+msgstr "Флуоресценция"
+
+msgid "Individual model scores"
+msgstr "Счета индивидуальных моделей"
+
+msgid "lambda[em]*', nm'"
+msgstr "lambda[исп]*', нм'"
+
+msgid "lambda[ex]*', nm'"
+msgstr "lambda[возб]*', нм'"
+
+msgid "lambda*', nm'"
+msgstr "lambda*', нм'"
+
+msgid "Loading values"
+msgstr "Значения нагрузок"
+
+msgid "Mean squared difference in loadings"
+msgstr "Среднеквадратичная разность между нагрузками"
+
+msgid "Mean squared residuals"
+msgstr "Среднеквадратичные остатки"
+
+msgid "Minimum TCC between halves"
+msgstr "Минимальный коэффициент конгруэнтности"
+
+msgid "Number of components"
+msgstr "Количество компонентов"
+
+msgid "Overall model scores"
+msgstr "Счета общей модели"
+
+msgid "Scattering"
+msgstr "Рассеяние"

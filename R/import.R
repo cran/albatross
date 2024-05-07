@@ -118,9 +118,10 @@ read.panorama <- function(filename) {
 }
 
 read.matrix <- function(
-	file, transpose = FALSE, na = NULL, fill = TRUE, fileEncoding = '', ...
+	file, transpose = FALSE, na = NULL,
+	fill = TRUE, fileEncoding = '', dec = '.', ...
 ) {
-	# we are asked to decode non-native encoding
+	# we are asked to decode a non-native encoding
 	# this is only possible if we are the ones to open the connection
 	if (nzchar(fileEncoding)) {
 		stopifnot(is.character(file))
@@ -138,10 +139,10 @@ read.matrix <- function(
 	x <- unname(as.matrix(read.table(
 		file = file, header = FALSE, colClasses = 'character', fill = fill, ...
 	)))
-	# warning is rased on text -> numeric conversion resulting in NAs,
-	# which we expect to happen
+	x[] <- gsub(dec, '.', x, fixed = TRUE)
+	# Some strings will fail to convert; warnings are expected
 	suppressWarnings(mode(x) <- 'numeric')
-	stopifnot(any(!is.na(x)))
+	stopifnot(`Couldn't parse any numbers inside the file` = any(!is.na(x)))
 
 	# first row and column should contain wavelengths
 	wavelengths <- list(
@@ -149,6 +150,7 @@ read.matrix <- function(
 		x[1,] # the first row describes the columns
 	)
 	x <- x[-1, -1]
+	stopifnot(`Couldn't parse any fluorescence intensities in the file` = any(!is.na(x)))
 
 	# the first row is problematic
 	# <text> <sep> <wavelength> <sep> <wavelength> ... <eol> => c(NA, wl... wl)
@@ -169,10 +171,13 @@ read.matrix <- function(
 	keep.em <- !apply(is.na(x), 1, all) & !is.na(wavelengths[[1]])
 	keep.ex <- !apply(is.na(x), 2, all) & !is.na(wavelengths[[2]])
 
+	x <- x[keep.em, keep.ex]
+	stopifnot(`Couldn't read any valid wavelengths` = prod(dim(x)) > 0)
+
 	# additionally mark unmeasured areas as NA if possible
 	.dropStokes(
 		feem(
-			x[keep.em, keep.ex],
+			x,
 			wavelengths[[1]][keep.em],
 			wavelengths[[2]][keep.ex]
 		),

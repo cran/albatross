@@ -36,7 +36,8 @@ stopifnot(
 
 cl <- makeCluster(1)
 feemscatter(feems, rep(20, 4), cl = cl, progress = FALSE)
-feemscatter(feems, rep(20, 4), cl = cl, progress = TRUE)
+setDefaultCluster(cl)
+feemscatter(feems, rep(20, 4), cl = NULL, progress = TRUE)
 stopCluster(cl)
 
 # pchip must fall back to linear interpolation when it doesn't have more

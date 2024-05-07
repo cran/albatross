@@ -75,15 +75,17 @@ jksumm <- function(jk) {
 }
 
 jkplot <- function(
-	jk, xlab = quote(lambda*', nm'), ylab = 'Loading values',
-	as.table = TRUE, scales = list(x = 'free'), ...
+	jk, xlab = pgtq("lambda*', nm'", translate),
+	ylab = pgt('Loading values', translate),
+	as.table = TRUE, scales = list(x = 'free'), ...,
+	translate = FALSE
 ) {
 	df <- coef(jk, 'estimations')
 	omitted <- NULL # R CMD check vs. xyplot(groups = ...)
 	xyplot(
-		loading ~ wavelength | mode + factor, df, group = omitted,
-		type = 'l', as.table = as.table, xlab = xlab, ylab = ylab,
-		scales = scales, ...
+		loading ~ wavelength | pgt(mode, translate) + factor, df,
+		group = omitted, type = 'l', as.table = as.table, xlab = xlab,
+		ylab = ylab, scales = scales, ...
 	)
 }
 
@@ -98,9 +100,9 @@ jksummrip <- function(jk) {
 }
 
 jk.RIP <- function(
-	jk, q = .9, xlab = 'Mean squared residuals',
-	ylab = 'Mean squared difference in loadings',
-	scales = list(alternating = 1), ...
+	jk, q = .9, xlab = pgt('Mean squared residuals', translate),
+	ylab = pgt('Mean squared difference in loadings', translate),
+	scales = list(alternating = 1), ..., translate = FALSE
 ) {
 	RIP <- coef(jk, 'RIP')
 
@@ -127,9 +129,9 @@ jksummimp <- function(jk) {
 }
 
 jk.IMP <- function(
-	jk, q = .9, xlab = 'Overall model scores',
-	ylab = 'Individual model scores', as.table = T,
-	scales = list(alternating = 1), ...
+	jk, q = .9, xlab = pgt('Overall model scores', translate),
+	ylab = pgt('Individual model scores', translate), as.table = T,
+	scales = list(alternating = 1), ..., translate = FALSE
 ) {
 	IMP <- coef(jk, 'IMP')
 	xyplot(

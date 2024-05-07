@@ -21,7 +21,7 @@ wcmls <- function(X, A, W, ..., struc = NULL)
 cmf <- function(
 	X, nfac = 1,
 	const = list(list(const = 'nonneg'), list(const = 'nonneg')),
-	start = c('svd', 'random'), ctol = 1e-4, maxiter = 10
+	start = c('svd', 'random'), ctol = 1e-4, maxit = 10
 ) {
 	stopifnot(length(dim(X)) == 2)
 
@@ -65,7 +65,7 @@ cmf <- function(
 		SSE <- c(SSE[2], sum(W * (X - tcrossprod(A, B))^2))
 
 		# stop criteria test
-		if (i >= maxiter) break
+		if (i >= maxit) break
 		if (abs(diff(SSE))/SSE[2] <= ctol) break
 	}
 
@@ -77,14 +77,16 @@ fitted.cmf <- function(object, ...) tcrossprod(object[[1]], object[[2]])
 feemflame <- function(
 	X, ffac, sfac,
 	maxiter = 32, widths = rep(25, 4), Raman.shift = 3400,
-	ctol = 1e-4, progress = TRUE
+	ctol = 1e-4, progress = TRUE,
+	control.parafac = list(ctol = 1e-4, maxit = 10),
+	control.cmf = list(ctol = 1e-4, maxit = 10)
 ) {
 	stopifnot(inherits(X, 'feemcube'))
 
-	fl <- feemparafac(
+	fl <- do.call(feemparafac, c(list(
 		feemscatter(X, widths, 'omit', progress = FALSE),
 		nfac = ffac, verbose = FALSE
-	)
+	), control.parafac))
 	sc.struc <- matrix(
 		.scatter.mask(X[,,1], widths, Raman.shift),
 		ncol = sfac, nrow = prod(dim(X)[-3]) # use recycling
@@ -99,20 +101,20 @@ feemflame <- function(
 	# TODO: early termination by catching interrupt?
 	repeat {
 		# ALS step
-		sc <- cmf(
+		sc <- do.call(cmf, c(list(
 			matrix(X - fitted(fl), prod(dim(X)[-3]), dim(X)[3]),
 			nfac = sfac, const = list(
 				list(const = 'nonneg'),
 				list(const = 'nonneg', struc = sc.struc)
 			),
 			start = sc
-		)
-		fl <- feemparafac(
+		), control.cmf))
+		fl <- do.call(feemparafac, c(list(
 			Xfl <- X - array(fitted(sc), dim(X)),
-			nfac = ffac, maxit = 10,
-			nstart = 1, Astart = fl$A, Bstart = fl$B, Cstart = fl$C,
+			nfac = ffac, nstart = 1,
+			Astart = fl$A, Bstart = fl$B, Cstart = fl$C,
 			verbose = FALSE
-		)
+		), control.parafac))
 
 		# update stop criteria
 		i <- i + 1
@@ -197,9 +199,10 @@ coef.feemflame <- function(
 }
 
 .flame.image.plot <- function(
-	x, xlab = quote(lambda[em] * ", nm"),
-	ylab = quote(lambda[ex] * ", nm"),
-	cuts = 128, col.regions = marine.colours(256), as.table = TRUE, ...
+	x, xlab = pgtq("lambda[em]*', nm'", translate),
+	ylab = pgtq("lambda[ex]*', nm'", translate),
+	cuts = 128, col.regions = marine.colours(256), as.table = TRUE, ...,
+	translate = FALSE
 ) {
 	cube <- feemcube(x)
 	fl <- as.data.frame(feemcube(
@@ -215,7 +218,7 @@ coef.feemflame <- function(
 
 	sl <- cbind(coef(x, 'sc.loadings'), kind = 'Scattering')
 	levelplot(
-		value ~ emission + excitation | paste(kind, factor),
+		value ~ emission + excitation | paste(pgt(kind, translate), factor),
 		rbind(fl, sl),
 		xlab = xlab, ylab = ylab, col.regions = col.regions,
 		cuts = cuts, as.table = as.table, ...

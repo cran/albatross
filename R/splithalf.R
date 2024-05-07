@@ -170,8 +170,9 @@ print.feemsplithalf <- function(x, ...) {
 }
 
 shtccplot <- function(
-	x, xlab = 'Number of components',
-	ylab = 'Minimum TCC between halves', jitter.x = TRUE, ...
+	x, xlab = pgt('Number of components', translate),
+	ylab = pgt('Minimum TCC between halves', translate),
+	jitter.x = TRUE, ..., translate = FALSE
 ) {
 	factor <- NULL # R CMD check vs. xyplot(groups = ...)
 	xyplot(
@@ -181,12 +182,15 @@ shtccplot <- function(
 }
 
 shxyplot <- function(
-	x, xlab = quote(lambda*", nm"), ylab = 'Factor value', as.table = T, ...
+	x, xlab = pgtq("lambda*', nm'", translate),
+	ylab = pgt('Factor value', translate), as.table = TRUE, ...,
+	translate = FALSE
 ) {
-	df <- coef(x, 'factors')
+	d <- coef(x, 'factors')
 	factor <- test <- half <- NULL # R CMD check vs xyplot(groups = ...)
 	xyplot(
-		value ~ wavelength | mode + nfac, df, groups = paste(factor, test, half),
+		value ~ wavelength | pgt(mode, translate) + nfac, d,
+		groups = paste(factor, test, half),
 		par.settings = list(superpose.line = list(col = rep(
 			trellis.par.get('superpose.line')$col, each = 2 * dim(x$factors)[3]
 		))), scales = list(x = list(relation = 'free')),
@@ -194,10 +198,66 @@ shxyplot <- function(
 	)
 }
 
-plot.feemsplithalf <- function(x, kind = c('tcc', 'factors'), ...) {
+shaggplot <- function(
+	x, xlab = pgt('Number of components', translate),
+	ylab = pgt('Minimum TCC between halves', translate),
+	panel = bwv, FUN = min, ..., translate = FALSE
+) {
+	d <- coef(x, 'agg', FUN = FUN)
+	bwv <- function(..., box.ratio) {
+		# inspired by example(panel.violin)
+		panel.violin(..., col = 'transparent', box.ratio = box.ratio)
+		panel.bwplot(..., fill = NULL, box.ratio = .25)
+	}
+	bwplot(tcc ~ nfac, d, xlab = xlab, ylab = ylab, panel = panel, ...)
+}
+
+shbandplot <- function(
+	x, xlab = pgtq("lambda*', nm'", translate),
+	ylab = pgt('Factor value', translate), as.table = TRUE,
+	subset = TRUE, alpha.f = .25, ..., FUN = NULL, translate = FALSE
+) {
+	d <- eval(as.call(list(
+		quote(coef),
+		x,
+		kind = 'bandfactors',
+		FUN = FUN,
+		# must explicitly forward the NSE argument
+		subset = substitute(subset)
+	)))
+	panel.bands <- function(x, y, lower, upper, fill, col, subscripts, ...) {
+		lower <- lower[subscripts]
+		upper <- upper[subscripts]
+		panel.polygon(
+			c(x, rev(x)), c(lower, rev(upper)), border = FALSE,
+			col = fill, ...
+		)
+	}
+	xyplot(
+		estimate ~ wavelength | pgt(mode, translate) + nfac, d,
+		groups = factor, scales = list(x = list(relation = 'free')),
+		type = 'l', xlab = xlab, ylab = ylab, as.table = as.table,
+		panel = function(x, y, ...) {
+			panel.superpose(
+				x, y, panel.groups = panel.bands,
+				fill = adjustcolor(
+					trellis.par.get("superpose.line")$col,
+					alpha.f
+				), ...
+			)
+			panel.xyplot(x, y, ...)
+		}, lower = d$lower, upper = d$upper, ...
+	)
+}
+
+plot.feemsplithalf <- function(
+	x, kind = c('tcc', 'factors', 'aggtcc', 'bandfactors'), ...
+) {
 	switch(match.arg(kind),
 		tcc = shtccplot(x, ...),
-		factors = shxyplot(x, ...)
+		factors = shxyplot(x, ...),
+		aggtcc = shaggplot(x, ...),
+		bandfactors = shbandplot(x, ...)
 	)
 }
 
@@ -235,11 +295,38 @@ coefshtcc <- function(object)
 		)
 	}))
 
-coef.feemsplithalf <- function(object, kind = c('tcc', 'factors'), ...) {
-	stopifnot(length(list(...)) == 0)
+coefshagg <- function(x, FUN = min)
+	aggregate(tcc ~ nfac + test, coef(x, 'tcc'), FUN)
+
+coefshbands <- function(x, FUN = NULL, subset = TRUE) {
+	if (is.null(FUN)) FUN <- function(x) quantile(x, c(.025, .5, .975))
+	d <- eval(as.call(list(
+		quote(base::subset),
+		x = quote(coef(x, 'factors')),
+		# must explicitly forward the NSE argument
+		subset = substitute(subset),
+		# i.e. "drop the subset column", otherwise aggregate.formula breaks
+		select = quote(-subset)
+	)))
+	d <- aggregate(
+		value ~ wavelength + factor + mode + nfac,
+		d, function(x) list(FUN(x))
+	)
+	# now value is a list of 3-element vectors, fix it up
+	estimates <- t(simplify2array(d$value))
+	d$value <- NULL
+	colnames(estimates) <- c('lower', 'estimate', 'upper')
+	cbind(d, estimates)
+}
+
+coef.feemsplithalf <- function(
+	object, kind = c('tcc', 'factors', 'aggtcc', 'bandfactors'), ...
+) {
 	switch(match.arg(kind),
 		factors = coefshfact(object),
-		tcc = coefshtcc(object)
+		tcc = coefshtcc(object),
+		aggtcc = coefshagg(object, ...),
+		bandfactors = coefshbands(object, ...)
 	)
 }
 

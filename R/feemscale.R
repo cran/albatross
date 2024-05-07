@@ -11,6 +11,7 @@ feemscale.list <- feemscale.feemcube <- function(x, ..., progress = FALSE)
 
 feemscale.feem <- function(x, norm = sd, remember = TRUE, ...) {
 	factor <- norm(x, ...)
+	stopifnot(`Scale function returned NA: does it need na.rm = TRUE?` = !is.na(factor))
 	structure(
 		x / factor,
 		scale = attr(x, 'scale') * if (remember) factor else 1

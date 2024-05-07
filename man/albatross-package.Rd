@@ -98,18 +98,20 @@
   data(feems)
 
   dataset <- feemcube(feems, FALSE)
-  dataset <- feemscatter(dataset, rep(24, 4), 'pchip')
+  dataset <- feemscatter(dataset, c(24, 15, 10), 'whittaker')
   dataset <- feemife(dataset, absorp)
   plot(dataset <- feemscale(dataset, na.rm = TRUE))
 
   \donttest{
     # takes a long time
-    (sh <- feemsplithalf(cube, nfac = 2:5, splits = 4))
+    (sh <- feemsplithalf(
+      feemscatter(cube, c(24, 15)),
+      # in real life, set a stricter stopping criterion, 1e-6..1e-8
+      nfac = 2:4, splits = 4, ctol = 1e-4
+    ))
     plot(sh)
-    jk <- feemjackknife(cube, nfac = 3)
-    plot(jk)
   }
 
-  pf <- feemparafac(cube, nfac = 3)
+  pf <- feemparafac(cube, nfac = 3, ctol = 1e-4)
   plot(pf)
 }

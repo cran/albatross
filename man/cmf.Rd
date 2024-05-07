@@ -38,7 +38,7 @@
   cmf(
     X, nfac = 1,
     const = list(list(const = "nonneg"), list(const = "nonneg")),
-    start = c("svd", "random"), ctol = 1e-04, maxiter = 10
+    start = c("svd", "random"), ctol = 1e-04, maxit = 10
   )
   \method{fitted}{cmf}(object, \dots)
   wcmls(X, A, W, \dots, struc = NULL)
@@ -102,7 +102,7 @@
     }{abs(diff(L))/L \le ctol}{
       <sup>|&Delta;L|</sup>/<sub>L</sub> &le; <code>ctol</code>}.
   }
-  \item{maxiter}{
+  \item{maxit}{
     Iteration number limit.
   }
   \item{object}{

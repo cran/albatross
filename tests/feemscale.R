@@ -10,6 +10,7 @@ z <- feemcube(y, TRUE)
 feemscale(z)
 
 z[1, 1, ] <- NA
+tools::assertError(feemscale(z), verbose = TRUE)
 feemscale(z, multiway::sumsq, na.rm = TRUE)
 
 feemscale(y, progress = TRUE)

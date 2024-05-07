@@ -14,7 +14,7 @@ feemlist <- function(x, ...) UseMethod('feemlist')
 
 feemlist.character <- function(
 	x, format, pattern = NULL, recursive = TRUE,
-	ignore.case = FALSE, simplify.names = TRUE, ...
+	ignore.case = FALSE, simplify.names = TRUE, progress = TRUE, ...
 ) {
 	# all supplied paths must exist
 	stopifnot(file.exists(x))
@@ -52,7 +52,14 @@ feemlist.character <- function(
 		fname <- format
 		format <- function(f, ...) feem(f, fname, ...)
 	}
-	lapply(.wraplist(x), .wrapfun(format), ...)
+	x <- .wraplist(x)
+	wfun <- .wrapfun(format)
+	pfun <- if (progress) {
+		pb <- makepb(length(x))
+		on.exit(close(pb))
+		wrap_pb_callback(wfun, pb)
+	} else wfun
+	lapply(x, pfun, ...)
 }
 
 # Enhances: eemR

@@ -147,12 +147,23 @@ as.data.frame.feemcube <- function(x, ...) {
 	)
 }
 
-plot.feemcube <- function(
-	x, xlab = quote(lambda[em]*', nm'), ylab = quote(lambda[ex]*', nm'),
-	cuts = 128, col.regions = marine.colours(256), as.table = TRUE, ...
-)
+.plot.feemcube <- function(
+	x, xlab, ylab, cuts, col.regions, as.table,
+	..., translate = FALSE
+) {
+	if (missing(xlab)) xlab <- pgtq("lambda[em]*', nm'", translate)
+	if (missing(ylab)) ylab <- pgtq("lambda[ex]*', nm'", translate)
 	levelplot(
 		x = intensity ~ emission + excitation | sample,
 		data = as.data.frame(x), xlab = xlab, ylab = ylab, cuts = cuts,
 		col.regions = col.regions, as.table = as.table, ...
 	)
+}
+
+plot.feemcube <- function(
+	x, xlab, ylab, cuts = 128, col.regions = marine.colours(256),
+	as.table = TRUE, ...
+) .plot.feemcube(
+	x = x, xlab = xlab, ylab = ylab, cuts = cuts,
+	col.regions = col.regions, as.table = as.table, ...
+)

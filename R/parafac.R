@@ -4,7 +4,7 @@
 # methods returning long-format data.frames.
 
 feemparafac <- function(
-	X, ..., const = rep('nonneg', 3),
+	X, ..., const = rep('nonneg', 3), ctol = 1e-6,
 	rescale = 3, retries = 10, subset = TRUE, envir = NULL
 ) {
 	# see feemsplithalf and friends for why this is needed
@@ -13,10 +13,15 @@ feemparafac <- function(
 	stopifnot(inherits(cube, 'feemcube'))
 	if (!is.na(rescale)) stopifnot(length(rescale) == 1, rescale %in% 1:3)
 	# run the actual PARAFAC
-	for (i in seq_len(retries)) {
-		ret <- parafac(cube[,,subset], output = 'best', ..., const = const)
-		if (ret$cflag != 2) break
-	}
+	time <- system.time(
+		for (i in seq_len(retries)) {
+			ret <- parafac(
+				cube[,,subset], output = 'best', ...,
+				const = const, ctol = ctol
+			)
+			if (ret$cflag != 2) break
+		}
+	)
 	if (ret$cflag == 2) stop(
 		'Algorithm terminated abnormally after ', retries,
 		' tries due to a problem with the constraints'
@@ -35,20 +40,33 @@ feemparafac <- function(
 	}
 	structure(ret,
 		class = c('feemparafac', oldClass(ret)),
-		cube = X, subset = subset, envir = envir
+		cube = X, subset = subset, envir = envir, time = time
 	)
 }
 
-# extract the cube from a feemcube object, directly or by reference
-feemcube.feemparafac <- function(x, ...) {
-	stopifnot(length(list(...)) == 0)
+# Turns out, doing cube[,,subset] over and over is very expensive,
+# so do not subset the cube if we can help it
+.metadata.feemparafac <- function(x) {
 	# the cube could have been stored directly or in an environment
 	cube <- attr(x, 'cube')
 	if (!is.null(envir <- attr(x, 'envir')))
 		cube <- get(cube, envir = envir)
 	# we may have been asked to process a subset of the samples
 	if (is.null(subs <- attr(x, 'subset'))) subs <- TRUE
-	cube[,,subs]
+	list(
+		emission = attr(cube, 'emission'),
+		excitation = attr(cube, 'excitation'),
+		names = .cubenames(cube)[subs],
+		cube = cube,
+		subset = subs
+	)
+}
+
+# extract the cube from a feemcube object, directly or by reference
+feemcube.feemparafac <- function(x, ...) {
+	stopifnot(length(list(...)) == 0)
+	ret <- .metadata.feemparafac(x)
+	ret$cube[,,ret$subset]
 }
 
 fitted.feemparafac <- function(object, ...) {
@@ -74,15 +92,15 @@ residuals.feemparafac <- function(object, ...) {
 
 coef.feemparafac <- function(
 	object, type = c(
-		'all', 'scores', 'loadings', 'emission', 'excitation', 'samples'
+		'all', 'scores', 'loadings', 'surfaces', 'emission', 'excitation', 'samples'
 	), ...
 ) {
 	stopifnot(length(list(...)) == 0)
-	cube <- feemcube(object)
+	meta <- .metadata.feemparafac(object)
 	comps <- list(
-		emission = list(comp = 'A', name = 'wavelength', val = attr(cube, 'emission')),
-		excitation = list(comp = 'B', name = 'wavelength', val = attr(cube, 'excitation')),
-		samples = list(comp = 'C', name = 'sample', val = .cubenames(cube))
+		emission = list(comp = 'A', name = 'wavelength', val = meta$emission),
+		excitation = list(comp = 'B', name = 'wavelength', val = meta$excitation),
+		samples = list(comp = 'C', name = 'sample', val = meta$names)
 	)
 	switch(type <- match.arg(type),
 		emission =, excitation =, samples = {
@@ -108,29 +126,41 @@ coef.feemparafac <- function(
 				# kludge: uppercase "Emission" / "Excitation"
 				mode = `substr<-`(n, 1, 1, 'E')
 			)
-		))
+		)),
+		surfaces = {
+			do.call(rbind, lapply(1:ncol(object$A), function(i)
+				cbind(
+					as.data.frame(feem(
+						object$A[,i] %o% object$B[,i],
+						meta$emission,
+						meta$excitation
+					)),
+					factor = ordered(i, 1:ncol(object$A))
+				)
+			))
+		}
 	)
 }
 
-compplot.surf <- function(X, ...) {
-	cube <- feemcube(X)
-	plot(feemcube(with(X,
-		lapply(setNames(nm = 1:ncol(A)), function (i)
-			feem(
-				A[,i] %o% B[,i],
-				attr(cube, 'emission'),
-				attr(cube, 'excitation')
-			)
-		)
-	), TRUE), ...)
-}
+compplot.surf <- function(
+	X,
+	xlab = pgtq("lambda[em]*', nm'", translate),
+	ylab = pgtq("lambda[ex]*', nm'", translate),
+	col.regions = marine.colours(256), cuts = 255, as.table = TRUE, ...,
+	translate = FALSE
+) levelplot(
+	intensity ~ emission + excitation | factor, coef(X, 'surfaces'),
+	xlab = xlab, ylab = ylab, col.regions = col.regions, cuts = cuts,
+	as.table = as.table, ...
+)
 
 compplot.xy <- function(
-	X, xlab = quote(lambda*", nm"), ylab = "Factor value", as.table = T,
-	auto.key = TRUE, type = 'l', ...
+	X, xlab = pgtq("lambda*', nm'", translate),
+	ylab = pgt("Factor value", translate),
+	as.table = T, auto.key = TRUE, type = 'l', ..., translate = FALSE
 ) {
 	xyplot(
-		x = value ~ wavelength | factor, groups = mode,
+		x = value ~ wavelength | factor, groups = pgt(mode, translate),
 		data = coef(X, 'loadings'),
 		xlab = xlab, ylab = ylab, as.table = as.table, auto.key = auto.key,
 		type = type, ...

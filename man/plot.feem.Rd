@@ -8,14 +8,12 @@
 }
 \usage{
 \method{plot}{feem}(
-  x,
-  xlab = quote(lambda[em] * ", nm"), ylab = quote(lambda[ex] * ", nm"),
-  cuts = 128, col.regions = marine.colours(256), ...
+  x, xlab, ylab, cuts = 128,
+  col.regions = marine.colours(256), \dots
 )
 \method{plot}{feemcube}(
-  x,
-  xlab = quote(lambda[em] * ", nm"), ylab = quote(lambda[ex] * ", nm"),
-  cuts = 128, col.regions = marine.colours(256), as.table = TRUE, ...
+  x, xlab, ylab, cuts = 128,
+  col.regions = marine.colours(256), as.table = TRUE, \dots
 )
 \method{plot}{feem.resid}(
   x, \dots, at, col.regions = diverging.colours(256)

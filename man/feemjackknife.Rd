@@ -212,8 +212,8 @@
 \examples{\donttest{
   data(feems)
   cube <- feemscale(feemscatter(cube, rep(14, 4)), na.rm = TRUE)
-  # takes a long time
-  jk <- feemjackknife(cube, nfac = 3)
+  # takes a long time; the stopping criterion is weaked for speed
+  jk <- feemjackknife(cube, nfac = 3, ctol = 1e-4)
   # feemparafac methods should be able to use the environment and subset
   plot(jk$leaveone[[1]])
   plot(jk)

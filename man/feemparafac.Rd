@@ -5,7 +5,7 @@
 \alias{fitted.feemparafac}
 \alias{residuals.feemparafac}
 \alias{reorder.feemparafac}
-\alias{rescale} % re-exporting is tricky business
+\alias{rescale} % re-exported, so has to be documented somewhere
 \alias{rescale.feemparafac}
 \alias{print.feemparafac}
 \title{
@@ -20,13 +20,14 @@
 }
 \usage{
   feemparafac(
-    X, \dots, const = rep('nonneg', 3),
+    X, \dots, const = rep('nonneg', 3), ctol = 1e-6,
     rescale = 3, retries = 10, subset = TRUE, envir = NULL
   )
   \method{plot}{feemparafac}(x, type = c("image", "lines"), \dots)
   \method{coef}{feemparafac}(
     object, type = c(
-      "all", "scores", "loadings", "emission", "excitation", "samples"
+      "all", "scores", "loadings", "surfaces",
+      "emission", "excitation", "samples"
     ), \dots
   )
   \method{fitted}{feemparafac}(object, \dots)
@@ -62,6 +63,12 @@
     modes of \code{X}, passed to \code{\link[multiway]{parafac}}.
     Defaults to non-negativity. See \code{\link[CMLS]{const}} for more
     information.
+  }
+  \item{ctol}{
+    The stopping criterion used by \code{\link[multiway]{parafac}}. When
+    a step results in an absolute change in
+    \eqn3{R^2}{R^2}{R<sup>2</sup>} below \code{ctol}, the algorithm
+    stops.
   }
   \item{rescale}{
     Rescale the resulting factors to leave all the variance in the given
@@ -143,6 +150,17 @@
         \dQuote{samples} containing results of
         \code{coef(object, "emission")}, \code{coef(object, "excitation")},
         \code{coef(object, "samples")}, respectively.
+      }
+      \item{surfaces}{
+        A \code{\link[base]{data.frame}} containing the columns
+        \code{emission}, \code{excitation} (containing the wavelengths),
+        \code{intensity} (containing the values of the outer product
+        \eqn3{
+          \mathbf{a}_r \times \mathbf{b}_r^\top
+        }{A[,r] \\\%o\\\% B[,r]}{
+          <b>a</b><sub>r</sub> &times; <b>b</b><sub>r</sub><sup>
+            <span style="font-style: normal;">T</span></sup>}),
+        and \code{factor} (containing the factor numbers \eqn{r}).
       }
     }
   }
@@ -231,6 +249,13 @@
       \item{cube}{A copy of the \code{X} argument.}
       \item{subset}{A copy of the \code{subset} argument.}
       \item{envir}{A copy of the \code{envir} argument.}
+      \item{time}{
+        The time it took to compute the decomposition as an object of
+        class \code{proc_time}. Only the time taken to run
+        \code{multiway::\link[multiway]{parafac}} (including the
+        retries, if the decomposition failed) is included. The time
+        taken to rescale the scores should be negligible.
+      }
     }
     \code{\link[base]{rownames}} are added from the original data cube
     to the \code{A}, \code{B}, \code{C} components of the list returned
@@ -265,14 +290,17 @@
 }
 
 \seealso{
-  \code{\link[multiway]{parafac}} class structure;
+  The \code{\link[multiway]{parafac}} class structure;
   \code{\link{write.openfluor}}, \code{\link{feemcube}} for methods
   specific to values returned from this function.
+
+  The \code{\link[multiway]{rescale}} generic is re-exported from the
+  \CRANpkg{multiway} package.
 }
 \examples{
   data(feems)
-  cube <- feemscale(feemscatter(cube, rep(14, 4)), na.rm = TRUE)
-  (factors <- feemparafac(cube, nfac = 3))
+  cube <- feemscale(feemscatter(cube, c(24, 14)), na.rm = TRUE)
+  (factors <- feemparafac(cube, nfac = 3, ctol = 1e-4))
   plot(factors, 'image')
   plot(factors, 'line')
   head(coef(factors, 'loadings'))

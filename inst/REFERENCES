@@ -427,3 +427,18 @@ bibentry('Article', key = 'Thygesen2004',
 		person(c('Jens', 'K.', 'S.'), 'Møller')
 	)
 )
+
+bibentry('Article', key = 'Bro2003-CORCONDIA',
+	title = 'A new efficient method for determining the number of components in PARAFAC models',
+	volume = 17,
+	issn = '0886-9383',
+	doi = '10.1002/cem.801',
+	number = 5,
+	journal = 'Journal of Chemometrics',
+	author = c(
+		person('Rasmus', 'Bro'),
+		person(c('Henk', 'A.', 'L.'), 'Kiers')
+	),
+	year = 2003,
+	pages = '274-286'
+)

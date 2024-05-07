@@ -159,8 +159,8 @@ write.openfluor(
 \seealso{\code{\link{feemparafac}}}
 \examples{
   data(feems)
-  cube <- feemscale(feemscatter(cube, rep(14, 4)), na.rm = TRUE)
-  factors <- feemparafac(cube, nfac = 3)
+  cube <- feemscale(feemscatter(cube, c(24, 14)), na.rm = TRUE)
+  factors <- feemparafac(cube, nfac = 3, ctol = 1e-4)
   # all defaults
   write.openfluor(factors, f1 <- tempfile(fileext = '.txt'))
   if (interactive()) file.show(f1)

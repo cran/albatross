@@ -85,12 +85,12 @@
       are assumed to correspond to excitation wavelengths; if that's
       not the case, set the \code{transpose} argument to \code{TRUE}.
 
-      If there are unmeasured points in the spectrum (e.g. the anti-Stokes
-      area) but they are hard to distinguish from measured values
-      (e.g. stored as zeroes instead of \code{NA}), specify their
-      values as the \code{na} argument (numeric vector). The function
-      will check for triangles filled with these values (such that a
-      threshold \eqn3{\Delta}{Delta}{&#x2206;} exists where for all \eqn3{
+      If there are unmeasured points in the spectrum (e.g. the
+      anti-Stokes area) encoded as special numbers (e.g. stored as
+      zeroes or \eqn{-100}), specify their values as the \code{na}
+      argument (numeric vector). The function will check for triangles
+      filled with these values (such that a threshold
+      \eqn3{\Delta}{Delta}{&#x2206;} exists where for all \eqn3{
         \lambda_\mathrm{em} - \lambda_\mathrm{ex} > \Delta
       }{lambda.em - lambda.ex > Delta}{
         &lambda;<sub>em</sub> - &lambda;<sub>ex</sub> &gt; &#x2206;
@@ -115,6 +115,11 @@
       is a file path, not a connection. (When passing a connection with
       an encoding attribute set, make sure that the file contents after
       decoding can be represented in the session charset.)
+
+      The \code{dec} argument is also treated specially, making it
+      possible to read a column containing both numbers (with a decimal
+      comma) and strings and then convert them to numbers (transforming
+      the strings into \code{NA_real_}).
 
       All other arguments are passed to \code{\link[utils]{read.table}},
       with \code{fill} defaulting to \code{TRUE} instead of

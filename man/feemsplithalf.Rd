@@ -13,9 +13,13 @@
   feemsplithalf(
     cube, nfac, splits, random, groups, fixed, \dots, progress = TRUE
   )
-  \method{plot}{feemsplithalf}(x, kind = c('tcc', 'factors'), \dots)
+  \method{plot}{feemsplithalf}(
+    x, kind = c('tcc', 'factors', 'aggtcc', 'bandfactors'), \dots
+  )
   \method{print}{feemsplithalf}(x, \dots)
-  \method{coef}{feemsplithalf}(object, kind = c('tcc', 'factors'), \dots)
+  \method{coef}{feemsplithalf}(
+    object, kind = c('tcc', 'factors', 'aggtcc', 'bandfactors'), \dots
+  )
 }
 \arguments{
   \item{cube}{
@@ -96,9 +100,9 @@
     Chooses what type of data to return or plot:
     \describe{
       \item{tcc}{
-        Statistics of between-half TCCs for different numbers of
-        components. The smallest TCC is chosen between emission- and
-        excitation-mode values, but otherwise they are not aggregated.
+        Between-half TCCs for different numbers of components. The
+        smallest TCC is chosen between emission- and excitation-mode
+        values, but otherwise they are not aggregated.
 
         When plotting, TCC values for the component with the same number
         have the same colour.
@@ -110,6 +114,32 @@
         components and each mode (emission or excitation). Components
         with the same number have the same colour.
       }
+      \item{aggtcc}{
+        \code{\link[stats]{aggregate}} the TCCs returned by
+        \code{coef(x, 'tcc')} over individual components.
+        By default, the function returns the minimal values, but a
+        different aggregation can be chosen using the additional
+        argument \code{FUN}.
+
+        When plotting, use a combination of a box-and-whiskers plot and
+        a violin plot.
+      }
+      \item{bandfactors}{
+        \code{\link[stats]{aggregate}} the factor values from
+        \code{coef(x, 'factors')} over individual tests and halves. By
+        default, collect the \eqn{2.5\%} and \eqn{97.5\%} quantiles as
+        the lower and the upper boundaries, respectively, and medians as
+        the estimates.
+
+        The additional argument \code{FUN} can be specified
+        as a function returning \code{c(lower, estimate, upper)} given a
+        numeric vector. The additional argument \code{subset} works as
+        in \code{base::\link[base]{subset}}.
+
+        When plotting, the estimates are lines on top of
+        semi-transparent polygons signifying the lower and upper
+        boundaries..
+      }
     }
   }
   \item{\dots}{\describe{
@@ -118,10 +148,16 @@
       eventually, to \code{\link[multiway]{parafac}}. It is recommended
       to fully name the parameters instead of relying on partial or
       positional matching.
+
+      The arguments \code{parallel}, \code{cl} are handled separately,
+      see Details.
     }
-    \item{plot.feemsplithalf}{Passed as-is to \code{\link[lattice]{xyplot}}.}
-    \item{print.feemsplithalf, coef.feemsplithalf}{
+    \item{plot.feemsplithalf}{Passed to \code{\link[lattice]{xyplot}}.}
+    \item{print.feemsplithalf}{
       No additional options are allowed.
+    }
+    \item{coef.feemsplithalf}{
+      Ignored unless \code{kind \%in\% c('aggtcc', 'bandfactors')}.
     }
   }}
 }
@@ -173,6 +209,13 @@
   unlike in \code{\link{feemparafac}}, the \code{cube} argument has
   to be a \code{\link{feemcube}} object and passing \code{envir} and
   \code{subset} options to \code{feemsplithalf} is not supported.
+
+  Instead of forwarding the arguments \code{parallel}, \code{cl} to
+  \code{multiway::\link[multiway]{parafac}}, \code{feemsplithalf}
+  schedules the calls to \code{\link{feemparafac}} on the cluster by
+  itself. This makes it possible to fit more than \code{nstart} models
+  at the same time if enough nodes are present in the \pkg{parallel}
+  cluster \code{cl}.
 
   \code{plot.feemsplithalf} plots results of the split-half procedure
   (TCC or loading values depending on the \code{kind} argument)
@@ -276,6 +319,16 @@
           obtained from.
         }
       }}
+      \item{aggtcc}{
+        The columns \code{tcc}, \code{nfac}, \code{test} after
+        aggregation of \code{coef(kind = 'tcc')}.
+      }
+      \item{bandfactors}{
+        Columns \code{wavelength}, \code{factor}, \code{mode},
+        \code{nfac} from \code{coef(kind = 'factors')}, plus columns
+        \code{lower}, \code{estimate}, \code{upper} signifying the
+        outputs from the aggregation function.
+      }
     }
   }
 }}
@@ -289,10 +342,12 @@
   cube <- feemscale(feemscatter(cube, rep(14, 4)), na.rm = TRUE)
 
   (sh <- feemsplithalf(
-    cube, 1:4, splits = 4 # => S4C6T3
+    cube, 1:4, splits = 4, # => S4C6T3
     # splits = c(4, 2) would be S4C4T2, and so on
     # the rest is passed to multiway::parafac;
-    # setting ctol and maxit is recommended
+    ctol = 1e-4
+    # here we set a mild stopping criterion for speed;
+    # be sure to use a stricter one for real tasks
   ))
 
   # specifying fixed halves to compare as list of 2-element lists
@@ -300,13 +355,9 @@
     list(1:6, 7:12),
     list(seq(1, 11, 2), seq(2, 12, 2))
   )
-  sh.f <- feemsplithalf(cube, 2:3, fixed = fixed)
+  sh.f <- feemsplithalf(cube, 2:3, fixed = fixed, ctol = 1e-4)
 
-  # can use feemparafac methods for individual models in $factors
-  plot(sh$factors[[1]])
-  plot(sh)
-  plot(sh, 'factors')
-  head(coef(sh))
+  plot(sh, 'aggtcc')
   head(coef(sh, 'factors'))
 }}
 \keyword{hplot}
